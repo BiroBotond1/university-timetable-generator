@@ -1,0 +1,401 @@
+{
+  "ChangesNumber": 1,
+  "MaxIteration": 10000,
+  "InitialTemperature": 10000,
+  "Teachers": [
+    {
+      "name": "Szilagyi Zsolt",
+      "ineligibleDays": [
+        {
+          "day": 0,
+          "hour": 9,
+          "week": 0
+        }
+      ]
+    },
+    {
+      "name": "Robu Judit",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Gasko Noemi",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Vekov Geza",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Kepes Tamas",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Molnar Botond",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Szenkovits Annamaria",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Biro Eniko",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Garfield Adrienne",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Szollosi Istvan",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Suto Agoston",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Darvay Zsolt",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Mezei Ildiko",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Ruff Laura",
+      "ineligibleDays": []
+    },
+    {
+      "name": "Patcas Csaba",
+      "ineligibleDays": []
+    }
+  ],
+  "Locations": [
+    {
+      "name": "Main building"
+    }
+  ],
+  "Courses": [
+    {
+      "name": "Op rendszerek"
+    },
+    {
+      "name": "Graf algoritmika"
+    },
+    {
+      "name": "Adatszerkezetek"
+    },
+    {
+      "name": "OOP"
+    },
+    {
+      "name": "Geometria"
+    },
+    {
+      "name": "Metode avansate de rezolvare a problemelor de matematica si informatica"
+    }
+  ],
+  "Majors": [
+    {
+      "name": "Info",
+      "year": 1,
+      "groupID": 0
+    }
+  ],
+  "Groups": [
+    {
+      "name": "511/1",
+      "invalidGroups": [8, 12]
+    },
+    {
+      "name": "511/2",
+      "invalidGroups": [8, 12]
+    },
+    {
+      "name": "512/1",
+      "invalidGroups": [9, 12]
+    },
+    {
+      "name": "512/2",
+      "invalidGroups": [9, 12]
+    },
+    {
+      "name": "513/1",
+      "invalidGroups": [10, 12]
+    },
+    {
+      "name": "513/2",
+      "invalidGroups": [10, 12]
+    },
+    {
+      "name": "514/1",
+      "invalidGroups": [11 , 12]
+    },
+    {
+      "name": "514/2",
+      "invalidGroups": [11 , 12]
+    },
+    {
+      "name": "511",
+      "invalidGroups": [0, 1 , 12]
+    },
+    {
+      "name": "512",
+      "invalidGroups": [2, 3, 12]
+    },
+    {
+      "name": "513",
+      "invalidGroups": [4, 5, 12]
+    },
+    {
+      "name": "514",
+      "invalidGroups": [6, 7, 12]
+    },
+    {
+      "name": "Everyone",
+      "invalidGroups": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    }
+  ],
+  "SubCourses": [
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 12,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 1,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 1,
+      "type": 0,
+      "groupID": 12,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    },
+    {
+      "courseID": 0,
+      "type": 0,
+      "groupID": 0,
+      "numberOfHours": 1,
+      "coursePeriod": 0,
+      "teacherID": 0,
+      "majorID": 0,
+      "locationID": 0
+    }
+  ]
+}

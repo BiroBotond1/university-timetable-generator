@@ -72,15 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,6 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,16 +147,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Catalog.cpp" />
     <ClCompile Include="Course.cpp" />
     <ClCompile Include="DateTime.cpp" />
+    <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Group.cpp" />
+    <ClCompile Include="HelperFunctions.cpp" />
+    <ClCompile Include="Hour.cpp" />
+    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="Major.cpp" />
+    <ClCompile Include="SubCourse.cpp" />
+    <ClCompile Include="Teacher.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Catalog.h" />
     <ClInclude Include="Course.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="Global.h" />
+    <ClInclude Include="Group.h" />
+    <ClInclude Include="HelperFunctions.h" />
+    <ClInclude Include="Hour.h" />
+    <ClInclude Include="Location.h" />
+    <ClInclude Include="Major.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SubCourse.h" />
+    <ClInclude Include="Teacher.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="input.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

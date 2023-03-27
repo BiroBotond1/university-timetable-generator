@@ -1,0 +1,93 @@
+ helytelen 
+0.nap:
+      8 ora: Kemia
+      9 ora: Anyanyelv
+      10 ora: Roman
+      11 ora: -------------
+      12 ora: Anyanyelv
+      13 ora: Angol
+      14 ora: Informatika
+      15 ora: Matematika
+1.nap:
+      8 ora: Torna
+      9 ora: -------------
+      10 ora: Fizika
+      11 ora: Biologia
+      12 ora: Angol
+      13 ora: Matematika
+      14 ora: -------------
+      15 ora: Anyanyelv
+2.nap:
+      8 ora: Zene
+      9 ora: Matematika
+      10 ora: -------------
+      11 ora: Vallas
+      12 ora: Matematika
+      13 ora: Biologia
+      14 ora: Roman
+      15 ora: Roman
+3.nap:
+      8 ora: Kemia
+      9 ora: Informatika
+      10 ora: Tortenelem
+      11 ora: Foldrajz
+      12 ora: -------------
+      13 ora: Informatika
+      14 ora: Angol
+      15 ora: Fizika
+4.nap:
+      8 ora: Biologia
+      9 ora: Torna
+      10 ora: Tortenelem
+      11 ora: Anyanyelv
+      12 ora: Biologia
+      13 ora: Matematika
+      14 ora: Roman
+      15 ora: Fizika
+-----------------------------------------
+ helyes 
+0.nap:
+      8 ora: Informatika
+      9 ora: Biologia
+      10 ora: Angol
+      11 ora: Tortenelem
+      12 ora: Roman
+      13 ora: Matematika
+      14 ora: Anyanyelv
+      15 ora: -------------
+1.nap:
+      8 ora: Roman
+      9 ora: Tortenelem
+      10 ora: Torna
+      11 ora: Kemia
+      12 ora: Matematika
+      13 ora: Anyanyelv
+      14 ora: Biologia
+      15 ora: -------------
+2.nap:
+      8 ora: Fizika
+      9 ora: Torna
+      10 ora: Anyanyelv
+      11 ora: Angol
+      12 ora: Informatika
+      13 ora: Matematika
+      14 ora: Vallas
+      15 ora: -------------
+3.nap:
+      8 ora: Foldrajz
+      9 ora: Matematika
+      10 ora: Informatika
+      11 ora: Fizika
+      12 ora: Biologia
+      13 ora: Roman
+      14 ora: Kemia
+      15 ora: -------------
+4.nap:
+      8 ora: Anyanyelv
+      9 ora: Biologia
+      10 ora: Zene
+      11 ora: Angol
+      12 ora: Fizika
+      13 ora: Matematika
+      14 ora: Roman
+      15 ora: -------------

@@ -1,69 +1,69 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include "stdafx.h"
 #include <fstream>
 #include <algorithm>
-#include <random>
-#include <chrono>
+#include "Global.h"
 
-#include "Course.h"
+using json = nlohmann::json;
 
-int g_changeNumber, g_maxIteration, g_courseNumber;
-double g_initialTemperature;
-std::vector<Course> g_courses;
-std::vector<std::vector<int>> g_catalog;
-bool g_bActive;
-
-std::vector<std::string> Split(std::string string, std::string delimenter) {
-    int start, end = -1 * delimenter.size();
-    auto substrings = std::vector<std::string>();
-    do {
-        start = end + delimenter.size();
-        end = string.find(delimenter, start);
-        substrings.push_back(string.substr(start, end - start));
-    } while (end != -1);
-    return substrings;
-}
-
-std::vector<std::string> ReadLineAndSplit(std::ifstream &fin) {
-    std::string line;
-    std::getline(fin, line);
-    auto substrings = Split(line, " ");
-    return substrings;
-}
-
-int ReadAndConvertFirstInt(std::ifstream& fin) {
-    return std::stoi(ReadLineAndSplit(fin)[0]);
-}
+//std::ofstream std::cout("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/output.txt");
 
 void Read(std::string fileName) {
     std::ifstream fin(fileName);
-    g_changeNumber = ReadAndConvertFirstInt(fin);
-    g_maxIteration = ReadAndConvertFirstInt(fin);
-    g_initialTemperature = double(ReadAndConvertFirstInt(fin));
-    g_courseNumber = ReadAndConvertFirstInt(fin);
-    for (int i = 0; i < g_courseNumber; i++) {
-        g_courses.push_back(Course{ ReadLineAndSplit(fin) });
+    json data = json::parse(fin);
+    g_changeNumber = data["ChangesNumber"];
+    g_maxIteration = data["MaxIteration"];
+    g_initialTemperature = data["InitialTemperature"];
+    for (auto jsonTeacher : data["Teachers"]) {
+        g_teachers.push_back(Teacher{ jsonTeacher });
+    }
+    for (auto jsonLocation : data["Locations"]) {
+        g_locations.push_back(Location{ jsonLocation });
+    }
+    for (auto jsonCourse : data["Courses"]) {
+        g_courses.push_back(Course{ jsonCourse });
+    }
+    for (auto jsonMajor : data["Majors"]) {
+        g_majors.push_back(Major{ jsonMajor });
+    }
+    for (auto jsonGroup : data["Groups"]) {
+        g_groupes.push_back(Group{ jsonGroup });
+    }
+    for (auto jsonSubCourse : data["SubCourses"]) {
+        g_subCourses.push_back(SubCourse{ jsonSubCourse });
     }
 }
 
-int randInt(int a, int b) {
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> dist6(a, b);
-    return dist6(rng);
+void InitCatalogs() {
+    int i = 0;
+    for (auto subCourse : g_subCourses)
+    {
+        int teacherID = subCourse.GetTeacherID();
+        int locationID = subCourse.GetLocationID();
+        int courseID = subCourse.GetCourseID();
+        int majorID = subCourse.GetMajorID();
+        int groupID = subCourse.GetGroupID();
+        CoursePeriod eCursePeriod = subCourse.GetCoursePeriod();
+        Catalog &majorCatalog = g_majors[majorID].GetCatalog();
+        Catalog teacherCatalog = g_teachers[teacherID].GetCatalog();
+        Catalog locationCatalog = g_locations[locationID].GetCatalog();
+        int day = 0, hour = 0, week = 0;
+        do
+        {
+            day = RandInt(0, 4);
+            hour = RandInt(0, 11);
+            week = RandInt(0, 1);
+
+        } while (!majorCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID) &&
+            !teacherCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID) &&
+            !locationCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID));
+        majorCatalog.Add(eCursePeriod, day, hour, week, i);
+        teacherCatalog.Add(eCursePeriod, day, hour, week, i);
+        locationCatalog.Add(eCursePeriod, day, hour, week, i);
+        i++;
+    }
 }
 
-double Rand() {
-    std::mt19937_64 rng;
-    uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
-    rng.seed(ss);
-    std::uniform_real_distribution<double> unif(0, 1);
-    return unif(rng);
-}
-
-void InitCatalog() {
+/*void InitCatalog() {
     g_bActive = true;
     g_catalog = std::vector<std::vector<int>>();
     for (int i = 0; i < 5; i++) {
@@ -147,9 +147,9 @@ float Fitness(std::vector<std::vector<int>> p_catalog) {
     }
     
     return fitnessValue;
-}
+}*/
 
-float Fitness() {
+/*float Fitness() {
     return Fitness(g_catalog);
 }
 
@@ -207,21 +207,54 @@ void WriteCatalog() {
         std::cout << i << ".nap:" << std::endl;
         for (int j = 0; j < g_catalog[i].size(); j++) {
             if (g_catalog[i][j] == -1) {
-                std::cout << "      " << j + 8 << " ora: -------------" << std::endl;
+               std::cout << "      " << j + 8 << " ora: -------------" << std::endl;
                 continue;
             }
             std::cout << "      " << j + 8 << " ora: " << g_courses[g_catalog[i][j]].GetName() << std::endl;
         }
-    }
-}
+    }*/
+    /*json j;
+    j["active"] = g_bActive;
+    for (int i = 0; i < g_catalog.size(); i++) {
+        for (int j = 0; j < g_catalog[i].size(); j++) {
+            std::string courseName;
+            if (g_catalog[i][j] == -1)
+                courseName = "";
+            else
+                courseName = g_courses[g_catalog[i][j]].GetName();
+            switch (i) {
+            case 0: {
+                j["catalog"]["monday"] = ({ {"hour", j + 8}, {"name", courseName} });
+                break;
+            }
+            case 1:
+                j["catalog"]["tuesday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
+                    break;
+            case 2:
+                j["catalog"]["wednesday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
+                    break;
+            case 3:
+                j["catalog"]["thursday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
+                    break;
+            case 4:
+                j["catalog"]["friday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
+                    break;
+            }
+        }
+    }*/
+    
+//}
 
 int main()
 {
-    Read("input.txt");
-    InitCatalog();
+    //Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
+    Read("input.json");
+    InitCatalogs();
+    g_majors[0].GetCatalog().Write();
+    /*InitCatalog();
     Fitness();
     WriteCatalog();
     std::cout << "-----------------------------------------" << std::endl;
     SimulatedAnnealing();
-    WriteCatalog();
+    WriteCatalog();*/
 }
