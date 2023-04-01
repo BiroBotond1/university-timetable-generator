@@ -2,6 +2,8 @@
 #include <fstream>
 #include <algorithm>
 #include "Global.h"
+#include "HelperFunctions.h"
+#include <chrono>
 
 using json = nlohmann::json;
 
@@ -19,242 +21,157 @@ void Read(std::string fileName) {
     for (auto jsonLocation : data["Locations"]) {
         g_locations.push_back(Location{ jsonLocation });
     }
-    for (auto jsonCourse : data["Courses"]) {
-        g_courses.push_back(Course{ jsonCourse });
+    for (auto jsonClass : data["Classes"]) {
+        g_classes.push_back(Class{ jsonClass });
     }
-    for (auto jsonMajor : data["Majors"]) {
-        g_majors.push_back(Major{ jsonMajor });
+    for (auto jsonSubject : data["Subjects"]) {
+        g_subjects.push_back(Subject{ jsonSubject });
     }
-    for (auto jsonGroup : data["Groups"]) {
-        g_groupes.push_back(Group{ jsonGroup });
-    }
-    for (auto jsonSubCourse : data["SubCourses"]) {
-        g_subCourses.push_back(SubCourse{ jsonSubCourse });
+    for (auto jsonClassHour : data["ClassHours"]) {
+        g_classHours.push_back(ClassHour{ jsonClassHour });
     }
 }
 
 void InitCatalogs() {
     int i = 0;
-    for (auto subCourse : g_subCourses)
+    for (auto classHour : g_classHours)
     {
-        int teacherID = subCourse.GetTeacherID();
-        int locationID = subCourse.GetLocationID();
-        int courseID = subCourse.GetCourseID();
-        int majorID = subCourse.GetMajorID();
-        int groupID = subCourse.GetGroupID();
-        CoursePeriod eCursePeriod = subCourse.GetCoursePeriod();
-        Catalog &majorCatalog = g_majors[majorID].GetCatalog();
-        Catalog teacherCatalog = g_teachers[teacherID].GetCatalog();
-        Catalog locationCatalog = g_locations[locationID].GetCatalog();
-        int day = 0, hour = 0, week = 0;
-        do
-        {
-            day = RandInt(0, 4);
-            hour = RandInt(0, 11);
-            week = RandInt(0, 1);
-
-        } while (!majorCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID) &&
-            !teacherCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID) &&
-            !locationCatalog.IsFreeDay(eCursePeriod, day, hour, week, groupID));
-        majorCatalog.Add(eCursePeriod, day, hour, week, i);
-        teacherCatalog.Add(eCursePeriod, day, hour, week, i);
-        locationCatalog.Add(eCursePeriod, day, hour, week, i);
+        classHour.AddClassHoursToCatalog(i);
         i++;
     }
 }
 
-/*void InitCatalog() {
-    g_bActive = true;
-    g_catalog = std::vector<std::vector<int>>();
-    for (int i = 0; i < 5; i++) {
-        g_catalog.push_back(std::vector<int> {});
-        for (int j = 0; j < 8; j++) {
-            g_catalog[i].push_back(-1);
-        }
+double Fitness(std::vector<Class> p_classes, std::vector<Teacher> p_teachers, std::vector<Location> p_locations) {
+    double fitnessValue = 0;
+    for (auto clas : p_classes)
+    {
+        fitnessValue += clas.GetFitnessValue();
     }
-    for (int i = 0; i < g_courseNumber; i++) {
-        auto invalidTimes = g_courses[i].GetInvalidTimes();
-        for (int j = 0; j < g_courses[i].GetNumber(); j++) {
-            int day = 0, hour = 0;
-            do
-            {
-                day = randInt(0, 4);
-                hour = randInt(0, 7);
-            } while (std::find(invalidTimes[day].begin(), invalidTimes[day].end(), hour) != invalidTimes[day].end() || g_catalog[day][hour] != -1);
-            g_catalog[day][hour] = i;
-        }
+    for (auto teacher : p_teachers)
+    {
+        fitnessValue += teacher.GetCatalog().GetFitnessValue();
     }
-}
-
-float Fitness(std::vector<std::vector<int>> p_catalog) {
-    std::vector<int> courseNumberOnADay;
-    std::vector<int> coursesNumbers;
-    for (int j = 0; j < g_courseNumber; j++) {
-        courseNumberOnADay.push_back(0);
-        coursesNumbers.push_back(0);
+    for (auto location : p_locations)
+    {
+        fitnessValue += location.GetCatalog().GetFitnessValue();
     }
-    float fitnessValue = 1000;
-    g_bActive = true;
-    for (int i = 0; i < p_catalog.size(); i++) {
-        int hasEmptyHoursBetweenCourses = 0;
-        bool hasEmptyHours = false;
-
-        for (int j = 0; j < p_catalog[i].size(); j++) {
-            if (p_catalog[i][j] == -1) {
-                hasEmptyHours = true;
-                continue;
-            }
-            courseNumberOnADay[p_catalog[i][j]]++;
-            coursesNumbers[i]++;
-
-            //a prof can't work on invalid day
-            auto invalidTimes = g_courses[p_catalog[i][j]].GetInvalidTimes();
-            if (std::find(invalidTimes[i].begin(), invalidTimes[i].end(), j) != invalidTimes[i].end()) {
-                fitnessValue -= 10;
-                g_bActive = false;
-            }
-
-            if (hasEmptyHours) {
-                hasEmptyHoursBetweenCourses++;
-                hasEmptyHours = false;
-                g_bActive = false;
-            }
-            //the courses starts at 8
-            fitnessValue += std::abs(j - 8);
-        }
-        //no empty hours between courses
-        fitnessValue -= hasEmptyHoursBetweenCourses * 10;
-
-        //just 1 type of course on each day
-        for (int j = 0; j < g_courseNumber; j++) {
-            if (courseNumberOnADay[j] > 1) {
-                fitnessValue -= courseNumberOnADay[j]*2;
-                g_bActive = false;
-            }
-            courseNumberOnADay[j] = 0;
-        }  
-    }
-
-    //even hours
-    for (int i = 0; i < g_courseNumber; i++) {
-        for (int j = 0; j < g_courseNumber; j++) {
-            fitnessValue -= pow(abs(coursesNumbers[i] - coursesNumbers[j]), 2);
-        }
-    }
-
-    if (g_bActive) {
-        fitnessValue += 1000;
-    }
-    
     return fitnessValue;
-}*/
-
-/*float Fitness() {
-    return Fitness(g_catalog);
 }
 
-std::vector<std::vector<int>> Change(std::vector<std::vector<int>> p_catalog) {
-    int day1 = randInt(0, 4);
-    int hour1 = randInt(0, 7);
-    int day2 = randInt(0, 4);
-    int hour2 = randInt(0, 7);
-    int toSwitch = p_catalog[day1][hour1];
-    p_catalog[day1][hour1] = p_catalog[day2][hour2];
-    p_catalog[day2][hour2] = toSwitch;
-    return p_catalog;
+double Fitness() {
+    return Fitness(g_classes, g_teachers, g_locations);
 }
 
-std::vector<std::vector<int>> Changes() {
-    auto ToChange = g_catalog;
-    for (int i = 0; i < g_changeNumber; i++) {
-        ToChange = Change(ToChange);
+void ChangeLocation(std::vector<Location>& p_locations, Class &p_class, int day1, int hour1, int day2, int hour2) {
+    int locationID1 = p_class.GetTeacherID(day1, hour1);
+    int locationID2 = p_class.GetLocationID(day2, hour2);
+    if (locationID1 != -1)
+        p_locations[locationID1].Change(day1, hour1, day2, hour2);
+    if (locationID2 != -1)
+        p_locations[locationID2].Change(day1, hour1, day2, hour2);
+}
+
+void ChangeTeachers(std::vector<Teacher>& p_teachers, Class& p_class, int day1, int hour1, int day2, int hour2) {
+    int teacherID1 = p_class.GetTeacherID(day1, hour1);
+    int teacherID2 = p_class.GetTeacherID(day2, hour2);
+    if (teacherID1 != -1)
+        p_teachers[teacherID1].Change(day1, hour1, day2, hour2);
+    if (teacherID2 != -1)
+        p_teachers[teacherID2].Change(day1, hour1, day2, hour2);
+}
+
+void Change(std::vector<Class> &p_classes, std::vector<Teacher> &p_teachers, std::vector<Location> &p_locations) {
+    int classID = RandInt(0, int(p_classes.size() - 1));
+    int day1 = RandInt(0, 4);
+    int hour1 = RandInt(0, 7);
+    int day2 = RandInt(0, 4);
+    int hour2 = RandInt(0, 7);
+
+    /*int subjectID1 = g_classHours[p_classes[classID].GetClassHourID(day1, hour1)].GetSubjectID();
+    int subjectID2 = g_classHours[p_classes[classID].GetClassHourID(day2, hour2)].GetSubjectID();
+    if (g_subjects[subjectID1].HasLocations())      //change the location of a classhour
+    {
+        if (Rand() <= 0.2) {
+            int locationID = g_subjects[subjectID1].GetRandomLocationID();
+        }
     }
-    return ToChange;
+    if (g_subjects[subjectID2].HasLocations())
+    {
+        if (Rand() <= 0.2) {
+            int locationID = g_subjects[subjectID2].GetRandomLocationID();
+        }
+    }*/
+
+    p_classes[classID].Change(day1, hour1, day2, hour2);
+
+    ChangeLocation(p_locations, p_classes[classID], day1, hour1, day2, hour2);
+
+    ChangeTeachers(p_teachers, p_classes[classID], day1, hour1, day2, hour2);
+}
+
+void Changes(std::vector<Class>& p_classes, std::vector<Teacher>& p_teachers, std::vector<Location>& p_locations) {
+    for (int i = 0; i < g_changeNumber; i++) {
+        Change(p_classes, p_teachers, p_locations);
+    }
 }
 
 double LinearAnnealing(int i) {
     return g_initialTemperature / (1 + 0.5 * i);
 }
 
+void WriteCatalog() {
+    g_classes[0].GetCatalog().Write();
+    g_teachers[0].GetCatalog().Write();
+}
+
 void SimulatedAnnealing() {
-    g_bActive = true;
+    std::vector<Class> p_classesBest = g_classes;
+    std::vector<Teacher> p_teachersBest = g_teachers;
+    std::vector<Location> p_locationsBest = g_locations;
+    std::vector<Class> p_classes;
+    std::vector<Teacher> p_teachers;
+    std::vector<Location> p_locations;
+    g_bActive = false;
     double t = g_initialTemperature;
-    std::vector<std::vector<int>> best = g_catalog;
     int i = 0;
     while (i < g_maxIteration && t > 0.00001) {
-        std::vector<std::vector<int>> w = Changes();
-        double r = Rand();
-        double fitnessW = Fitness(w);
+        p_classes = g_classes;
+        p_teachers = g_teachers;
+        p_locations = g_locations;
+        Changes(p_classes, p_teachers, p_locations);
+        double fitnessW = Fitness(p_classes, p_teachers, p_locations);
         double fitnessC = Fitness();
-        if (Fitness(w) > Fitness() || r < exp((Fitness(w) - Fitness()) / t)) {
-            g_catalog = w;
+        if (fitnessW > fitnessC || Rand() < exp((fitnessW - fitnessC) / t)) {
+            g_classes = p_classes;
+            g_teachers = p_teachers;
+            g_locations = p_locations;
         }
         i++;
         t = LinearAnnealing(i);
-        if (Fitness() > Fitness(best)) {
-            best = g_catalog;
+        if (Fitness() > Fitness(p_classesBest, p_teachersBest, p_locationsBest)) {
+            p_classesBest = g_classes;
+            p_teachersBest = g_teachers;
+            p_locationsBest = g_locations;
         }
     }
-    g_catalog =  best;
+    g_classes = p_classesBest;
+    g_teachers = p_teachersBest;
+    g_locations = p_locationsBest;
 }
 
-void WriteCatalog() {
-    if (g_bActive)
-        std::cout << " helyes " << std::endl;
-    else
-        std::cout << " helytelen " << std::endl;
-    for (int i = 0; i < g_catalog.size(); i++) {
-        std::cout << i << ".nap:" << std::endl;
-        for (int j = 0; j < g_catalog[i].size(); j++) {
-            if (g_catalog[i][j] == -1) {
-               std::cout << "      " << j + 8 << " ora: -------------" << std::endl;
-                continue;
-            }
-            std::cout << "      " << j + 8 << " ora: " << g_courses[g_catalog[i][j]].GetName() << std::endl;
-        }
-    }*/
-    /*json j;
-    j["active"] = g_bActive;
-    for (int i = 0; i < g_catalog.size(); i++) {
-        for (int j = 0; j < g_catalog[i].size(); j++) {
-            std::string courseName;
-            if (g_catalog[i][j] == -1)
-                courseName = "";
-            else
-                courseName = g_courses[g_catalog[i][j]].GetName();
-            switch (i) {
-            case 0: {
-                j["catalog"]["monday"] = ({ {"hour", j + 8}, {"name", courseName} });
-                break;
-            }
-            case 1:
-                j["catalog"]["tuesday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
-                    break;
-            case 2:
-                j["catalog"]["wednesday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
-                    break;
-            case 3:
-                j["catalog"]["thursday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
-                    break;
-            case 4:
-                j["catalog"]["friday"] = push_back({ {"hour", j + 8}, {"name", courseName} });
-                    break;
-            }
-        }
-    }*/
-    
-//}
 
 int main()
 {
     //Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
     Read("input.json");
     InitCatalogs();
-    g_majors[0].GetCatalog().Write();
-    /*InitCatalog();
     Fitness();
     WriteCatalog();
     std::cout << "-----------------------------------------" << std::endl;
+    auto t_start = std::chrono::high_resolution_clock::now();
     SimulatedAnnealing();
-    WriteCatalog();*/
+    auto t_end = std::chrono::high_resolution_clock::now();
+    WriteCatalog();
+    double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+    std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

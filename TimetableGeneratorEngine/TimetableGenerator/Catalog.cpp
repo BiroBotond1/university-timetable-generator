@@ -3,47 +3,41 @@
 
 
 Catalog::Catalog() {
-	m_catalog = std::vector<std::vector<std::vector<std::vector<int>>>>(
-			2, std::vector<std::vector<std::vector<int>>>(5, std::vector<std::vector<int>>(12, std::vector<int>())));
+	m_catalog = std::vector<std::vector<int>>(5, std::vector<int>(8, -1));
 }
 
-bool Catalog::IsFreeDay(CoursePeriod eCoursePeriod, int day, int hour, int week, int p_nGroupID) {
-	if (eCoursePeriod == CoursePeriod::weekly)
-	{
-		return HasInvalidGroup(p_nGroupID, m_catalog[0][day][hour]) && HasInvalidGroup(p_nGroupID, m_catalog[1][day][hour]);
-	}
-	return HasInvalidGroup(p_nGroupID, m_catalog[week][hour][day]);
-}
-
-bool Catalog::HasInvalidGroup(int p_nGroupID, std::vector<int> subCourseIDs) {
-	bool hasInvalidGroup = true;
-	for (auto subCourseID : subCourseIDs) {
-		hasInvalidGroup = hasInvalidGroup && g_groupes[g_subCourses[subCourseID].GetGroupID()].IsValidityWithGroup(p_nGroupID);
-	}
-	return hasInvalidGroup;
-}
-
-void Catalog::Add(CoursePeriod eCoursePeriod, int day, int hour, int week, int subCourseID) {
-	if (eCoursePeriod == CoursePeriod::weekly) {
-		m_catalog[0][day][hour].push_back(subCourseID);
-		m_catalog[1][day][hour].push_back(subCourseID);
-		return;
-	}
-	m_catalog[week][day][hour].push_back(subCourseID);
+bool Catalog::IsFreeDay(int day, int hour) {
+	return m_catalog[day][hour] == -1;
 }
 
 void Catalog::Write() {
-	for (int week = 0; week < m_catalog.size(); week++) {
-		std::cout << week << ".het:" << std::endl;
-		for (int day = 0; day < m_catalog[week].size(); day++) {
-			std::cout << "	" << day << ".nap: " << std::endl;
-			for (int hour = 0; hour < m_catalog[week][day].size(); hour++) {
-				std::cout << "		" << hour << ".ora: ";
-				for (auto subCourseID : m_catalog[week][day][hour]) {
-					std::cout << "[" << g_subCourses[subCourseID].ToString() << "] ";
-				}
-				std::cout<< std::endl;
+	for (int day = 0; day < m_catalog.size(); day++) {
+		std::cout << day <<".nap: " << std::endl;
+		for (int hour = 0; hour < m_catalog[day].size(); hour++) {
+			if (m_catalog[day][hour] == -1) {
+				std::cout << "	" << hour + 8 << "-" << hour + 9 << ":" << "---------" << std::endl;
+			}
+			else {
+				std::cout << "	" << hour + 8 << "-" << hour + 9 << ":" << g_classHours[m_catalog[day][hour]].ToString() << std::endl;
 			}
 		}
 	}
+}
+
+void Catalog::Add(int day, int hour, int subCourseID) {
+	m_catalog[day][hour] = subCourseID;
+}
+
+void Catalog::Change(int day1, int hour1, int day2, int hour2) {
+	int classHourID = m_catalog[day1][hour1];
+	m_catalog[day1][hour1] = m_catalog[day2][hour2];
+	m_catalog[day2][hour2] = classHourID;
+}
+
+int Catalog::GetClassHourID(int day, int hour) {
+	return m_catalog[day][hour];
+}
+
+void Catalog::SetClassHourID(int day, int hour, int classHour) {
+	m_catalog[day][hour] = classHour;
 }

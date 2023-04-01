@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver</OutDir>
+    <OutDir>D:\Egyetem\Allamvizsga\university-timetable-generator\Webserver\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,16 +148,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Catalog.cpp" />
-    <ClCompile Include="Course.cpp" />
-    <ClCompile Include="DateTime.cpp" />
+    <ClCompile Include="Class.cpp" />
     <ClCompile Include="Global.cpp" />
-    <ClCompile Include="Group.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
-    <ClCompile Include="Hour.cpp" />
+    <ClCompile Include="ClassHour.cpp" />
     <ClCompile Include="Location.cpp" />
-    <ClCompile Include="Major.cpp" />
-    <ClCompile Include="SubCourse.cpp" />
+    <ClCompile Include="LocationCatalog.cpp" />
+    <ClCompile Include="ClassCatalog.cpp" />
+    <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Teacher.cpp" />
+    <ClCompile Include="TeacherCatalog.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,17 +165,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Catalog.h" />
-    <ClInclude Include="Course.h" />
-    <ClInclude Include="DateTime.h" />
+    <ClInclude Include="Class.h" />
     <ClInclude Include="Global.h" />
-    <ClInclude Include="Group.h" />
     <ClInclude Include="HelperFunctions.h" />
-    <ClInclude Include="Hour.h" />
+    <ClInclude Include="ClassHour.h" />
     <ClInclude Include="Location.h" />
-    <ClInclude Include="Major.h" />
+    <ClInclude Include="LocationCatalog.h" />
+    <ClInclude Include="ClassCatalog.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="SubCourse.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="Teacher.h" />
+    <ClInclude Include="TeacherCatalog.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="input.json" />

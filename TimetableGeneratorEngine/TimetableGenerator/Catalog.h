@@ -4,11 +4,15 @@
 
 class Catalog
 {
-	std::vector<std::vector<std::vector<std::vector<int>>>> m_catalog;
+protected:
+	std::vector<std::vector<int>> m_catalog;
 public:
 	Catalog();
-	bool IsFreeDay(CoursePeriod eCoursePeriod, int day, int hour, int week, int p_nGroupID);
-	bool HasInvalidGroup(int p_nGroupID, std::vector<int> subCourseIDs);
-	void Add(CoursePeriod eCoursePeriod, int day, int hour, int week, int subCourseID);
+	bool IsFreeDay(int day, int hour);
 	void Write();
+	void Add(int day, int hour, int subCourseID);
+	virtual double GetFitnessValue() = 0;
+	void Change(int day1, int hour1, int day2, int hour2);
+	int GetClassHourID(int day, int hour);
+	void SetClassHourID(int day, int hour, int classHour);
 };

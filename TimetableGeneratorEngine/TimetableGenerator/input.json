@@ -1,401 +1,430 @@
 {
   "ChangesNumber": 1,
-  "MaxIteration": 10000,
+  "MaxIteration": 20000,
   "InitialTemperature": 10000,
   "Teachers": [
     {
-      "name": "Szilagyi Zsolt",
-      "ineligibleDays": [
+      "id": 0,
+      "name": "Jakab Szilard",
+      "ineligibleDates": [
         {
           "day": 0,
-          "hour": 9,
-          "week": 0
+          "hour": 1
         }
       ]
     },
     {
-      "name": "Robu Judit",
-      "ineligibleDays": []
+      "id": 1,
+      "name": "Nekeres Elemer",
+      "ineligibleDates": [
+        {
+          "day": 1,
+          "hour": 2
+        }
+      ]
     },
     {
-      "name": "Gasko Noemi",
-      "ineligibleDays": []
+      "id": 2,
+      "name": "Para Zita",
+      "ineligibleDates": [
+        {
+          "day": 3,
+          "hour": 4
+        }
+      ]
     },
     {
-      "name": "Vekov Geza",
-      "ineligibleDays": []
+      "id": 3,
+      "name": "Vicc Elek",
+      "ineligibleDates": [
+        {
+          "day": 4,
+          "hour": 5
+        }
+      ]
     },
     {
-      "name": "Kepes Tamas",
-      "ineligibleDays": []
+      "id": 4,
+      "name": "Hat Izsak",
+      "ineligibleDates": [
+        {
+          "day": 2,
+          "hour": 6
+        }
+      ]
     },
     {
-      "name": "Molnar Botond",
-      "ineligibleDays": []
+      "id": 5,
+      "name": "Ka Pal",
+      "ineligibleDates": [
+        {
+          "day": 4,
+          "hour": 7
+        }
+      ]
     },
     {
-      "name": "Szenkovits Annamaria",
-      "ineligibleDays": []
+      "id": 6,
+      "name": "Aloe Vera",
+      "ineligibleDates": [
+        {
+          "day": 0,
+          "hour": 5
+        }
+      ]
     },
     {
-      "name": "Biro Eniko",
-      "ineligibleDays": []
+      "id": 7,
+      "name": "Barmi Aron",
+      "ineligibleDates": [
+        {
+          "day": 2,
+          "hour": 4
+        }
+      ]
     },
     {
-      "name": "Garfield Adrienne",
-      "ineligibleDays": []
+      "id": 8,
+      "name": "Cicam Ica",
+      "ineligibleDates": [
+        {
+          "day": 0,
+          "hour": 3
+        }
+      ]
     },
     {
-      "name": "Szollosi Istvan",
-      "ineligibleDays": []
+      "id": 9,
+      "name": "Cset Elek",
+      "ineligibleDates": [
+        {
+          "day": 3,
+          "hour": 0
+        }
+      ]
     },
     {
-      "name": "Suto Agoston",
-      "ineligibleDays": []
+      "id": 10,
+      "name": "Csin Csilla",
+      "ineligibleDates": [
+        {
+          "day": 4,
+          "hour": 5
+        }
+      ]
     },
     {
-      "name": "Darvay Zsolt",
-      "ineligibleDays": []
-    },
-    {
-      "name": "Mezei Ildiko",
-      "ineligibleDays": []
-    },
-    {
-      "name": "Ruff Laura",
-      "ineligibleDays": []
-    },
-    {
-      "name": "Patcas Csaba",
-      "ineligibleDays": []
+      "id": 11,
+      "name": "Humor Herold",
+      "ineligibleDates": [
+        {
+          "day": 4,
+          "hour": 5
+        }
+      ]
     }
   ],
   "Locations": [
     {
-      "name": "Main building"
+      "id": 0,
+      "name": "Tornaterem1",
+      "reservedDates": [
+        {
+          "day": 1,
+          "hour": 2
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Tornaterem2"
+    },
+    {
+      "id": 2,
+      "name": "Kemiaterem"
+    },
+    {
+      "id": 3,
+      "name": "Fizikaterem"
+    },
+    {
+      "id": 4,
+      "name": "Zeneterem"
+    },
+    {
+      "id": 5,
+      "name": "Rajzterem"
+    },
+    {
+      "id": 6,
+      "name": "A31"
+    },
+    {
+      "id": 7,
+      "name": "A32"
+    },
+    {
+      "id": 8,
+      "name": "A33"
+    },
+    {
+      "id": 9,
+      "name": "A34"
+    },
+    {
+      "id": 10,
+      "name": "A35"
+    },
+    {
+      "id": 11,
+      "name": "A36"
+    },
+    {
+      "id": 12,
+      "name": "A37"
+    },
+    {
+      "id": 13,
+      "name": "A38"
+    },
+    {
+      "id": 14,
+      "name": "A39"
+    },
+    {
+      "id": 15,
+      "name": "A40"
+    },
+    {
+      "id": 16,
+      "name": "A41"
+    },
+    {
+      "id": 17,
+      "name": "A42"
+    },
+    {
+      "id": 18,
+      "name": "A43"
+    },
+    {
+      "id": 19,
+      "name": "A44"
+    },
+    {
+      "id": 20,
+      "name": "A45"
+    },
+    {
+      "id": 21,
+      "name": "A46"
     }
   ],
-  "Courses": [
+  "Classes": [
     {
-      "name": "Op rendszerek"
+      "id": 0,
+      "name": "1st class",
+      "locationID": 6
     },
     {
-      "name": "Graf algoritmika"
+      "id": 1,
+      "name": "2nd class",
+      "locationID": 7
     },
     {
-      "name": "Adatszerkezetek"
+      "id": 2,
+      "name": "3rd class",
+      "locationID": 8
     },
     {
-      "name": "OOP"
+      "id": 3,
+      "name": "4th class",
+      "locationID": 9
     },
     {
-      "name": "Geometria"
+      "id": 4,
+      "name": "5th class",
+      "locationID": 10
     },
     {
-      "name": "Metode avansate de rezolvare a problemelor de matematica si informatica"
+      "id": 5,
+      "name": "6th class",
+      "locationID": 11
+    },
+    {
+      "id": 6,
+      "name": "7th class",
+      "locationID": 12
+    },
+    {
+      "id": 7,
+      "name": "8th class",
+      "locationID": 13
+    },
+    {
+      "id": 8,
+      "name": "9th class",
+      "locationID": 14
+    },
+    {
+      "id": 9,
+      "name": "10th class",
+      "locationID": 15
+    },
+    {
+      "id": 10,
+      "name": "11th class",
+      "locationID": 16
+    },
+    {
+      "id": 11,
+      "name": "12th class",
+      "locationID": 17
     }
   ],
-  "Majors": [
+  "Subjects": [
     {
-      "name": "Info",
-      "year": 1,
-      "groupID": 0
+      "id": 0,
+      "name": "Matematika"
+    },
+    {
+      "id": 1,
+      "name": "Roman"
+    },
+    {
+      "id": 2,
+      "name": "Foldrajz"
+    },
+    {
+      "id": 3,
+      "name": "Magyar"
+    },
+    {
+      "id": 4,
+      "name": "Angol"
+    },
+    {
+      "id": 5,
+      "name": "Nemet"
+    },
+    {
+      "id": 6,
+      "name": "Torna",
+      "locationIDs": [ 0, 1 ]
+    },
+    {
+      "id": 7,
+      "name": "Fizika",
+      "locationIDs": [ 3 ]
+    },
+    {
+      "id": 8,
+      "name": "Kemia",
+      "locationIDs": [ 2 ]
+    },
+    {
+      "id": 9,
+      "name": "Informatika"
+    },
+    {
+      "id": 10,
+      "name": "Zene",
+      "locationIDs": [ 4 ]
+    },
+    {
+      "id": 11,
+      "name": "Rajz",
+      "locationIDs": [ 5 ]
+    },
+    {
+      "id": 12,
+      "name": "Biologia"
     }
   ],
-  "Groups": [
+  "ClassHours": [
     {
-      "name": "511/1",
-      "invalidGroups": [8, 12]
+      "id": 0,
+      "classID": 0,
+      "subjectID": 0,
+      "number": 4,
+      "teacherID": 0
     },
     {
-      "name": "511/2",
-      "invalidGroups": [8, 12]
+      "id": 1,
+      "classID": 0,
+      "subjectID": 1,
+      "number": 4,
+      "teacherID": 1
     },
     {
-      "name": "512/1",
-      "invalidGroups": [9, 12]
+      "id": 2,
+      "classID": 0,
+      "subjectID": 2,
+      "number": 2,
+      "teacherID": 2
     },
     {
-      "name": "512/2",
-      "invalidGroups": [9, 12]
+      "id": 3,
+      "classID": 0,
+      "subjectID": 3,
+      "number": 4,
+      "teacherID": 3
     },
     {
-      "name": "513/1",
-      "invalidGroups": [10, 12]
+      "id": 4,
+      "classID": 0,
+      "subjectID": 4,
+      "number": 3,
+      "teacherID": 3
     },
     {
-      "name": "513/2",
-      "invalidGroups": [10, 12]
+      "id": 5,
+      "classID": 0,
+      "subjectID": 5,
+      "number": 2,
+      "teacherID": 4
     },
     {
-      "name": "514/1",
-      "invalidGroups": [11 , 12]
+      "id": 6,
+      "classID": 0,
+      "subjectID": 6,
+      "number": 2,
+      "teacherID": 5
     },
     {
-      "name": "514/2",
-      "invalidGroups": [11 , 12]
+      "id": 7,
+      "classID": 0,
+      "subjectID": 7,
+      "number": 2,
+      "teacherID": 6
     },
     {
-      "name": "511",
-      "invalidGroups": [0, 1 , 12]
+      "id": 8,
+      "classID": 0,
+      "subjectID": 8,
+      "number": 3,
+      "teacherID": 7
     },
     {
-      "name": "512",
-      "invalidGroups": [2, 3, 12]
+      "id": 9,
+      "classID": 0,
+      "subjectID": 9,
+      "number": 1,
+      "teacherID": 8
     },
     {
-      "name": "513",
-      "invalidGroups": [4, 5, 12]
+      "id": 10,
+      "classID": 0,
+      "subjectID": 10,
+      "number": 1,
+      "teacherID": 9
     },
     {
-      "name": "514",
-      "invalidGroups": [6, 7, 12]
-    },
-    {
-      "name": "Everyone",
-      "invalidGroups": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-    }
-  ],
-  "SubCourses": [
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 12,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 1,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 1,
-      "type": 0,
-      "groupID": 12,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
-    },
-    {
-      "courseID": 0,
-      "type": 0,
-      "groupID": 0,
-      "numberOfHours": 1,
-      "coursePeriod": 0,
-      "teacherID": 0,
-      "majorID": 0,
-      "locationID": 0
+      "id": 11,
+      "classID": 0,
+      "subjectID": 11,
+      "number": 3,
+      "teacherID": 10
     }
   ]
 }

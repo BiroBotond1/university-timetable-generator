@@ -13,15 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Catalog">
+      <UniqueIdentifier>{01bb40ad-e608-4f2d-a3b0-1664131c6049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Catalog">
+      <UniqueIdentifier>{c5f66b5b-2f6f-46ea-86e3-2eaf5a4fa960}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TimetableGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Course.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DateTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Teacher.cpp">
@@ -30,26 +30,32 @@
     <ClCompile Include="Location.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SubCourse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Major.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Catalog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hour.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HelperFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Group.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Global.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassHour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="LocationCatalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="TeacherCatalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassCatalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,41 +64,41 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Course.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DateTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Teacher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Location.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SubCourse.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Major.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Catalog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HelperFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Group.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassHour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog.h">
+      <Filter>Header Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassCatalog.h">
+      <Filter>Header Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="TeacherCatalog.h">
+      <Filter>Header Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="LocationCatalog.h">
+      <Filter>Header Files\Catalog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
