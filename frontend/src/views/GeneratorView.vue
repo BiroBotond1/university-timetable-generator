@@ -1,6 +1,13 @@
 <template>
+  <v-app>
   <Sidebar />
-  <TimetableInitializer />
+  <v-main>
+    <v-container fluid>
+      <TimetableInitializer />
+  <router-view></router-view>
+</v-container>
+  </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -11,7 +18,7 @@ import TimetableInitializer from '../components/TimetableInitializer.vue'
 import Sidebar from '../components/Side_bar.vue'
 
 export default defineComponent({
-  name: 'HomeView',
+  name: 'GeneratorView',
 
   components: {
     TimetableInitializer,

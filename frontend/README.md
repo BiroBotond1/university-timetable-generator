@@ -1,4 +1,4 @@
-# frontend
+# vuetify-frontend
 
 ## Project setup
 ```

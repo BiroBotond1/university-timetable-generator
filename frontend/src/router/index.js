@@ -1,22 +1,39 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import TimetableView from '../views/TimetableView.vue'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import GeneratorView from '../views/GeneratorView.vue'
+import SubjectsView from '../views/SubjectsView.vue'
+import LocationsView from '../views/LocationsView.vue'
+import TeachersView from '../views/TeachersView.vue'
+
+
+Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: GeneratorView
   },
   {
-    path: '/timetable',
-    name: 'timetable',
-    component: TimetableView
-  }
+    path: '/subjects',
+    name: 'sunjects',
+    component: SubjectsView
+  },
+  {
+    path: '/locations',
+    name: 'locations',
+    component: LocationsView
+  },
+  {
+    path: '/teachers',
+    name: 'teachers',
+    component: TeachersView
+  },
 ]
 
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
   routes
 })
 

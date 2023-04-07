@@ -1,7 +1,6 @@
-import { Router } from 'express';
-import Course from '../models/Courses.js';
-import {exec, spawn} from 'child_process';
-import fs from 'fs';
+const { Router } =  require('express');
+const {exec, spawn} = require('child_process');
+const fs = require('fs');
 
 const router = Router();
 
@@ -20,20 +19,6 @@ function os_func() {
 
 var os = new os_func();
 
-router.get('/', async (req, res) => {
-    const courses = await Course.find();
-
-    res.json(courses);
-});
-
-router.post('/', async (req, res) => {
-    const course = new Course(req.body);
-
-    const savedCourse = await course.save();
-
-    res.json(savedCourse);
-});
-
 router.post('/proba', async (req, res) => {
     try {
         console.log(req.body);
@@ -51,11 +36,5 @@ router.post('/proba', async (req, res) => {
     }
 });
 
-//Get specific course
-router.get('/get:id', async (req, res) => {
-    const q = await Course.findById({_id: req.params.id});
-    req.json(q);
-})
 
-
-export default router;
+module.exports = router;

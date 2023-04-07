@@ -1,23 +1,48 @@
 <template>
-   
-      <v-app-bar
-        app
-        color="primary"
-        density="compact"
-      >
-      <v-app-bar-nav-icon> </v-app-bar-nav-icon>
-      <v-toolbar-title>Timetable generator</v-toolbar-title>
+   <div>
+    <v-app-bar app clipped-left flat dark>
+      <v-toolbar-title>
+        TimetableGenerator
+      </v-toolbar-title>
       <v-spacer></v-spacer>
-      <router-link to="/timetable" ><v-btn icon> <v-icon>mdi-thumb-up </v-icon> </v-btn> </router-link>
-      <router-link to="/"><v-btn icon>
-        <v-icon>mdi-thumb-down</v-icon>
-      </v-btn>
-      </router-link>
-      </v-app-bar>
+    </v-app-bar>
+
+    <v-navigation-drawer 
+        app 
+        permanent
+        clipped 
+        mini-variant
+        dark 
+        expand-on-hover>
+      <v-list dense nav>
+        <v-list-item v-for="item in items" :key="item.title" link :to="item.route">
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+  </div>
 </template>
 
-<script setup>
-
+<script>
+export default {
+  name: 'App',
+  data: () => ({
+    items: [
+      { title: 'Generate timetable', icon: 'mdi-pencil', route: '/' },
+      { title: 'Locations', icon: 'mdi-map-marker', route: '/locations' },
+      { title: 'Teachers', icon: 'mdi-account-edit', route: '/teachers' },
+      { title: 'Subjects', icon: 'mdi-book-variant', route: '/subjects' },
+      { title: 'Classes', icon: 'mdi-account-group', route: '/classes' },
+      { title: 'ClassHours', icon: 'mdi-clock-outline', route: '/classHours' },
+    ],
+  }),
+};
 </script>
 
 <style>
