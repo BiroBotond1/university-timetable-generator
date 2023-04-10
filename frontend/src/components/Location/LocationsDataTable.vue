@@ -1,7 +1,7 @@
 <template>
     <v-data-table
         :headers="headers"
-        :items="subjects"
+        :items="locations"
         class="elevation-1" 
     >
     <template v-slot:top>
@@ -25,7 +25,7 @@
               dark
               class="mb-2"
               v-bind="props"
-              @click="editItem(item)"
+              @click="editItem(undefined)"
             >
               New Item
             </v-btn>
@@ -41,7 +41,48 @@
                   v-model="editedItem.name"
                   label="Location name"
                 ></v-text-field>
-                <DatePicker />
+                <v-data-table
+    :items-per-page="-1"
+    hide-default-footer
+    :headers="headersToDatePicker"
+    :items="items"
+    class="border">
+        <template v-slot:[`item.monday`]="{ item }"> 
+            <v-btn
+            @click="chooseItem(item.hours, 0)" 
+            v-bind:color="editedItem.reservedDates[item.hours][0] === 0 ? 'green':'red' " 
+            >
+        </v-btn>
+        </template>
+        <template v-slot:[`item.tuesday`]="{ item }"> 
+            <v-btn
+            @click="chooseItem(item.hours, 1)"
+            v-bind:color="editedItem.reservedDates[item.hours][1] === 0 ? 'green':'red' " 
+        >   
+            </v-btn>
+        </template>
+        <template v-slot:[`item.wednesday`]="{ item }"> 
+            <v-btn
+            @click="chooseItem(item.hours, 2)" 
+            v-bind:color="editedItem.reservedDates[item.hours][2] === 0 ? 'green':'red' " 
+        >   
+            </v-btn>
+        </template>
+        <template v-slot:[`item.thursday`]="{ item }"> 
+            <v-btn
+            @click="chooseItem(item.hours, 3)" 
+            v-bind:color="editedItem.reservedDates[item.hours][3] === 0 ? 'green':'red' " 
+        >   
+            </v-btn>
+        </template>
+        <template v-slot:[`item.friday`]="{ item }"> 
+            <v-btn
+            @click="chooseItem(item.hours, 4)" 
+            v-bind:color="editedItem.reservedDates[item.hours][4] === 0 ? 'green':'red' " 
+        >   
+            </v-btn>
+        </template>
+    </v-data-table>
               </v-container>
             </v-card-text>
 
@@ -92,46 +133,84 @@
         mdi-delete
       </v-icon>
     </template>
-    <template v-slot:no-data>
-      <v-btn
-        color="primary"
-        @click="initialize"
-      >
-        Reset
-      </v-btn>
-    </template>
     </v-data-table>
 </template>
 
 <script>
-import DatePicker from '../DatePicker.vue'
+import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     data () {
         return {
             dialog: false,
+            defaultReservedDates: {
+              "8-9": [0, 0, 0, 0, 0],
+              "9-10": [0, 0, 0, 0, 0],
+              "10-11": [0, 0, 0, 0, 0],
+              "11-12": [0, 0, 0, 0, 0],
+              "12-13": [0, 0, 0, 0, 0],
+              "13-14": [0, 0, 0, 0, 0],
+              "14-15": [0, 0, 0, 0, 0],
+              "15-16": [0, 0, 0, 0, 0]
+            },
             dialogDelete: false,
             headers: [ 
                 {text: 'Name', value: 'name',},
                 {text: 'Reserved Dates', value: 'reservedDates'}, 
                 {text: 'Actions', value: 'actions', sortable: false}
             ],
-            subjects: [
-                {name: "Kemia labor", reservedDates: ["Monday",]},
-                {name: "Kemia", reservedDates: []}
-            ],
+            locations: [],
             editedIndex: -1,
             editedItem: {
-                name: '',
+              _id: '',  
+              name: '',
+              reservedDates:  {
+              "8-9": [0, 0, 0, 0, 0],
+              "9-10": [0, 0, 0, 0, 0],
+              "10-11": [0, 0, 0, 0, 0],
+              "11-12": [0, 0, 0, 0, 0],
+              "12-13": [0, 0, 0, 0, 0],
+              "13-14": [0, 0, 0, 0, 0],
+              "14-15": [0, 0, 0, 0, 0],
+              "15-16": [0, 0, 0, 0, 0]
+            }
             },
             defaultItem: {
+                _id: '',  
                 name: '',
+                reservedDates:  {
+              "8-9": [0, 0, 0, 0, 0],
+              "9-10": [0, 0, 0, 0, 0],
+              "10-11": [0, 0, 0, 0, 0],
+              "11-12": [0, 0, 0, 0, 0],
+              "12-13": [0, 0, 0, 0, 0],
+              "13-14": [0, 0, 0, 0, 0],
+              "14-15": [0, 0, 0, 0, 0],
+              "15-16": [0, 0, 0, 0, 0]
+            }
             },
+            headersToDatePicker: [
+            {text: "Hours", value: "hours"},
+            {text: "Monday", value: "monday"},
+            {text: "Tuesday", value: "tuesday"},
+            {text: "Wednesday", value: "wednesday"},
+            {text: "Thursday", value: "thursday"},
+            {text: "Friday", value: "friday"},
+        ],
+        items: [
+            {hours: "8-9"},
+            {hours: "9-10"},
+            {hours: "10-11"},
+            {hours: "12-13"},
+            {hours: "13-14"},
+            {hours: "14-15"},
+            {hours: "15-16"}
+        ],
+        active: true
         }
     },
-    components: {
-      DatePicker
-    },
+    
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
@@ -147,30 +226,66 @@ export default {
       },
     },
 
+    created () {
+      this.fetchLocations()
+    },
+
     methods: {
+      fetchLocations() {
+          axios.
+          get('http://127.0.0.1:3000/api/location')
+          .catch(error => console.log(error))
+          .then(response => {
+            this.locations = response.data.data
+          })
+        },
+      fetchLocation() {
+        axios
+            .get('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id)
+            .catch(error => console.log(error))
+            .then(response => {
+            this.editedItem = response.data.data
+            })
+      },
         editItem (item) {
-        this.editedIndex = this.subjects.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
+          this.editedIndex = this.locations.indexOf(item)
+          if(this.editedIndex !== -1) {
+            this.fetchLocation()
+          } else {
+            this.editedItem.name = ''
+            this.editedItem.reservedDates = {
+              "8-9": [0, 0, 0, 0, 0],
+              "9-10": [0, 0, 0, 0, 0],
+              "10-11": [0, 0, 0, 0, 0],
+              "11-12": [0, 0, 0, 0, 0],
+              "12-13": [0, 0, 0, 0, 0],
+              "13-14": [0, 0, 0, 0, 0],
+              "14-15": [0, 0, 0, 0, 0],
+              "15-16": [0, 0, 0, 0, 0]
+            }
+          }
+          this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.subjects.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.editedIndex = this.locations.indexOf(item)
+        this.fetchLocation()
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.subjects.splice(this.editedIndex, 1)
+        axios.
+        delete('http://127.0.0.1:3000/api/location/' + this.editedItem._id)
+          .catch(error => console.log(error))
+          .then(() => {
+            this.fetchLocations()
+          })
         this.closeDelete()
       },
 
       close () {
         this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
+        this.editedIndex = -1
       },  
       closeDelete () {
         this.dialogDelete = false
@@ -181,12 +296,35 @@ export default {
       },
 
       save () {
+        let location = {
+          name: this.editedItem.name,
+          reservedDates: Object.assign({}, this.editedItem.reservedDates)
+        }
         if (this.editedIndex > -1) {
-          Object.assign(this.subjects[this.editedIndex], this.editedItem)
+          axios.
+          put('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id, location)
+          .catch(error => console.log(error))
+          .then(() => {
+            this.fetchLocations()
+          })
+          Object.assign(this.locations[this.editedIndex], this.editedItem)
         } else {
-          this.subjects.push(this.editedItem)
+          axios.
+          post('http://127.0.0.1:3000/api/location', location)
+          .catch(error => console.log(error))
+          .then(() => {
+            this.fetchLocations()
+          })
         }
         this.close()
+      },
+      chooseItem (hour, day) {
+            if( this.editedItem.reservedDates[hour][day] === 0)
+            {
+                Vue.set(this.editedItem.reservedDates[hour], day, 1);
+            } else {
+                Vue.set(this.editedItem.reservedDates[hour], day, 0);
+            }
       },
     }
 }

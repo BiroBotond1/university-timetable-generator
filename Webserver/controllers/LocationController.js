@@ -2,7 +2,7 @@ const locationService = require("../services/LocationService.js")
 
 exports.getAllLocations = async (req, res) => {
     try {
-        const locations = await locationService.getAllSubjects();
+        const locations = await locationService.getAllLocations();
         res.json({data: locations, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -11,7 +11,7 @@ exports.getAllLocations = async (req, res) => {
 
 exports.createLocation = async (req, res) => {
     try {
-        const location = await locationService.createSubject(req.body);
+        const location = await locationService.createLocation(req.body);
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -20,7 +20,7 @@ exports.createLocation = async (req, res) => {
 
 exports.getLocationById = async (req, res) => {
     try {
-        const location = await locationService.getSubjectById();
+        const location = await locationService.getLocationById(req.params.id);
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -29,7 +29,7 @@ exports.getLocationById = async (req, res) => {
 
 exports.updateLocation = async (req, res) => {
     try {
-        const location = await locationService.updateSubject(req.params.id, req.body);
+        const location = await locationService.updateLocation(req.params.id, req.body);
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -38,9 +38,9 @@ exports.updateLocation = async (req, res) => {
 
 exports.deleteLocation = async (req, res) => {
     try {
-        const location = await locationService.deleteSubject(req.params.id);
+        const location = await locationService.deleteLocation(req.params.id);
         res.json({data: location, status: "success"});
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({error: err.message, alma: req});
     }
 };
