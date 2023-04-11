@@ -20,7 +20,7 @@ exports.createSubject = async (req, res) => {
 
 exports.getSubjectById = async (req, res) => {
     try {
-        const subject = await subjectService.getSubjectById();
+        const subject = await subjectService.getSubjectById(req.params.id);
         res.json({data: subject, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});

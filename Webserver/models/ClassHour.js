@@ -7,7 +7,8 @@ const ClassHourSchema = new mongoose.Schema({
     number: Number,
     class: ClassSchema,
     subject: SubjectSchema,
-    teacher: TeacherSchema
+    teacher: TeacherSchema,
+    weight: Number,
 });
 
 module.exports = mongoose.model('ClassHour', ClassHourSchema);

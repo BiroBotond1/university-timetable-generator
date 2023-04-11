@@ -43,40 +43,7 @@
                     required
                 ></v-text-field>
                 </v-col>
-
-                <v-col
-                cols="12"
-                md="12"
-                >
-                <v-text-field @input="createCourseArray"
-                    v-model.number="courseNumber"
-                    :rules="numberRules"
-                    label="Number of courses"
-                    type="number"
-                    required
-                ></v-text-field>
-                </v-col
-                >
-                <v-col v-for="index in courseNumber" :key="index"
-                cols="12"
-                md="4"
-                >
-                    <v-text-field
-                        v-model="courses[index-1].name"
-                        :rules="nameRules"
-                        label="Name of course"
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        v-model.number="courses[index-1].number"
-                        :rules="numberRules"
-                        label="Number of hours in a week"
-                        type="number"
-                        required
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-
+                </v-row>
             <v-btn type="submit" block class="mt-2" :disabled="!valid">Submit</v-btn>
             <v-btn block class="mt-2" @click="reset">
             clear
@@ -125,8 +92,6 @@ export default {
         ChangesNumber: this.changesNumber,
         MaxIteration: this.maxIteration,
         InitialTemperature: this.initialTemperature,
-        CourseNumber: this.courseNumber+1,
-        Courses: this.courses
         }
 
         console.log(params)
@@ -138,13 +103,6 @@ export default {
       },
       reset () {
         this.$refs.form.reset()
-      },
-      createCourseArray () {
-        this.courses = []
-        for (let i = 0; i < this.courseNumber; i++){
-            this.courses.push({ name: null,
-                                number: null })
-        }
       },
     },
 };

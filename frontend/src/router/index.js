@@ -4,6 +4,8 @@ import GeneratorView from '../views/GeneratorView.vue'
 import SubjectsView from '../views/SubjectsView.vue'
 import LocationsView from '../views/LocationsView.vue'
 import TeachersView from '../views/TeachersView.vue'
+import ClassesView from '../views/ClassesView.vue'
+import ClassHoursView from '../views/ClassHoursView.vue'
 
 
 Vue.use(VueRouter)
@@ -28,6 +30,16 @@ const routes = [
     path: '/teachers',
     name: 'teachers',
     component: TeachersView
+  },
+  {
+    path: '/classes',
+    name: 'classes',
+    component: ClassesView
+  },
+  {
+    path: '/classHours',
+    name: 'classHours',
+    component: ClassHoursView
   },
 ]
 

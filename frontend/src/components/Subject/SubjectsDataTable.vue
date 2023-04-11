@@ -1,244 +1,225 @@
 <template>
-    <v-data-table
-        :headers="headers"
-        :items="subjects"
-        class="elevation-1" 
+  <v-data-table
+      :headers="headers"
+      :items="subjects"
+      class="elevation-1" 
+  >
+  <template v-slot:top>
+    <v-toolbar
+      flat
     >
-    <template v-slot:top>
-      <v-toolbar
-        flat
+      <v-toolbar-title>Subjects</v-toolbar-title>
+      <v-divider
+        class="mx-4"
+        inset
+        vertical
+      ></v-divider>
+      <v-spacer></v-spacer>
+      <v-dialog
+        v-model="dialog"
+        max-width="800px"
       >
-        <v-toolbar-title>Subjects</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
-        <v-spacer></v-spacer>
-        <v-dialog
-          v-model="dialog"
-          max-width="500px"
-        >
-          <template v-slot:activator="{ props }">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="primary"
+            dark
+            class="mb-2"
+            v-bind="props"
+            @click="editItem(undefined)"
+          >
+            New Subject
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">{{ formTitle }}</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container>
+              <v-text-field
+                v-model="editedItem.name"
+                label="Subject name"
+              ></v-text-field>
+              <v-combobox
+              v-model="editedItem.locations"
+              label="Locations"
+              :items="allLocations"
+              item-text="name"
+              multiple
+              ></v-combobox>
+
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
             <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              v-bind="props"
+              color="blue-darken-1"
+              variant="text"
+              @click="close"
             >
-              New Item
+              Cancel
             </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="Dessert name"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.calories"
-                      label="Calories"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.fat"
-                      label="Fat (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.carbs"
-                      label="Carbs (g)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.protein"
-                      label="Protein (g)"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="close"
-              >
-                Cancel
-              </v-btn>
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="save"
-              >
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-    </template>
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        size="medium"
-        class="me-2"
-        @click="editItem(item.raw)"
-      >
-        mdi-pencil
-      </v-icon>
-      <v-icon
-        size="medium"
-        @click="deleteItem(item.raw)"
-      >
-        mdi-delete
-      </v-icon>
-    </template>
-    <template v-slot:no-data>
-      <v-btn
-        color="primary"
-        @click="initialize"
-      >
-        Reset
-      </v-btn>
-    </template>
-    </v-data-table>
+            <v-btn
+              color="blue-darken-1"
+              variant="text"
+              @click="save"
+            >
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+  </template>
+  <template v-slot:[`item.actions`]="{ item }">
+    <v-icon
+      size="medium"
+      class="me-2"
+      @click="editItem(item)"
+    >
+      mdi-pencil
+    </v-icon>
+    <v-icon
+      size="medium"
+      @click="deleteItem(item)"
+    >
+      mdi-delete
+    </v-icon>
+  </template>
+  <template v-slot:[`item.locations`]="{ item }">
+      <v-label v-for="location in item.locations" :key="location._id">
+        [{{ location.name }}]
+      </v-label>
+</template>
+  </v-data-table>
 </template>
 
 <script>
+import axios from 'axios'
 
 export default {
-    data () {
-        return {
-            dialog: false,
-            dialogDelete: false,
-            headers: [ 
-                {text: 'Name', value: 'name',},
-                {text: 'LocationName', value: 'locationName'}, 
-                {text: 'Actions', value: 'actions', sortable: false}
-            ],
-            subjects: [
-                {name: "Matematika", locationName: ""},
-                {name: "Kemia", locationName: "Kemia Labor"}
-            ],
-            editedIndex: -1,
-            editedItem: {
-                name: '',
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0,
-            },
-            defaultItem: {
-                name: '',
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0,
-            },
-        }
+  data () {
+      return {
+          dialog: false,
+          dialogDelete: false,
+          headers: [ 
+              {text: 'Name', value: 'name',},
+              {text: 'Locations', value: "locations"}, 
+              {text: 'Actions', value: 'actions', sortable: false}
+          ],
+          subjects: [],
+          allLocations: [],
+          editedIndex: -1,
+          editedItem: {
+            _id: '',  
+            name: '',
+            locations:  []
+          },
+      }
+  },
+  
+  computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? 'New Subject' : 'Edit Subject'
     },
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-      },
-    },
+  },
 
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-      dialogDelete (val) {
-        val || this.closeDelete()
-      },
+  watch: {
+    dialog (val) {
+      val || this.close()
     },
+    dialogDelete (val) {
+      val || this.closeDelete()
+    },
+  },
 
-    methods: {
-        editItem (item) {
+  created () {
+    this.fetchSubjects()
+  },
+
+  methods: {
+    async fetchLocations() {
+          let response = await axios.
+          get('http://127.0.0.1:3000/api/location')
+          .catch(error => console.log(error))
+          this.allLocations = response.data.data
+        },
+    async fetchSubjects() {
+        let response = await axios.
+        get('http://127.0.0.1:3000/api/subject')
+        .catch(error => console.log(error))
+        this.subjects = response.data.data
+      },
+      async fetchSubject() {
+      let response = await axios
+          .get('http://127.0.0.1:3000/api/subject/' + this.subjects[this.editedIndex]._id)
+          .catch(error => console.log(error))
+          this.editedItem = response.data.data
+    },
+      async editItem (item) {
+        await this.fetchLocations()
         this.editedIndex = this.subjects.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
-
-      deleteItem (item) {
-        this.editedIndex = this.subjects.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-
-      deleteItemConfirm () {
-        this.subjects.splice(this.editedIndex, 1)
-        this.closeDelete()
-      },
-
-      close () {
-        this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },  
-      closeDelete () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.subjects[this.editedIndex], this.editedItem)
+        if(this.editedIndex !== -1) {
+          await this.fetchSubject()
         } else {
-          this.subjects.push(this.editedItem)
+          this.editedItem.name = ''
+          this.editedItem.locations = []
         }
-        this.close()
-      },
+        this.dialog = true
+    },
+
+    async deleteItem (item) {
+      this.editedIndex = this.subjects.indexOf(item)
+      await this.fetchSubject()
+      this.dialogDelete = true
+    },
+
+    async deleteItemConfirm () {
+      await axios
+        .delete('http://127.0.0.1:3000/api/subject/' + this.editedItem._id)
+        .catch(error => console.log(error))
+      await this.fetchSubjects()
+      this.closeDelete()
+    },
+
+    close () {
+      this.dialog = false
+    },  
+    closeDelete () {
+      this.dialogDelete = false
+    },
+
+    async save () {
+      let subject = {
+        name: this.editedItem.name,
+        locations: this.editedItem.locations
+      }
+      if (this.editedIndex > -1) {
+        await axios.
+        put('http://127.0.0.1:3000/api/subject/' + this.subjects[this.editedIndex]._id, subject)
+        .catch(error => console.log(error))
+      } else {
+        await axios.
+        post('http://127.0.0.1:3000/api/subject', subject)
+        .catch(error => console.log(error))
+      }
+      await this.fetchSubjects()
+      this.close()
     }
+  }
 }
 
 </script>

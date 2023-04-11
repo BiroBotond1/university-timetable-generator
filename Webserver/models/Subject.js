@@ -3,7 +3,7 @@ const { LocationSchema } = require('./Location');
 
 const SubjectSchema = new mongoose.Schema({
     name: String,
-    location: LocationSchema
+    locations: [LocationSchema]
 });
 
 exports.SubjectSchema = SubjectSchema;

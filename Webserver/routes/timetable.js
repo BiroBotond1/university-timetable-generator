@@ -1,6 +1,7 @@
 const { Router } =  require('express');
 const {exec, spawn} = require('child_process');
 const fs = require('fs');
+const classHourService = require("../services/ClassHourService.js")
 
 const router = Router();
 
@@ -21,10 +22,11 @@ var os = new os_func();
 
 router.post('/proba', async (req, res) => {
     try {
+        req.body.classHours = await classHourService.getAllClassHours()
         console.log(req.body);
         let obj = JSON.stringify(req.body);
         fs.writeFileSync("../TimetableGeneratorEngine/TimetableGenerator/in.json", obj);
-        //exec("TimetableGenerator.exe")
+
         os.execCommand("TimetableGenerator.exe").then(res => {
             console.log("os >>>", res);
         }).catch(err => {

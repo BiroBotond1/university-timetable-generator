@@ -1,14 +1,14 @@
 <template>
     <v-data-table
         :headers="headers"
-        :items="locations"
+        :items="teachers"
         class="elevation-1" 
     >
     <template v-slot:top>
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Locations</v-toolbar-title>
+        <v-toolbar-title>Teachers</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -27,7 +27,7 @@
               v-bind="props"
               @click="editItem(undefined)"
             >
-              New Location
+              New Teacher
             </v-btn>
           </template>
           <v-card>
@@ -39,9 +39,9 @@
               <v-container>
                 <v-text-field
                   v-model="editedItem.name"
-                  label="Location name"
+                  label="Teacher name"
                 ></v-text-field>
-               <DatePicker  ref="locationDatePicker"/>
+               <DatePicker  ref="teacherDatePicker"/>
               </v-container>
             </v-card-text>
 
@@ -106,22 +106,22 @@ export default {
             dialogDelete: false,
             headers: [ 
                 {text: 'Name', value: 'name',},
-                {text: 'Reserved Dates', value: 'reservedDates'}, 
+                {text: 'Inappropriate Dates', value: 'inappropriateDates'}, 
                 {text: 'Actions', value: 'actions', sortable: false}
             ],
-            locations: [],
+            teachers: [],
             editedIndex: -1,
             editedItem: {
               _id: '',  
               name: '',
-              reservedDates:  {}
+              inappropriateDates:  {}
             },
         }
     },
     
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Location' : 'Edit Location'
+        return this.editedIndex === -1 ? 'New Teacher' : 'Edit Teacher'
       },
     },
 
@@ -139,29 +139,29 @@ export default {
     },
 
     created () {
-      this.fetchLocations()
+      this.fetchTeachers()
     },
 
     methods: {
-      async fetchLocations() {
+      async fetchTeachers() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/location')
+          get('http://127.0.0.1:3000/api/teacher')
           .catch(error => console.log(error))
-          this.locations = response.data.data
+          this.teachers = response.data.data
         },
-        async fetchLocation() {
+        async fetchTeacher() {
         let response = await axios
-            .get('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id)
+            .get('http://127.0.0.1:3000/api/teacher/' + this.teachers[this.editedIndex]._id)
             .catch(error => console.log(error))
             this.editedItem = response.data.data
       },
         async editItem (item) {
-          this.editedIndex = this.locations.indexOf(item)
+          this.editedIndex = this.teachers.indexOf(item)
           if(this.editedIndex !== -1) {
-            await this.fetchLocation()
+            await this.fetchTeacher()
           } else {
             this.editedItem.name = ''
-            this.editedItem.reservedDates = {
+            this.editedItem.inappropriateDates = {
               "8-9": [0, 0, 0, 0, 0],
               "9-10": [0, 0, 0, 0, 0],
               "10-11": [0, 0, 0, 0, 0],
@@ -174,22 +174,22 @@ export default {
           }
           this.dialog = true
           this.$nextTick(() => {
-            this.$refs.locationDatePicker.dates = this.editedItem.reservedDates
+            this.$refs.teacherDatePicker.dates = this.editedItem.inappropriateDates
         })
           
       },
 
       async deleteItem (item) {
-        this.editedIndex = this.locations.indexOf(item)
-        await this.fetchLocation()
+        this.editedIndex = this.teachers.indexOf(item)
+        await this.fetchTeacher()
         this.dialogDelete = true
       },
 
       async deleteItemConfirm () {
         await axios
-          .delete('http://127.0.0.1:3000/api/location/' + this.editedItem._id)
+          .delete('http://127.0.0.1:3000/api/teacher/' + this.editedItem._id)
           .catch(error => console.log(error))
-        await this.fetchLocations()
+        await this.fetchTeachers()
         this.closeDelete()
       },
 
@@ -201,20 +201,20 @@ export default {
       },
 
       async save () {
-        let location = {
+        let teacher = {
           name: this.editedItem.name,
-          reservedDates: Object.assign({}, this.editedItem.reservedDates)
+          inappropriateDates: Object.assign({}, this.editedItem.inappropriateDates)
         }
         if (this.editedIndex > -1) {
           await axios.
-          put('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id, location)
+          put('http://127.0.0.1:3000/api/teacher/' + this.teachers[this.editedIndex]._id, teacher)
           .catch(error => console.log(error))
         } else {
           await axios.
-          post('http://127.0.0.1:3000/api/location', location)
+          post('http://127.0.0.1:3000/api/teacher', teacher)
           .catch(error => console.log(error))
         }
-        await this.fetchLocations()
+        await this.fetchTeachers()
         this.close()
       }
     }

@@ -3,7 +3,7 @@
     <Sidebar />
     <v-main>
       <v-container fluid>
-        <TeachersDataTable />
+        <ClassHoursDataTable />
     <router-view></router-view>
   </v-container>
     </v-main>
@@ -15,14 +15,14 @@
   
   // Components
   import Sidebar from '../components/Side_bar.vue'
-  import TeachersDataTable from '../components/Teacher/TeachersDataTable.vue'
+  import ClassHoursDataTable from '../components/ClassHour/ClassHourDataTable.vue'
 
   export default defineComponent({
     name: 'Side_bar',
   
     components: {
         Sidebar,
-        TeachersDataTable,
+        ClassHoursDataTable,
   },
   });
   </script>
