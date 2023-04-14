@@ -4,23 +4,27 @@
 ClassCatalog::ClassCatalog() : m_nCourseNumber(0) {}
 
 double ClassCatalog::GetFitnessValue() {
-	double fitnessValue = 0;
-	std::vector<int> courseNumberOnADay(m_nCourseNumber, 0);
-	std::vector<int> coursesNumbers(m_catalog.size(), 0);
+	double dFitnessValue = 0;
+	std::vector<int> vCourseNumbers(m_catalog.size(), 0);
 	g_bActive = true;
 
-	for (int day = 0; day < m_catalog.size(); day++) {
+	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
+		std::unordered_map<std::string, int> mCourseNumberOnADay;
 		int hasEmptyHoursBetweenCourses = 0;
 		bool hasEmptyHours = false;
 
-		for (int hour = 0; hour < m_catalog[day].size(); hour++) {
-			if (m_catalog[day][hour] == -1) {
+		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++) {
+			if (IsFreeDay(nDay, nHour)) {
 				hasEmptyHours = true;
 				continue;
 			}
 
-			courseNumberOnADay[m_catalog[day][hour]]++;
-			coursesNumbers[day]++;
+			if (mCourseNumberOnADay.find(m_catalog[nDay][nHour]) != mCourseNumberOnADay.end())
+				mCourseNumberOnADay[m_catalog[nDay][nHour]]++;
+			else
+				mCourseNumberOnADay[m_catalog[nDay][nHour]] = 0;
+
+			vCourseNumbers[nDay]++;
 
 			if (hasEmptyHours) {
 				hasEmptyHoursBetweenCourses++;
@@ -29,35 +33,31 @@ double ClassCatalog::GetFitnessValue() {
 			}
 
 			//the courses starts at 8
-			fitnessValue += std::abs(day - 8);
+			dFitnessValue += std::abs(nDay - 8);
 		}
 		//no empty hours between courses
-		fitnessValue -= hasEmptyHoursBetweenCourses * 10;
+		dFitnessValue -= hasEmptyHoursBetweenCourses * 10;
 
 		//just 1 type of course on each day
-		for (int j = 0; j < m_nCourseNumber; j++) {
-			if (courseNumberOnADay[j] > 1) {
-				fitnessValue -= courseNumberOnADay[j] * 2;
+		for (auto courseNumber: mCourseNumberOnADay) {
+			if (courseNumber.second > 1) {
+				dFitnessValue -= courseNumber.second * 2;
 				g_bActive = false;
 			}
-			courseNumberOnADay[j] = 0;
+			courseNumber.second = 0;
 		}
 	}
 
 	//even hours
-	for (int i = 0; i < coursesNumbers.size(); i++) {
-		for (int j = 0; j < coursesNumbers.size(); j++) {
-			fitnessValue -= pow(abs(coursesNumbers[i] - coursesNumbers[j]), 2);
+	for (int i = 0; i < vCourseNumbers.size(); i++) {
+		for (int j = 0; j < vCourseNumbers.size(); j++) {
+			dFitnessValue -= pow(abs(vCourseNumbers[i] - vCourseNumbers[j]), 2);
 		}
 	}
 
 	if (g_bActive) {
-		fitnessValue += 1000;
+		dFitnessValue += 1000;
 	}
 
-	return fitnessValue;
-}
-
-void ClassCatalog::IncrementCourseNumber() {
-	m_nCourseNumber++;
+	return dFitnessValue;
 }

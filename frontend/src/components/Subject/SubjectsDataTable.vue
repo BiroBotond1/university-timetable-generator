@@ -103,7 +103,7 @@
       <v-label v-for="location in item.locations" :key="location._id">
         [{{ location.name }}]
       </v-label>
-</template>
+  </template>
   </v-data-table>
 </template>
 

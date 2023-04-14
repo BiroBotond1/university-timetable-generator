@@ -15,45 +15,48 @@ void Read(std::string fileName) {
     g_changeNumber = data["ChangesNumber"];
     g_maxIteration = data["MaxIteration"];
     g_initialTemperature = data["InitialTemperature"];
-    for (auto jsonTeacher : data["Teachers"]) {
-        g_teachers.push_back(Teacher{ jsonTeacher });
+    for (auto jsonTeacher : data["teachers"]) {
+        g_teachers[jsonTeacher["_id"]] = Teacher{jsonTeacher};
+        g_teacherIDs.push_back(jsonTeacher["_id"]);
     }
-    for (auto jsonLocation : data["Locations"]) {
-        g_locations.push_back(Location{ jsonLocation });
+    for (auto jsonLocation : data["locations"]) {
+        g_locations[jsonLocation["_id"]] = Location{jsonLocation};
+        g_locationIDs.push_back(jsonLocation["_id"]);
     }
-    for (auto jsonClass : data["Classes"]) {
-        g_classes.push_back(Class{ jsonClass });
+    for (auto jsonClass : data["classes"]) {
+        g_classes[jsonClass["_id"]] = Class{jsonClass};
+        g_classIDs.push_back(jsonClass["_id"]);
     }
-    for (auto jsonSubject : data["Subjects"]) {
-        g_subjects.push_back(Subject{ jsonSubject });
+    for (auto jsonSubject : data["subjects"]) {
+        g_subjects[jsonSubject["_id"]] = Subject{jsonSubject};
+        g_subjectIDs.push_back(jsonSubject["_id"]);
     }
-    for (auto jsonClassHour : data["ClassHours"]) {
-        g_classHours.push_back(ClassHour{ jsonClassHour });
+    for (auto jsonClassHour : data["classHours"]) {
+        g_classHours[jsonClassHour["_id"]] = ClassHour{jsonClassHour};
+        g_classHourIDs.push_back(jsonClassHour["_id"]);
     }
 }
 
 void InitCatalogs() {
-    int i = 0;
     for (auto classHour : g_classHours)
     {
-        classHour.AddClassHoursToCatalog(i);
-        i++;
+        classHour.second.AddClassHoursToCatalog();
     }
 }
 
-double Fitness(std::vector<Class> p_classes, std::vector<Teacher> p_teachers, std::vector<Location> p_locations) {
+double Fitness(std::unordered_map<std::string, Class> p_classes, std::unordered_map<std::string, Teacher> p_teachers, std::unordered_map<std::string, Location> p_locations) {
     double fitnessValue = 0;
     for (auto clas : p_classes)
     {
-        fitnessValue += clas.GetFitnessValue();
+        fitnessValue += clas.second.GetFitnessValue();
     }
     for (auto teacher : p_teachers)
     {
-        fitnessValue += teacher.GetCatalog().GetFitnessValue();
+        fitnessValue += teacher.second.GetFitnessValue();
     }
     for (auto location : p_locations)
     {
-        fitnessValue += location.GetCatalog().GetFitnessValue();
+        fitnessValue += location.second.GetFitnessValue();
     }
     return fitnessValue;
 }
@@ -62,54 +65,80 @@ double Fitness() {
     return Fitness(g_classes, g_teachers, g_locations);
 }
 
-void ChangeLocation(std::vector<Location>& p_locations, Class &p_class, int day1, int hour1, int day2, int hour2) {
-    int locationID1 = p_class.GetTeacherID(day1, hour1);
-    int locationID2 = p_class.GetLocationID(day2, hour2);
-    if (locationID1 != -1)
-        p_locations[locationID1].Change(day1, hour1, day2, hour2);
-    if (locationID2 != -1)
-        p_locations[locationID2].Change(day1, hour1, day2, hour2);
+void WriteCatalog() {
+    std::ofstream fout("out.json");
+    json res, classCatalogs, teacherCatalogs, locationsCatalogs;
+    for (auto clas : g_classes) {
+        classCatalogs[clas.first] = clas.second.GetCatalog().GetJSONObj();
+    }
+    for (auto teacher : g_teachers) {
+        teacherCatalogs[teacher.first] = teacher.second.GetCatalog().GetJSONObj();
+    }
+    for (auto location : g_locations) {
+        locationsCatalogs[location.first] = location.second.GetCatalog().GetJSONObj();
+    }
+    res["classCatalogs"] = classCatalogs;
+    res["teacherCatalogs"] = teacherCatalogs;
+    res["locationCatalogs"] = locationsCatalogs;
+    fout << res;
+    //g_classes["64345afe10265ba59827241e"].GetCatalog().Write();
+   // g_teachers[0].GetCatalog().Write();
 }
 
-void ChangeTeachers(std::vector<Teacher>& p_teachers, Class& p_class, int day1, int hour1, int day2, int hour2) {
-    int teacherID1 = p_class.GetTeacherID(day1, hour1);
-    int teacherID2 = p_class.GetTeacherID(day2, hour2);
-    if (teacherID1 != -1)
-        p_teachers[teacherID1].Change(day1, hour1, day2, hour2);
-    if (teacherID2 != -1)
-        p_teachers[teacherID2].Change(day1, hour1, day2, hour2);
+
+void ChangeLocation(std::unordered_map<std::string, Location>& p_locations, Class &p_class, int day1, int hour1, int day2, int hour2) {
+    std::string strLocationID1 = p_class.GetLocationID(day1, hour1);
+    std::string strLocationID2 = p_class.GetLocationID(day2, hour2);
+    if (strLocationID1.compare("") != 0)
+        p_locations[strLocationID1].Change(day1, hour1, day2, hour2);
+    if (strLocationID2.compare("") != 0)
+        p_locations[strLocationID2].Change(day1, hour1, day2, hour2);
 }
 
-void Change(std::vector<Class> &p_classes, std::vector<Teacher> &p_teachers, std::vector<Location> &p_locations) {
-    int classID = RandInt(0, int(p_classes.size() - 1));
-    int day1 = RandInt(0, 4);
-    int hour1 = RandInt(0, 7);
-    int day2 = RandInt(0, 4);
-    int hour2 = RandInt(0, 7);
+void ChangeTeachers(std::unordered_map<std::string, Teacher>& p_teachers, Class& p_class, int day1, int hour1, int day2, int hour2) {
+    std::string strTeacherID1 = p_class.GetTeacherID(day1, hour1);
+    std::string strTeacherID2 = p_class.GetTeacherID(day2, hour2);
+    if (strTeacherID1.compare("") != 0)
+        p_teachers[strTeacherID1].Change(day1, hour1, day2, hour2);
+    if (strTeacherID2.compare("") != 0)
+        p_teachers[strTeacherID2].Change(day1, hour1, day2, hour2);
+}
 
-    /*int subjectID1 = g_classHours[p_classes[classID].GetClassHourID(day1, hour1)].GetSubjectID();
-    int subjectID2 = g_classHours[p_classes[classID].GetClassHourID(day2, hour2)].GetSubjectID();
-    if (g_subjects[subjectID1].HasLocations())      //change the location of a classhour
+std::string GetRandomClassID() {
+    return g_classIDs[RandInt(0, int(g_classIDs.size() - 1))];
+}
+
+void Change(std::unordered_map<std::string, Class> &p_classes, std::unordered_map<std::string, Teacher> &p_teachers, std::unordered_map<std::string, Location> &p_locations) {
+    std::string strClassID = "64345afe10265ba59827241e";//GetRandomClassID();
+    int nDay1 = RandInt(0, 4);
+    int nHour1 = RandInt(0, 7);
+    int nDay2 = RandInt(0, 4);
+    int nHour2 = RandInt(0, 7);
+    
+    std::string strSubjectID1 = g_classHours[p_classes[strClassID].GetClassHourID(nDay1, nHour1)].GetSubjectID();
+    std::string strSubjectID2 = g_classHours[p_classes[strClassID].GetClassHourID(nDay2, nHour2)].GetSubjectID();
+    
+    /*if (g_subjects[strSubjectID1].HasLocations())      //change the location of a classhour
     {
         if (Rand() <= 0.2) {
-            int locationID = g_subjects[subjectID1].GetRandomLocationID();
+            std::string locationID = g_subjects[strSubjectID1].GetRandomLocationID();
         }
     }
-    if (g_subjects[subjectID2].HasLocations())
+    if (g_subjects[strSubjectID2].HasLocations())
     {
         if (Rand() <= 0.2) {
-            int locationID = g_subjects[subjectID2].GetRandomLocationID();
+            std::string locationID = g_subjects[strSubjectID2].GetRandomLocationID();
         }
     }*/
 
-    p_classes[classID].Change(day1, hour1, day2, hour2);
+    ChangeLocation(p_locations, p_classes[strClassID], nDay1, nHour1, nDay2, nHour2);
 
-    ChangeLocation(p_locations, p_classes[classID], day1, hour1, day2, hour2);
+    ChangeTeachers(p_teachers, p_classes[strClassID], nDay1, nHour1, nDay2, nHour2);
 
-    ChangeTeachers(p_teachers, p_classes[classID], day1, hour1, day2, hour2);
+    p_classes[strClassID].Change(nDay1, nHour1, nDay2, nHour2);
 }
 
-void Changes(std::vector<Class>& p_classes, std::vector<Teacher>& p_teachers, std::vector<Location>& p_locations) {
+void Changes(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
     for (int i = 0; i < g_changeNumber; i++) {
         Change(p_classes, p_teachers, p_locations);
     }
@@ -119,18 +148,14 @@ double LinearAnnealing(int i) {
     return g_initialTemperature / (1 + 0.5 * i);
 }
 
-void WriteCatalog() {
-    g_classes[0].GetCatalog().Write();
-    g_teachers[0].GetCatalog().Write();
-}
 
 void SimulatedAnnealing() {
-    std::vector<Class> p_classesBest = g_classes;
-    std::vector<Teacher> p_teachersBest = g_teachers;
-    std::vector<Location> p_locationsBest = g_locations;
-    std::vector<Class> p_classes;
-    std::vector<Teacher> p_teachers;
-    std::vector<Location> p_locations;
+    std::unordered_map<std::string, Class> p_classesBest = g_classes;
+    std::unordered_map<std::string, Teacher> p_teachersBest = g_teachers;
+    std::unordered_map<std::string, Location> p_locationsBest = g_locations;
+    std::unordered_map<std::string, Class> p_classes;
+    std::unordered_map<std::string, Teacher> p_teachers;
+    std::unordered_map<std::string, Location> p_locations;
     g_bActive = false;
     double t = g_initialTemperature;
     int i = 0;
@@ -163,7 +188,7 @@ void SimulatedAnnealing() {
 int main()
 {
     //Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
-    Read("input.json");
+    Read("in.json");
     InitCatalogs();
     Fitness();
     WriteCatalog();

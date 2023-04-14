@@ -5,10 +5,10 @@
 class TeacherCatalog : public Catalog
 {
 private:
-	int m_nTeacherID;
+	std::string m_strTeacherID;
 public:
 	TeacherCatalog();
-	TeacherCatalog(int p_nTeacherID);
+	TeacherCatalog(std::string p_strTeacherID);
 	double GetFitnessValue() override;
 };
 

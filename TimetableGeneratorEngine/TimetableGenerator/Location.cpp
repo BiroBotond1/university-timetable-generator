@@ -1,46 +1,54 @@
 #include "Location.h"
+#include "Global.h"
 
 Location::Location() {};
 
 Location::Location(const nlohmann::json &jsonLocation) {
-	m_nID = jsonLocation["id"];
-	m_catalog = LocationCatalog{ m_nID };
+	m_strID = jsonLocation["_id"].get<std::string>();
+	m_catalog = LocationCatalog{ m_strID };
 	m_strName = jsonLocation["name"].get<std::string>();
-	if (jsonLocation.contains("reservedDates")) {
-		for (auto reservedDate : jsonLocation["reservedDates"])
+	int nDay, nHour = 0;
+	for (auto reservedHour : jsonLocation["reservedDates"].items())
+	{
+		nDay = 0;
+		int nHour = stoi(reservedHour.key().substr(0, reservedHour.key().find("-"))) - START_HOUR;
+		for (auto valid : reservedHour.value())
 		{
-			int day = reservedDate["day"];
-			int hour = reservedDate["hour"];
-			m_reservedDates.push_back(std::make_pair(day, hour));
+			if (valid == -1)
+				m_vReservedDates.push_back(std::make_pair(nDay, nHour));
+			nDay++;
 		}
+		nHour++;
 	}
-	if (jsonLocation.contains("fixedDays")) {
-		for (auto fixedDate : jsonLocation["fixedDates"])
-		{
-			int day = fixedDate["day"];
-			int hour = fixedDate["hour"];
-			m_fixedDates.push_back(std::make_pair(day, hour));
-		}
-	}
+}
+
+bool Location::IsFreeDay(int p_nDay, int p_nHour) {
+	return m_catalog.IsFreeDay(p_nDay, p_nHour);
+}
+
+void Location::Add(int p_nDay, int p_nHour, std::string p_strSubCourseID) {
+	m_catalog.Add(p_nDay, p_nHour, p_strSubCourseID);
+}
+
+double Location::GetFitnessValue() {
+	return m_catalog.GetFitnessValue();
+}
+
+std::vector<std::pair<int, int>> Location::GetReservedDates() {
+	return m_vReservedDates;
 }
 
 LocationCatalog Location::GetCatalog() {
 	return m_catalog;
 }
 
+void Location::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
+	m_catalog.Change(p_nDay1, p_nHour1, p_nDay2, p_nHour2);
+}
+/*
+
 std::string Location::GetName() {
 	return m_strName;
-}
-bool Location::IsFreeDay(int day, int hour) {
-	return m_catalog.IsFreeDay(day, hour);
-}
-
-void Location::Add(int day, int hour, int subCourseID) {
-	m_catalog.Add(day, hour, subCourseID);
-}
-
-void Location::Change(int day1, int hour1, int day2, int hour2) {
-	m_catalog.Change(day1, hour1, day2, hour2);
 }
 
 int Location::GetClassHourID(int day1, int hour1) {
@@ -49,8 +57,4 @@ int Location::GetClassHourID(int day1, int hour1) {
 
 void Location::SetClassHourID(int day, int hour, int classHour) {
 	return m_catalog.SetClassHourID(day, hour, classHour);
-}
-
-std::vector<std::pair<int, int>> Location::GetReservedDates() {
-	return m_reservedDates;
-}
+}*/

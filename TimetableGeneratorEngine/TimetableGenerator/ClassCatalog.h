@@ -7,6 +7,5 @@ class ClassCatalog : public Catalog
 	int m_nCourseNumber;
 public:
 	ClassCatalog();
-	void IncrementCourseNumber();
 	double GetFitnessValue() override;
 };

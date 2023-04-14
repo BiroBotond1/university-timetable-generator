@@ -3,14 +3,16 @@
 
 class Subject
 {
-	int					m_nID;
-	std::string			m_strName;
-	std::vector<int>	m_locationIDs;
+	std::string					m_strID;
+	std::string					m_strName;
+	std::vector<std::string>	m_locationIDs;
 public:
+	Subject();
 	Subject(const nlohmann::json& jsonSubject);
-	std::string GetName();
-	std::string	ToString();
 	bool HasLocations();
-	int GetRandomLocationID();
+	std::string GetRandomLocationID();
+	std::string	ToString();
+	/*std::string GetName();
+	*/
 };
 

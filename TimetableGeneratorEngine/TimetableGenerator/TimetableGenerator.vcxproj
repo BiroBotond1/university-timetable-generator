@@ -178,7 +178,9 @@
     <ClInclude Include="TeacherCatalog.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="in.json" />
     <None Include="input.json" />
+    <None Include="out.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

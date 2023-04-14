@@ -105,5 +105,11 @@
     <None Include="input.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="in.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="out.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

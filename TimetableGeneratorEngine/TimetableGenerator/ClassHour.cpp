@@ -2,51 +2,59 @@
 #include "Global.h"
 #include "HelperFunctions.h"
 
+ClassHour::ClassHour() {}
+
 ClassHour::ClassHour(const nlohmann::json& jsonHour) {
-	m_nID = jsonHour["id"];
+	m_strLocationID = "";
+	m_strID = jsonHour["_id"].get<std::string>();
 	m_nNumber = jsonHour["number"];
-	m_nTeacherID = jsonHour["teacherID"];
-	m_nClassID = jsonHour["classID"];
-	m_nSubjectID = jsonHour["subjectID"];
-	if (g_subjects[m_nSubjectID].HasLocations()) {
-		m_nLocationID = g_subjects[m_nSubjectID].GetRandomLocationID();
+	m_strTeacherID = jsonHour["teacher"]["_id"].get<std::string>();
+	m_strClassID = jsonHour["class"]["_id"].get<std::string>();
+	m_strSubjectID = jsonHour["subject"]["_id"].get<std::string>();
+	m_dWeight = jsonHour["weight"];
+
+	if (g_subjects[m_strSubjectID].HasLocations()) {
+		m_strLocationID = g_subjects[m_strSubjectID].GetRandomLocationID();
 	}
-	else {
-		m_nLocationID = g_classes[m_nClassID].GetLocationID();
-	}
-	g_classes[m_nClassID].IncrementCourseNumber();
 }
 
-int ClassHour::GetTeacherID() {
-	return m_nTeacherID;
+bool ClassHour::HasLocation() {
+	return m_strLocationID.compare("");
 }
 
-int ClassHour::GetClassID() {
-	return m_nClassID;
+std::string ClassHour::GetSubjectID() {
+	return m_strSubjectID;
 }
 
-int ClassHour::GetSubjectID() {
-	return m_nSubjectID;
+std::string ClassHour::GetLocationID() {
+	return m_strLocationID;
 }
 
-int ClassHour::GetLocationID() {
-	return m_nLocationID;
+std::string ClassHour::GetTeacherID() {
+	return m_strTeacherID;
 }
 
-void ClassHour::AddClassHoursToCatalog(int classHourID) {
+std::string ClassHour::GetClassID() {
+	return m_strClassID;
+}
+
+void ClassHour::AddClassHoursToCatalog() {
 	int day, hour;
 	for (int i = 0; i < m_nNumber; i++) {
 		do {
-			day = RandInt(0, 4);
-			hour = RandInt(0, 7);
-		} while (!g_classes[m_nClassID].IsFreeDay(day, hour) || !g_teachers[m_nTeacherID].IsFreeDay(day, hour)
-			|| !g_locations[m_nLocationID].IsFreeDay(day, hour));
-		g_classes[m_nClassID].Add(day, hour, classHourID);
-		g_teachers[m_nTeacherID].Add(day, hour, classHourID);
-		g_locations[m_nLocationID].Add(day, hour, classHourID);
+			day = RandInt(0, DAY_COUNT-1);
+			hour = RandInt(0, HOUR_COUNT-1);
+		} while (!g_classes[m_strClassID].IsFreeDay(day, hour) || !g_teachers[m_strTeacherID].IsFreeDay(day, hour)
+			|| (HasLocation() && !g_locations[m_strLocationID].IsFreeDay(day, hour)));
+
+		g_classes[m_strClassID].Add(day, hour, m_strID);
+		g_teachers[m_strTeacherID].Add(day, hour, m_strID);
+
+		if(HasLocation())
+			g_locations[m_strLocationID].Add(day, hour, m_strID);
 	}
 } 
 
 std::string ClassHour::ToString() {
-	return g_subjects[m_nSubjectID].ToString();
+	return g_subjects[m_strSubjectID].ToString();
 }

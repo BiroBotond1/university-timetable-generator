@@ -4,20 +4,22 @@
 #include "LocationCatalog.h"
 
 class Location {
-	int									m_nID;
+	std::string							m_strID;
 	std::string							m_strName;
 	LocationCatalog						m_catalog;
-	std::vector<std::pair<int, int>>	m_reservedDates;
-	std::vector<std::pair<int, int>>	m_fixedDates;
+	std::vector<std::pair<int, int>>	m_vReservedDates;
 public:
 	Location();
 	Location(const nlohmann::json& jsonLocation);
+	bool IsFreeDay(int p_nDay, int p_nHour);
+	void	Add(int p_nDay, int p_nHour, std::string p_strSubCourseID);
+	double GetFitnessValue();
+	std::vector<std::pair<int, int>>	GetReservedDates();
 	LocationCatalog			GetCatalog();
+	void					Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2);
+	/*
 	std::string				GetName();
-	bool					IsFreeDay(int day, int hour);
-	void					Add(int day, int hour, int subCourseID);
-	void					Change(int day1, int hour1, int day2, int hour2);
 	int						GetClassHourID(int day1, int hour1);
 	void					SetClassHourID(int day, int hour, int classHour);
-	std::vector<std::pair<int, int>> GetReservedDates();
+	*/
 };

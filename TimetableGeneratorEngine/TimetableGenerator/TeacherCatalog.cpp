@@ -3,28 +3,28 @@
 
 TeacherCatalog::TeacherCatalog() {};
 
-TeacherCatalog::TeacherCatalog(int p_nTeacherID) : m_nTeacherID(p_nTeacherID) {}
+TeacherCatalog::TeacherCatalog(std::string p_strTeacherID) : m_strTeacherID(p_strTeacherID) {}
 
 double TeacherCatalog::GetFitnessValue() {
 	double fitnessValue = 0;
-	auto ineligibleDays = g_teachers[m_nTeacherID].GetIneligibleDays();
+	auto inappropriateDates = g_teachers[m_strTeacherID].GetInappropriateDates();
 	std::vector<int> coursesNumbers(m_catalog.size(), 0);
 	g_bActive = true;
 
-	for (int day = 0; day < m_catalog.size(); day++) {
+	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
 		int hasEmptyHoursBetweenCourses = 0;
 		bool hasEmptyHours = false;
 
-		for (int hour = 0; hour < m_catalog[day].size(); hour++) {
-			if (m_catalog[day][hour] == -1) {
+		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++) {
+			if (IsFreeDay(nDay, nHour)) {
 				hasEmptyHours = true;
 				continue;
 			}
-			coursesNumbers[day]++;
+			coursesNumbers[nDay]++;
 
 			//a teacher can't work on ineligible date
-			auto date = std::make_pair(day, hour);
-			if (std::find(ineligibleDays.begin(), ineligibleDays.end(), date) != ineligibleDays.end()) {
+			auto date = std::make_pair(nDay, nHour);
+			if (std::find(inappropriateDates.begin(), inappropriateDates.end(), date) != inappropriateDates.end()) {
 				fitnessValue -= 10;
 				g_bActive = false;
 			}

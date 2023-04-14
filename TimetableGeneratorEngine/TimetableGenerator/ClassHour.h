@@ -3,18 +3,21 @@
 
 class ClassHour
 {
-	int m_nID;
-	int m_nTeacherID;
-	int m_nClassID;
-	int m_nSubjectID;
-	int m_nLocationID;
+	std::string m_strID;
+	std::string m_strTeacherID;
+	std::string m_strClassID;
+	std::string m_strSubjectID;
+	std::string m_strLocationID;
 	int m_nNumber;
+	double m_dWeight;
 public:
+	ClassHour();
 	ClassHour(const nlohmann::json& jsonHour);
-	int GetTeacherID();
-	int GetClassID();
-	int GetSubjectID();
-	int GetLocationID();
-	void AddClassHoursToCatalog(int classHourID);
+	void AddClassHoursToCatalog();
+	bool HasLocation();
 	std::string ToString();
+	std::string GetSubjectID();
+	std::string GetTeacherID();
+	std::string GetClassID();
+	std::string GetLocationID();
 };

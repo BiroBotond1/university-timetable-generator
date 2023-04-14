@@ -85,7 +85,7 @@ import Vue from 'vue'
         chooseItem (hour, day) {
             if( this.dates[hour][day] === 0)
             {
-                Vue.set(this.dates[hour], day, 1);
+                Vue.set(this.dates[hour], day, -1);
             } else {
                 Vue.set(this.dates[hour], day, 0);
             }

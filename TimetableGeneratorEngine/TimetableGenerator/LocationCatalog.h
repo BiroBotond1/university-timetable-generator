@@ -5,10 +5,10 @@
 class LocationCatalog : public Catalog
 {
 private:
-	int m_nLocationID;
+	std::string m_strLocationID;
 public:
 	LocationCatalog();
-	LocationCatalog(int p_nID);
+	LocationCatalog(std::string p_strLocationID);
 	double GetFitnessValue() override;
 };
 

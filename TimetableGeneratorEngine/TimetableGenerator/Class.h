@@ -4,22 +4,22 @@
 
 class Class
 {
-	int					m_nID;
+	std::string			m_strID;
 	std::string			m_strName;
-	int					m_nLocationID;
 	ClassCatalog		m_catalog;
 public:
+	Class();
 	Class(const nlohmann::json& jsonClass);
-	std::string			GetName();
-	int					GetLocationID();
-	ClassCatalog		GetCatalog();
-	bool				IsFreeDay(int day, int hour);
-	void				Add(int day, int hour, int subCourseID);
+	bool				IsFreeDay(int p_nDay, int p_nHour);
+	void				Add(int p_nDay, int p_nHour, std::string p_strSubCourseID);
 	double				GetFitnessValue();
-	void				IncrementCourseNumber();
-	void				Change(int day1, int hour1, int day2, int hour2);
-	int					GetTeacherID(int day, int hour);
-	int					GetLocationID(int day, int hour);
-	int					GetClassHourID(int day, int hour);
+	ClassCatalog		GetCatalog();
+	std::string			GetClassHourID(int p_nDay, int p_nHour);
+	void				Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2);
+	std::string			GetTeacherID(int p_nDay, int p_nHour);
+	std::string			GetLocationID(int p_nDay, int p_nHour);
+	/*
+	std::string			GetName();
+	*/
 };
 

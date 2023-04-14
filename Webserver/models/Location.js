@@ -9,7 +9,8 @@ const LocationSchema = new mongoose.Schema({
     "12-13": [Number],
     "13-14": [Number],
     "14-15": [Number],
-    "15-16": [Number]}
+    "15-16": [Number]},
+    catalog: [[Number]]
 });
 
 exports.LocationSchema = LocationSchema;

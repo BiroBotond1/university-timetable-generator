@@ -1,56 +1,47 @@
 #include "Class.h"
 #include "global.h"
 
+Class::Class() {
+
+}
+
 Class::Class(const nlohmann::json& jsonClass) {
-	m_nID = jsonClass["id"];
+	m_strID = jsonClass["_id"].get<std::string>();
 	m_strName = jsonClass["name"].get<std::string>();
-	m_nLocationID = jsonClass["locationID"];
 }
 
-std::string Class::GetName() {
-	return m_strName;
+bool Class::IsFreeDay(int p_nDay, int p_nHour) {
+	return m_catalog.IsFreeDay(p_nDay, p_nHour);
 }
 
-int Class::GetLocationID() {
-	return m_nLocationID;
-}
-
-ClassCatalog	Class::GetCatalog() {
-	return m_catalog;
-}
-
-bool Class::IsFreeDay(int day, int hour) {
-	return m_catalog.IsFreeDay(day, hour);
-}
-
-void Class::Add(int day, int hour, int subCourseID) {
-	m_catalog.Add(day, hour, subCourseID);
+void Class::Add(int p_nDay, int p_nHour, std::string p_strSubCourseID) {
+	m_catalog.Add(p_nDay, p_nHour, p_strSubCourseID);
 }
 
 double Class::GetFitnessValue() {
 	return m_catalog.GetFitnessValue();
 }
 
-void Class::IncrementCourseNumber() {
-	m_catalog.IncrementCourseNumber();
+ClassCatalog	Class::GetCatalog() {
+	return m_catalog;
 }
 
-void Class::Change(int day1, int hour1, int day2, int hour2) {
-	m_catalog.Change(day1, hour1, day2, hour2);
+std::string Class::GetClassHourID(int p_nDay, int p_nHour) {
+	return m_catalog.GetClassHourID(p_nDay, p_nHour);
 }
 
-int	Class::GetTeacherID(int day, int hour) {
-	if (m_catalog.GetClassHourID(day, hour) == -1)
-		return -1;
-	return g_classHours[m_catalog.GetClassHourID(day, hour)].GetTeacherID();
+void Class::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
+	m_catalog.Change(p_nDay1, p_nHour1, p_nDay2, p_nHour2);
 }
 
-int	Class::GetLocationID(int day, int hour) {
-	if (m_catalog.GetClassHourID(day, hour) == -1)
-		return -1;
-	return g_classHours[m_catalog.GetClassHourID(day, hour)].GetLocationID();
+std::string	Class::GetTeacherID(int p_nDay, int p_nHour) {
+	if (m_catalog.IsFreeDay(p_nDay, p_nHour))
+		return "";
+	return g_classHours[m_catalog.GetClassHourID(p_nDay, p_nHour)].GetTeacherID();
 }
 
-int Class::GetClassHourID(int day, int hour) {
-	return m_catalog.GetClassHourID(day, hour);
+std::string Class::GetLocationID(int p_nDay, int p_nHour) {
+	if (m_catalog.IsFreeDay(p_nDay, p_nHour))
+		return "";
+	return g_classHours[m_catalog.GetClassHourID(p_nDay, p_nHour)].GetLocationID();
 }
