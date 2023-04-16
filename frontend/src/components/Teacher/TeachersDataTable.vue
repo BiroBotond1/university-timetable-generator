@@ -114,7 +114,7 @@ export default {
             editedItem: {
               _id: '',  
               name: '',
-              inappropriateDates:  {}
+              inappropriateDates:  []
             },
         }
     },
@@ -161,16 +161,13 @@ export default {
             await this.fetchTeacher()
           } else {
             this.editedItem.name = ''
-            this.editedItem.inappropriateDates = {
-              "8-9": [0, 0, 0, 0, 0],
-              "9-10": [0, 0, 0, 0, 0],
-              "10-11": [0, 0, 0, 0, 0],
-              "11-12": [0, 0, 0, 0, 0],
-              "12-13": [0, 0, 0, 0, 0],
-              "13-14": [0, 0, 0, 0, 0],
-              "14-15": [0, 0, 0, 0, 0],
-              "15-16": [0, 0, 0, 0, 0]
-            }
+            this.editedItem.inappropriateDates =  [
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0]
+          ]
           }
           this.dialog = true
           this.$nextTick(() => {
@@ -203,7 +200,7 @@ export default {
       async save () {
         let teacher = {
           name: this.editedItem.name,
-          inappropriateDates: Object.assign({}, this.editedItem.inappropriateDates)
+          inappropriateDates: Object.assign([], this.editedItem.inappropriateDates)
         }
         if (this.editedIndex > -1) {
           await axios.

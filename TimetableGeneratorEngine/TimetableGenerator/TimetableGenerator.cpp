@@ -7,8 +7,6 @@
 
 using json = nlohmann::json;
 
-//std::ofstream std::cout("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/output.txt");
-
 void Read(std::string fileName) {
     std::ifstream fin(fileName);
     json data = json::parse(fin);
@@ -66,7 +64,7 @@ double Fitness() {
 }
 
 void WriteCatalog() {
-    std::ofstream fout("out.json");
+    //std::ofstream fout("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/out.json");
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
     for (auto clas : g_classes) {
         classCatalogs[clas.first] = clas.second.GetCatalog().GetJSONObj();
@@ -80,9 +78,9 @@ void WriteCatalog() {
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
     res["locationCatalogs"] = locationsCatalogs;
-    fout << res;
+    std::cout << res;
     //g_classes["64345afe10265ba59827241e"].GetCatalog().Write();
-   // g_teachers[0].GetCatalog().Write();
+    //g_teachers[0].GetCatalog().Write();
 }
 
 
@@ -187,16 +185,15 @@ void SimulatedAnnealing() {
 
 int main()
 {
-    //Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
-    Read("in.json");
+    Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
     InitCatalogs();
     Fitness();
     WriteCatalog();
-    std::cout << "-----------------------------------------" << std::endl;
-    auto t_start = std::chrono::high_resolution_clock::now();
-    SimulatedAnnealing();
-    auto t_end = std::chrono::high_resolution_clock::now();
-    WriteCatalog();
-    double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-    std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
+    //std::cout << "-----------------------------------------" << std::endl;
+    //auto t_start = std::chrono::high_resolution_clock::now();
+    //SimulatedAnnealing();
+    //auto t_end = std::chrono::high_resolution_clock::now();
+    //WriteCatalog();
+    //double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+    //std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

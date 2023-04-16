@@ -19,3 +19,9 @@ exports.updateClass = async (id, clas) => {
 exports.deleteClass = async (id) => {
     return await ClassModel.findByIdAndRemove(id);
 }
+
+exports.addCatalog = async (id, catalog) => {
+    let clas = await ClassModel.findById(id);
+    clas.catalog = catalog;
+    return await ClassModel.findByIdAndUpdate(id, clas);
+}

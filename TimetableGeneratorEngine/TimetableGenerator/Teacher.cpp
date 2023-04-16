@@ -7,18 +7,17 @@ Teacher::Teacher(const nlohmann::json &jsonTeacher) {
 	m_strID = jsonTeacher["_id"].get<std::string>();
 	m_catalog = TeacherCatalog{ m_strID };
 	m_strName = jsonTeacher["name"].get<std::string>();
-	int nDay, nHour = 0;
-	for (auto ineligibleHour : jsonTeacher["inappropriateDates"].items())
+	int nDay = 0, nHour;
+	for (auto hours : jsonTeacher["inappropriateDates"])
 	{
-		nDay = 0;
-		int nHour = stoi(ineligibleHour.key().substr(0, ineligibleHour.key().find("-"))) - START_HOUR;
-		for(auto valid : ineligibleHour.value())
+		nHour = 0;
+		for(auto valid : hours)
 		{
 			if(valid == -1)
 				m_vInappropriateDates.push_back(std::make_pair(nDay, nHour));
-			nDay++;
+			nHour++;
 		}	
-		nHour++;
+		nDay++;
 	}
 }
 

@@ -31,16 +31,19 @@ router.post('/proba', async (req, res) => {
         req.body.locations = await locationService.getAllLocations()
         req.body.subjects = await subjectService.getAllSubjects()
         req.body.teachers = await teacherService.getAllTeachers()
-        console.log(req.body);
         let obj = JSON.stringify(req.body);
         fs.writeFileSync("../TimetableGeneratorEngine/TimetableGenerator/in.json", obj);
 
         os.execCommand("TimetableGenerator.exe").then(res => {
-            console.log("os >>>", res);
+            console.log("success");
+            let catalogs = JSON.parse(res)
+            for(var classID in catalogs["classCatalogs"]) {
+                classService.addCatalog(classID, catalogs["classCatalogs"][classID])
+            }
+            console.log(catalogs["classCatalogs"]["64345ae910265ba598272415"])
         }).catch(err => {
             console.log("os >>>", err)
         })
-        res.json(req.body);
     } catch (e) {
         console.log(e)
     }

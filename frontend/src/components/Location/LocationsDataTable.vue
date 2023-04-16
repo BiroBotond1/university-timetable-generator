@@ -114,7 +114,7 @@ export default {
             editedItem: {
               _id: '',  
               name: '',
-              reservedDates:  {}
+              reservedDates:  []
             },
         }
     },
@@ -161,16 +161,13 @@ export default {
             await this.fetchLocation()
           } else {
             this.editedItem.name = ''
-            this.editedItem.reservedDates = {
-              "8-9": [0, 0, 0, 0, 0],
-              "9-10": [0, 0, 0, 0, 0],
-              "10-11": [0, 0, 0, 0, 0],
-              "11-12": [0, 0, 0, 0, 0],
-              "12-13": [0, 0, 0, 0, 0],
-              "13-14": [0, 0, 0, 0, 0],
-              "14-15": [0, 0, 0, 0, 0],
-              "15-16": [0, 0, 0, 0, 0]
-            }
+            this.editedItem.reservedDates =  [
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
           }
           this.dialog = true
           this.$nextTick(() => {
@@ -203,7 +200,7 @@ export default {
       async save () {
         let location = {
           name: this.editedItem.name,
-          reservedDates: Object.assign({}, this.editedItem.reservedDates)
+          reservedDates: Object.assign([], this.editedItem.reservedDates)
         }
         if (this.editedIndex > -1) {
           await axios.

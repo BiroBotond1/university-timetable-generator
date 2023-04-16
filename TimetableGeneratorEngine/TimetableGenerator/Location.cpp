@@ -7,18 +7,17 @@ Location::Location(const nlohmann::json &jsonLocation) {
 	m_strID = jsonLocation["_id"].get<std::string>();
 	m_catalog = LocationCatalog{ m_strID };
 	m_strName = jsonLocation["name"].get<std::string>();
-	int nDay, nHour = 0;
-	for (auto reservedHour : jsonLocation["reservedDates"].items())
+	int nDay = 0, nHour;
+	for (auto hours : jsonLocation["reservedDates"])
 	{
-		nDay = 0;
-		int nHour = stoi(reservedHour.key().substr(0, reservedHour.key().find("-"))) - START_HOUR;
-		for (auto valid : reservedHour.value())
+		nHour = 0;
+		for (auto valid : hours)
 		{
 			if (valid == -1)
 				m_vReservedDates.push_back(std::make_pair(nDay, nHour));
-			nDay++;
+			nHour++;
 		}
-		nHour++;
+		nDay++;
 	}
 }
 

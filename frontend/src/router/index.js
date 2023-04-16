@@ -6,6 +6,7 @@ import LocationsView from '../views/LocationsView.vue'
 import TeachersView from '../views/TeachersView.vue'
 import ClassesView from '../views/ClassesView.vue'
 import ClassHoursView from '../views/ClassHoursView.vue'
+import ClassCatalogView from '../views/ClassCatalogView.vue'
 
 
 Vue.use(VueRouter)
@@ -40,6 +41,11 @@ const routes = [
     path: '/classHours',
     name: 'classHours',
     component: ClassHoursView
+  },
+  {
+    path: '/classCatalogs',
+    name: 'classCatalogs',
+    component: ClassCatalogView
   },
 ]
 
