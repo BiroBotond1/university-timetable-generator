@@ -1,17 +1,16 @@
 #include "Catalog.h"
 #include "Global.h"
 
-
 Catalog::Catalog() {
-	m_catalog = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
+	m_catalog = std::vector<std::vector<ClassHour>>(DAY_COUNT, std::vector<ClassHour>(HOUR_COUNT, ClassHour()));
 }
 
 bool Catalog::IsFreeDay(int p_nDay, int p_nHour) {
-	return m_catalog[p_nDay][p_nHour].compare("") == 0;
+	return m_catalog[p_nDay][p_nHour].IsEmpty();
 }
 
-void Catalog::Add(int p_nDay, int p_nHour, std::string p_strSubCourseID) {
-	m_catalog[p_nDay][p_nHour] = p_strSubCourseID;
+void Catalog::Add(int p_nDay, int p_nHour, std::string p_strClassHourID) {
+	m_catalog[p_nDay][p_nHour] = g_classHours[p_strClassHourID];
 }
 
 void Catalog::Write() {
@@ -22,26 +21,32 @@ void Catalog::Write() {
 				std::cout << "	" << nHour + 8 << "-" << nHour + 9 << ":" << "---------" << std::endl;
 			}
 			else {
-				std::cout << "	" << nHour + 8 << "-" << nHour + 9 << ":" << g_classHours[m_catalog[nDay][nHour]].ToString() << std::endl;
+				std::cout << "	" << nHour + 8 << "-" << nHour + 9 << ":" << m_catalog[nDay][nHour].ToString() << std::endl;
 			}
 		}
 	}
 }
 
 std::string Catalog::GetClassHourID(int p_nDay, int p_nHour) {
-	return m_catalog[p_nDay][p_nHour];
+	return m_catalog[p_nDay][p_nHour].GetID();
 }
 
 void Catalog::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
-	std::string strClassHourID = m_catalog[p_nDay1][p_nHour1];
+	ClassHour classHour = m_catalog[p_nDay1][p_nHour1];
 	m_catalog[p_nDay1][p_nHour1] = m_catalog[p_nDay2][p_nHour2];
-	m_catalog[p_nDay2][p_nHour2] = strClassHourID;
+	m_catalog[p_nDay2][p_nHour2] = classHour;
 }
 
-void Catalog::SetClassHourID(int p_nDay, int p_nHour, std::string p_strClassHourID) {
-	m_catalog[p_nDay][p_nHour] = p_strClassHourID;
+void Catalog::Delete(int p_nDay, int p_nHour) {
+	m_catalog[p_nDay][p_nHour] = ClassHour();
 }
 
 nlohmann::json Catalog::GetJSONObj() {
-	return nlohmann::json(m_catalog);
+	nlohmann::json json;
+	//for (auto day : )
+		return json;/*nlohmann::json(m_catalog);*/
+}
+
+void Catalog::SetClassHour(ClassHour p_classHour, int p_nDay, int p_nHour) {
+	m_catalog[p_nDay][p_nHour] = p_classHour;
 }

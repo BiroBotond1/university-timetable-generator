@@ -19,18 +19,19 @@ double ClassCatalog::GetFitnessValue() {
 				continue;
 			}
 
-			if (mCourseNumberOnADay.find(m_catalog[nDay][nHour]) != mCourseNumberOnADay.end())
-				mCourseNumberOnADay[m_catalog[nDay][nHour]]++;
-			else
-				mCourseNumberOnADay[m_catalog[nDay][nHour]] = 0;
-
-			vCourseNumbers[nDay]++;
-
 			if (hasEmptyHours) {
 				hasEmptyHoursBetweenCourses++;
 				hasEmptyHours = false;
 				g_bActive = false;
 			}
+
+			std::string nClassHourID = m_catalog[nDay][nHour].GetID();
+			if (mCourseNumberOnADay.find(nClassHourID) != mCourseNumberOnADay.end())
+				mCourseNumberOnADay[nClassHourID]++;
+			else
+				mCourseNumberOnADay[nClassHourID] = 0;
+
+			vCourseNumbers[nDay]++;
 
 			//the courses starts at 8
 			dFitnessValue += std::abs(nDay - 8);
@@ -49,9 +50,9 @@ double ClassCatalog::GetFitnessValue() {
 	}
 
 	//even hours
-	for (int i = 0; i < vCourseNumbers.size(); i++) {
-		for (int j = 0; j < vCourseNumbers.size(); j++) {
-			dFitnessValue -= pow(abs(vCourseNumbers[i] - vCourseNumbers[j]), 2);
+	for (auto courseNumber1 : vCourseNumbers) {
+		for (auto courseNumber2 : vCourseNumbers) {
+			dFitnessValue -= pow(abs(courseNumber1 - courseNumber2), 2);
 		}
 	}
 

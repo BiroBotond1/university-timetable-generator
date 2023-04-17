@@ -20,6 +20,13 @@ double TeacherCatalog::GetFitnessValue() {
 				hasEmptyHours = true;
 				continue;
 			}
+
+			if (hasEmptyHours) {
+				hasEmptyHoursBetweenCourses++;
+				hasEmptyHours = false;
+				g_bActive = false;
+			}
+
 			coursesNumbers[nDay]++;
 
 			//a teacher can't work on ineligible date
@@ -28,21 +35,15 @@ double TeacherCatalog::GetFitnessValue() {
 				fitnessValue -= 10;
 				g_bActive = false;
 			}
-
-			if (hasEmptyHours) {
-				hasEmptyHoursBetweenCourses++;
-				hasEmptyHours = false;
-				g_bActive = false;
-			}
 		}
 		//no empty hours between courses
 		fitnessValue -= hasEmptyHoursBetweenCourses * 4;
 	}
 
 	//even hours
-	for (int i = 0; i < coursesNumbers.size(); i++) {
-		for (int j = 0; j < coursesNumbers.size(); j++) {
-			fitnessValue -= pow(abs(coursesNumbers[i] - coursesNumbers[j]), 2);
+	for (auto courseNumber1 : coursesNumbers) {
+		for (auto courseNumber2 : coursesNumbers) {
+			fitnessValue -= pow(abs(courseNumber1 - courseNumber2), 2);
 		}
 	}
 

@@ -39,6 +39,7 @@ router.post('/proba', async (req, res) => {
             let catalogs = JSON.parse(res)
             for(var classID in catalogs["classCatalogs"]) {
                 classService.addCatalog(classID, catalogs["classCatalogs"][classID])
+                console.log(catalogs["classCatalogs"][classID])
             }
             for(var teacherID in catalogs["teacherCatalogs"]) {
                 teacherService.addCatalog(teacherID, catalogs["teacherCatalogs"][teacherID])

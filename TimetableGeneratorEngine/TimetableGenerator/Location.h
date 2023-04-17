@@ -17,9 +17,6 @@ public:
 	std::vector<std::pair<int, int>>	GetReservedDates();
 	LocationCatalog			GetCatalog();
 	void					Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2);
-	/*
-	std::string				GetName();
-	int						GetClassHourID(int day1, int hour1);
-	void					SetClassHourID(int day, int hour, int classHour);
-	*/
+	void					DeleteClassHour(int p_nDay, int p_nHour);
+	void					SetClassHour(ClassHour p_classHour, int p_nDay, int p_nHour);
 };

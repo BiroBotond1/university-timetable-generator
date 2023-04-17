@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "HelperFunctions.h"
 
-ClassHour::ClassHour() {}
+ClassHour::ClassHour(): m_strID("") {}
 
 ClassHour::ClassHour(const nlohmann::json& jsonHour) {
 	m_strLocationID = "";
@@ -57,4 +57,16 @@ void ClassHour::AddClassHoursToCatalog() {
 
 std::string ClassHour::ToString() {
 	return g_subjects[m_strSubjectID].ToString();
+}
+
+bool ClassHour::IsEmpty() {
+	return m_strID.compare("") == 0;
+}
+
+std::string ClassHour::GetID() {
+	return m_strID;
+}
+
+void ClassHour::SetLocationID(std::string p_strLocationID) {
+	m_strLocationID = p_strLocationID;
 }

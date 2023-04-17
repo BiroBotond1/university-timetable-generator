@@ -16,8 +16,11 @@ public:
 	void AddClassHoursToCatalog();
 	bool HasLocation();
 	std::string ToString();
+	std::string GetID();
 	std::string GetSubjectID();
 	std::string GetTeacherID();
 	std::string GetClassID();
 	std::string GetLocationID();
+	void SetLocationID(std::string p_strLocationID);
+	bool		IsEmpty();
 };

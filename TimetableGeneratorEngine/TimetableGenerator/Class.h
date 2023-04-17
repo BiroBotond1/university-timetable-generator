@@ -18,8 +18,6 @@ public:
 	void				Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2);
 	std::string			GetTeacherID(int p_nDay, int p_nHour);
 	std::string			GetLocationID(int p_nDay, int p_nHour);
-	/*
-	std::string			GetName();
-	*/
+	void				SetClassHour(ClassHour p_classHour, int p_nDay, int p_nHour);
 };
 

@@ -43,17 +43,7 @@ TeacherCatalog Teacher::GetCatalog() {
 void Teacher::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
 	m_catalog.Change(p_nDay1, p_nHour1, p_nDay2, p_nHour2);
 }
-/*
 
-std::string Teacher::GetName() {
-	return m_strName;
+void Teacher::SetClassHour(ClassHour p_classHour, int p_nDay, int p_nHour) {
+	m_catalog.SetClassHour(p_classHour, p_nDay, p_nHour);
 }
-
-int Teacher::GetClassHourID(int day1, int hour1) {
-	return m_catalog.GetClassHourID(day1, hour1);
-}
-
-void Teacher::SetClassHourID(int day, int hour, int classHour) {
-	return m_catalog.SetClassHourID(day, hour, classHour);
-}
-*/
