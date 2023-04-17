@@ -1,6 +1,6 @@
 <template>
    <div>
-    <v-app-bar app clipped-left flat dark>
+    <v-app-bar app clipped-left clipped-right flat dark>
       <v-toolbar-title>
         TimetableGenerator
       </v-toolbar-title>

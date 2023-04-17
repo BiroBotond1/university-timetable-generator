@@ -19,3 +19,9 @@ exports.updateTeacher = async (id, teacher) => {
 exports.deleteTeacher = async (id) => {
     return await TeacherModel.findByIdAndRemove(id);
 }
+
+exports.addCatalog = async (id, catalog) => {
+    let teacher = await TeacherModel.findById(id);
+    teacher.catalog = catalog;
+    return await TeacherModel.findByIdAndUpdate(id, teacher);
+}

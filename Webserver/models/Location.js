@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const LocationSchema = new mongoose.Schema({
     name: String,
     reservedDates: [[Number]],
-    catalog: [[Number]]
+    catalog: [[String]]
 });
 
 exports.LocationSchema = LocationSchema;

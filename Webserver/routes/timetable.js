@@ -40,7 +40,12 @@ router.post('/proba', async (req, res) => {
             for(var classID in catalogs["classCatalogs"]) {
                 classService.addCatalog(classID, catalogs["classCatalogs"][classID])
             }
-            console.log(catalogs["classCatalogs"]["64345ae910265ba598272415"])
+            for(var teacherID in catalogs["teacherCatalogs"]) {
+                teacherService.addCatalog(teacherID, catalogs["teacherCatalogs"][teacherID])
+            }
+            for(var locationID in catalogs["locationCatalogs"]) {
+                locationService.addCatalog(locationID, catalogs["locationCatalogs"][locationID])
+            }
         }).catch(err => {
             console.log("os >>>", err)
         })

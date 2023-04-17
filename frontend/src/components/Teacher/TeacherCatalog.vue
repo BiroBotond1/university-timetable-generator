@@ -58,7 +58,7 @@ import Vue from 'vue'
             {hours: "14-15"},
             {hours: "15-16"}
         ],
-        classID: '',
+        teacherID: '',
         catalog:
            [["", "", "", "", "", "", "", ""],
            ["", "", "", "", "", "", "", ""],
@@ -75,7 +75,7 @@ import Vue from 'vue'
     },
 
     watch: {
-    async classID() {
+    async teacherID() {
        await this.fetchCatalog()
     }
   },
@@ -89,7 +89,7 @@ import Vue from 'vue'
         },
         async fetchCatalog() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/class/' + this.classID)
+          get('http://127.0.0.1:3000/api/teacher/' + this.teacherID)
           .catch(error => console.log(error))
           let catalogIDs = response.data.data.catalog
           for(var day = 0; day < this.catalog.length; day++)
