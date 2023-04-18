@@ -44,16 +44,11 @@ LocationCatalog Location::GetCatalog() {
 void Location::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
 	m_catalog.Change(p_nDay1, p_nHour1, p_nDay2, p_nHour2);
 }
-/*
-
-std::string Location::GetName() {
-	return m_strName;
+ 
+void Location::DeleteClassHour(int p_nDay, int p_nHour) {
+	m_catalog.DeleteClassHour(p_nDay, p_nHour);
 }
 
-int Location::GetClassHourID(int day1, int hour1) {
-	return m_catalog.GetClassHourID(day1, hour1);
+void Location::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {
+	m_catalog.SetClassHour(p_strClassHourID, p_strLocationID, p_nDay, p_nHour);
 }
-
-void Location::SetClassHourID(int day, int hour, int classHour) {
-	return m_catalog.SetClassHourID(day, hour, classHour);
-}*/

@@ -4,6 +4,7 @@
 
 Catalog::Catalog() {
 	m_catalog = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
+	m_locations = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
 }
 
 bool Catalog::IsFreeDay(int p_nDay, int p_nHour) {
@@ -40,6 +41,16 @@ void Catalog::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
 
 void Catalog::SetClassHourID(int p_nDay, int p_nHour, std::string p_strClassHourID) {
 	m_catalog[p_nDay][p_nHour] = p_strClassHourID;
+}
+
+void Catalog::DeleteClassHour(int p_nDay, int p_nHour) {
+	m_catalog[p_nDay][p_nHour] = "";
+	m_locations[p_nDay][p_nHour] = "";
+}
+
+void Catalog::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {
+	m_catalog[p_nDay][p_nHour] = p_strClassHourID;
+	m_locations[p_nDay][p_nHour] = p_strLocationID;
 }
 
 nlohmann::json Catalog::GetJSONObj() {

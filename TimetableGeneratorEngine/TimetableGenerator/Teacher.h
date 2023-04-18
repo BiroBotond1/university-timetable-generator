@@ -17,9 +17,5 @@ public:
 	std::vector<std::pair<int, int>> 	GetInappropriateDates();
 	TeacherCatalog						GetCatalog();
 	void								Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2);
-	/*
-	std::string							GetName();
-	std::string							GetClassHourID(int day1, int hour1);
-	void								SetClassHourID(int day, int hour, std::string classHour);
-	*/
+	void								SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour);
 };

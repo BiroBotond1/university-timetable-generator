@@ -22,6 +22,10 @@ bool ClassHour::HasLocation() {
 	return m_strLocationID.compare("");
 }
 
+std::string ClassHour::GetID() {
+	return m_strID;
+}
+
 std::string ClassHour::GetSubjectID() {
 	return m_strSubjectID;
 }
@@ -57,4 +61,8 @@ void ClassHour::AddClassHoursToCatalog() {
 
 std::string ClassHour::ToString() {
 	return g_subjects[m_strSubjectID].ToString();
+}
+
+void ClassHour::SetLocationID(std::string p_strLocationID) {
+	m_strLocationID = p_strLocationID;
 }

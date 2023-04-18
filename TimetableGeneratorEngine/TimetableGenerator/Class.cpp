@@ -45,3 +45,7 @@ std::string Class::GetLocationID(int p_nDay, int p_nHour) {
 		return "";
 	return g_classHours[m_catalog.GetClassHourID(p_nDay, p_nHour)].GetLocationID();
 }
+
+void Class::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {
+	m_catalog.SetClassHour(p_strClassHourID, p_strLocationID, p_nDay, p_nHour);
+}

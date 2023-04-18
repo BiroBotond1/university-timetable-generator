@@ -8,27 +8,27 @@
     class="border">
         <template v-slot:[`item.monday`]="{ item }"> 
             <v-label>
-                {{ catalog[0][convertHourToInt(item.hours)] }}
+                {{ catalog[0][convertHourToInt(item.hours)].name }}
             </v-label>
         </template>
         <template v-slot:[`item.tuesday`]="{ item }"> 
             <v-label>
-                {{ catalog[1][convertHourToInt(item.hours)] }}
+                {{ catalog[1][convertHourToInt(item.hours)].name }}
             </v-label>
         </template>
         <template v-slot:[`item.wednesday`]="{ item }"> 
             <v-label>
-                {{ catalog[2][convertHourToInt(item.hours)] }}
+                {{ catalog[2][convertHourToInt(item.hours)].name }}
             </v-label>
         </template>
         <template v-slot:[`item.thursday`]="{ item }"> 
             <v-label>
-                {{ catalog[3][convertHourToInt(item.hours)] }}
+                {{ catalog[3][convertHourToInt(item.hours)].name }}
             </v-label>
         </template>
         <template v-slot:[`item.friday`]="{ item }"> 
             <v-label>
-                {{ catalog[4][convertHourToInt(item.hours)] }}
+                {{ catalog[4][convertHourToInt(item.hours)].name }}
             </v-label>
         </template>
     </v-data-table>
@@ -77,6 +77,7 @@ import Vue from 'vue'
     watch: {
     async classID() {
        await this.fetchCatalog()
+       console.log(this.catalog)
     }
   },
 
@@ -103,7 +104,7 @@ import Vue from 'vue'
                     Vue.set(this.catalog[day], hour, '')
                 } else {
                     await this.fetchClassHour(catalogIDs[day][hour])
-                    Vue.set(this.catalog[day], hour, this.classHour.subject.name)
+                    Vue.set(this.catalog[day], hour, this.classHour.subject)
                 }
             }
           }
