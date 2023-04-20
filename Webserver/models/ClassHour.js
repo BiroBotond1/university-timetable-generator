@@ -9,7 +9,6 @@ const ClassHourSchema = new mongoose.Schema({
     class: ClassSchema,
     subject: SubjectSchema,
     teacher: TeacherSchema,
-    location: LocationSchema,
     weight: Number,
 });
 

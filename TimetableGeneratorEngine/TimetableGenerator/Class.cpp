@@ -43,7 +43,7 @@ std::string	Class::GetTeacherID(int p_nDay, int p_nHour) {
 std::string Class::GetLocationID(int p_nDay, int p_nHour) {
 	if (m_catalog.IsFreeDay(p_nDay, p_nHour))
 		return "";
-	return g_classHours[m_catalog.GetClassHourID(p_nDay, p_nHour)].GetLocationID();
+	return m_catalog.GetLocationID(p_nDay, p_nHour);
 }
 
 void Class::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {

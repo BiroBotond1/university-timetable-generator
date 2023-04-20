@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const TeacherSchema = new mongoose.Schema({
     name: String,
     inappropriateDates: [[Number]],
-    catalog: [[String]]
+    catalog: [[{classID: String,
+        subjectID: String,
+        teacherID: String,
+        locationID: String}]]
 });
 
 exports.TeacherSchema = TeacherSchema;

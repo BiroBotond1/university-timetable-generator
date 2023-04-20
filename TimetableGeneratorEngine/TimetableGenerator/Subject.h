@@ -11,8 +11,5 @@ public:
 	Subject(const nlohmann::json& jsonSubject);
 	bool HasLocations();
 	std::string GetRandomLocationID();
-	std::string	ToString();
-	/*std::string GetName();
-	*/
 };
 

@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
+const ClassHourInCatalogSchema = require('./ClassHourInCatalog')
 
 const ClassSchema = new mongoose.Schema({
     name: String,
-    catalog: [[String]]
+    catalog: [[{classID: String,
+        subjectID: String,
+        teacherID: String,
+        locationID: String}]]
 });
 
 exports.ClassSchema = ClassSchema;

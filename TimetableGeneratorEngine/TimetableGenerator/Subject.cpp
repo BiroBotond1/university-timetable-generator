@@ -18,12 +18,3 @@ bool Subject::HasLocations() {
 std::string Subject::GetRandomLocationID() {
 	return m_locationIDs[RandInt(0, int(m_locationIDs.size() - 1))];
 }
-
-
-std::string	Subject::ToString() {
-	return m_strName;
-}
-/*
-std::string Subject::GetName() {
-	return m_strName;
-}*/

@@ -8,27 +8,27 @@
     class="border">
         <template v-slot:[`item.monday`]="{ item }"> 
             <v-label>
-                {{ catalog[0][convertHourToInt(item.hours)] }}
+                {{ catalog[0][convertHourToInt(item.hours)].subject }}
             </v-label>
         </template>
         <template v-slot:[`item.tuesday`]="{ item }"> 
             <v-label>
-                {{ catalog[1][convertHourToInt(item.hours)] }}
+                {{ catalog[1][convertHourToInt(item.hours)].subject }}
             </v-label>
         </template>
         <template v-slot:[`item.wednesday`]="{ item }"> 
             <v-label>
-                {{ catalog[2][convertHourToInt(item.hours)] }}
+                {{ catalog[2][convertHourToInt(item.hours)].subject }}
             </v-label>
         </template>
         <template v-slot:[`item.thursday`]="{ item }"> 
             <v-label>
-                {{ catalog[3][convertHourToInt(item.hours)] }}
+                {{ catalog[3][convertHourToInt(item.hours)].subject }}
             </v-label>
         </template>
         <template v-slot:[`item.friday`]="{ item }"> 
             <v-label>
-                {{ catalog[4][convertHourToInt(item.hours)] }}
+                {{ catalog[4][convertHourToInt(item.hours)].subject }}
             </v-label>
         </template>
     </v-data-table>
@@ -59,6 +59,9 @@ import Vue from 'vue'
             {hours: "15-16"}
         ],
         locationID: '',
+        teachers: [],
+        locations: [],
+        classes: [],
         catalog:
            [["", "", "", "", "", "", "", ""],
            ["", "", "", "", "", "", "", ""],
@@ -66,7 +69,6 @@ import Vue from 'vue'
            ["", "", "", "", "", "", "", ""],
            ["", "", "", "", "", "", "", ""]],
         active: true,
-        classHour: {}
       }
     },
 
@@ -81,30 +83,68 @@ import Vue from 'vue'
   },
 
     methods: {
-        async fetchClassHour(id) {
+        async fetchSubjects() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/classHour/' + id)
+          get('http://127.0.0.1:3000/api/subject')
           .catch(error => console.log(error))
-          this.classHour = response.data.data
+          this.subjects = response.data.data
+        },
+        async fetchTeachers() {
+          let response = await axios.
+          get('http://127.0.0.1:3000/api/teacher')
+          .catch(error => console.log(error))
+          this.teachers = response.data.data
+        },
+        async fetchClasses() {
+          let response = await axios.
+          get('http://127.0.0.1:3000/api/class')
+          .catch(error => console.log(error))
+          this.classes = response.data.data
         },
         async fetchCatalog() {
+          await this.fetchClasses()
+          await this.fetchSubjects()
+          await this.fetchTeachers()
           let response = await axios.
           get('http://127.0.0.1:3000/api/location/' + this.locationID)
           .catch(error => console.log(error))
-          let catalogIDs = response.data.data.catalog
+          let catalogClassHours = response.data.data.catalog
           for(var day = 0; day < this.catalog.length; day++)
           {
             for(var hour = 0; hour < this.catalog[day].length; hour++) {
-                if(!catalogIDs) {
-                    Vue.set(this.catalog[day], hour, '')
+                let classHour = {}
+                if(!catalogClassHours) {
+                    classHour.subject = ''
+                    classHour.class = ''
+                    classHour.teacher = ''
+                    Vue.set(this.catalog[day], hour, classHour)
                     continue
                 }
-                if(catalogIDs[day][hour] === '') {
-                    Vue.set(this.catalog[day], hour, '')
+                if (catalogClassHours[day][hour] === '') {
+                    classHour.subject = ''
+                    classHour.class = ''
+                    classHour.teacher = ''
                 } else {
-                    await this.fetchClassHour(catalogIDs[day][hour])
-                    Vue.set(this.catalog[day], hour, this.classHour.subject.name)
+                    for (const subject of this.subjects) {
+                        if(subject._id === catalogClassHours[day][hour].subjectID)
+                        {
+                            classHour.subject = subject.name
+                        }
+                    }
+                    for (const clas of this.classes) {
+                        if(clas._id === catalogClassHours[day][hour].classID)
+                        {
+                            classHour.class = clas.name
+                        }
+                    }
+                    for (const teacher of this.teachers) {
+                        if(teacher._id === catalogClassHours[day][hour].teacherID)
+                        {
+                            classHour.teacher = teacher.name
+                        }
+                    }
                 }
+                Vue.set(this.catalog[day], hour, classHour)
             }
           }
         },

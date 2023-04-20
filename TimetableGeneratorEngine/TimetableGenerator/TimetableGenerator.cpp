@@ -15,11 +15,9 @@ void Read(std::string fileName) {
     g_initialTemperature = data["InitialTemperature"];
     for (auto jsonTeacher : data["teachers"]) {
         g_teachers[jsonTeacher["_id"]] = Teacher{jsonTeacher};
-        g_teacherIDs.push_back(jsonTeacher["_id"]);
     }
     for (auto jsonLocation : data["locations"]) {
         g_locations[jsonLocation["_id"]] = Location{jsonLocation};
-        g_locationIDs.push_back(jsonLocation["_id"]);
     }
     for (auto jsonClass : data["classes"]) {
         g_classes[jsonClass["_id"]] = Class{jsonClass};
@@ -27,11 +25,9 @@ void Read(std::string fileName) {
     }
     for (auto jsonSubject : data["subjects"]) {
         g_subjects[jsonSubject["_id"]] = Subject{jsonSubject};
-        g_subjectIDs.push_back(jsonSubject["_id"]);
     }
     for (auto jsonClassHour : data["classHours"]) {
         g_classHours[jsonClassHour["_id"]] = ClassHour{jsonClassHour};
-        g_classHourIDs.push_back(jsonClassHour["_id"]);
     }
 }
 
@@ -64,7 +60,6 @@ double Fitness() {
 }
 
 void WriteCatalog() {
-    //std::ofstream fout("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/out.json");
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
     for (auto clas : g_classes) {
         classCatalogs[clas.first] = clas.second.GetCatalog().GetJSONObj();
@@ -79,18 +74,15 @@ void WriteCatalog() {
     res["teacherCatalogs"] = teacherCatalogs;
     res["locationCatalogs"] = locationsCatalogs;
     std::cout << res;
-    //g_classes["64345afe10265ba59827241e"].GetCatalog().Write();
-    //g_teachers[0].GetCatalog().Write();
 }
 
 bool ChangeLocations(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, std::string p_strLocationID, ClassHour p_classHour, int p_nDay, int p_nHour) {
-    std::string oldLocationID = p_classHour.GetLocationID();
     std::string classID = p_classHour.GetClassID();
+    std::string oldLocationID = p_classes[classID].GetCatalog().GetLocationID(p_nDay, p_nHour);
     std::string teacherID = p_classHour.GetTeacherID();
     if (!p_locations[p_strLocationID].GetCatalog().IsFreeDay(p_nDay, p_nHour)) {
         return false;
     }
-    //p_classHour.SetLocationID(p_strLocationID);
     p_locations[oldLocationID].DeleteClassHour(p_nDay, p_nHour);
     p_classes[classID].SetClassHour(p_classHour.GetID(), p_strLocationID, p_nDay, p_nHour);
     p_teachers[teacherID].SetClassHour(p_classHour.GetID(), p_strLocationID, p_nDay, p_nHour);
@@ -211,10 +203,10 @@ int main()
     Fitness();
     //WriteCatalog();
     //std::cout << "-----------------------------------------" << std::endl;
-    auto t_start = std::chrono::high_resolution_clock::now();
+    //auto t_start = std::chrono::high_resolution_clock::now();
     SimulatedAnnealing();
-    auto t_end = std::chrono::high_resolution_clock::now();
+    //auto t_end = std::chrono::high_resolution_clock::now();
     WriteCatalog();
-    double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+    //double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
     //std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }
