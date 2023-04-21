@@ -39,7 +39,7 @@ double ClassCatalog::GetFitnessValue() {
 		dFitnessValue -= hasEmptyHoursBetweenCourses * 10;
 
 		//just 1 type of course on each day
-		for (auto courseNumber: mCourseNumberOnADay) {
+		for (auto &courseNumber: mCourseNumberOnADay) {
 			if (courseNumber.second > 1) {
 				dFitnessValue -= courseNumber.second * 2;
 				g_bActive = false;

@@ -7,30 +7,19 @@
     :items="items"
     class="border">
         <template v-slot:[`item.monday`]="{ item }"> 
-            <v-label>
-                {{ catalog[0][convertHourToInt(item.hours)].subject }}
-            </v-label>
+            <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]" />
         </template>
         <template v-slot:[`item.tuesday`]="{ item }"> 
-            <v-label>
-                {{ catalog[1][convertHourToInt(item.hours)].subject }}
-            </v-label>
+            <ClassHourComponent :hour="catalog[1][convertHourToInt(item.hours)]" />
         </template>
         <template v-slot:[`item.wednesday`]="{ item }"> 
-            <v-label>
-                {{ catalog[2][convertHourToInt(item.hours)].subject }}
-            </v-label>
+            <ClassHourComponent :hour="catalog[2][convertHourToInt(item.hours)]" />
         </template>
         <template v-slot:[`item.thursday`]="{ item }"> 
-            <v-label>
-                {{ catalog[3][convertHourToInt(item.hours)].subject }}
-            </v-label>
+            <ClassHourComponent :hour="catalog[3][convertHourToInt(item.hours)]" />
         </template>
         <template v-slot:[`item.friday`]="{ item }"> 
-            <v-label>
-                {{ catalog[4][convertHourToInt(item.hours)].subject }}
-                {{ catalog[4][convertHourToInt(item.hours)].teacher }}
-            </v-label>
+            <ClassHourComponent :hour="catalog[4][convertHourToInt(item.hours)]" />
         </template>
     </v-data-table>
  </template>
@@ -38,6 +27,8 @@
  <script>
 import axios from 'axios'
 import Vue from 'vue'
+import ClassHourComponent from '../ClassHour.vue'
+
  export default {
     data () {
       return {
@@ -77,10 +68,14 @@ import Vue from 'vue'
       await this.fetchCatalog()
     },
 
+    components: {
+        ClassHourComponent
+    },
+
     watch: {
     async classID() {
        await this.fetchCatalog()
-    }
+    },
   },
 
     methods: {
