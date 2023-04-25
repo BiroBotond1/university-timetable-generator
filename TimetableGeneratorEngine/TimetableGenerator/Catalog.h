@@ -20,4 +20,7 @@ public:
 	std::string GetLocationID(int p_nDay, int p_nHour);
 	void SetLocationID(std::string p_strLocationID, int p_nDay, int p_nHour);
 	nlohmann::json GetJSONObj();
+	double GetEvenDaysFitness(const std::vector<int>& coursesNumber);
+	double GetNoHoleHoursFitness(bool& p_bHasEmptyHours);
+	double GetInactiveDaysFitness(int p_nDay, int p_nHour, const std::vector<std::pair<int, int>>& p_inactiveDays);
 };

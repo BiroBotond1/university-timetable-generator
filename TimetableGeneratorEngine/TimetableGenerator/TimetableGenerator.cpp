@@ -13,6 +13,12 @@ void Read(std::string fileName) {
     g_changeNumber = data["ChangesNumber"];
     g_maxIteration = data["MaxIteration"];
     g_initialTemperature = data["InitialTemperature"];
+    g_bClassCatalogOneTypeOfCourseOnADay = data["OneTypeOfCourseOnADayClass"].get<bool>();
+    g_bClassCatalogCoursesStartsAtEight = data["ClassCoursesStartsAtEight"].get<bool>();
+    g_bClassCatalogNoHoleHour = data["NoHoleHoursInClass"].get<bool>();
+    g_bClassCatalogEvenHours = data["EvenHoursInClass"].get<bool>();
+    g_bTeacherCatalogNoHoleHour = data["NoHoleHoursInTeacher"].get<bool>();
+    g_bTeacherCatalogEvenHours = data["EvenHoursInTeacher"].get<bool>();
     for (auto jsonTeacher : data["teachers"]) {
         g_teachers[jsonTeacher["_id"]] = Teacher{jsonTeacher};
     }
@@ -203,10 +209,10 @@ int main()
     Fitness();
     //WriteCatalog();
     //std::cout << "-----------------------------------------" << std::endl;
-    //auto t_start = std::chrono::high_resolution_clock::now();
+    auto t_start = std::chrono::high_resolution_clock::now();
     SimulatedAnnealing();
-    //auto t_end = std::chrono::high_resolution_clock::now();
+    auto t_end = std::chrono::high_resolution_clock::now();
     WriteCatalog();
-    //double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+    double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
     //std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

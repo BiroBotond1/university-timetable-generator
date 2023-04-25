@@ -63,3 +63,35 @@ nlohmann::json Catalog::GetJSONObj() {
 	}
 	return json;
 }
+
+//even hours
+double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber) {
+	double dFitness = 0;
+	for (int i = 0; i < p_coursesNumber.size(); i++) {
+		for (int j = 0; j < p_coursesNumber.size(); j++) {
+			dFitness -= pow(abs(p_coursesNumber[i] - p_coursesNumber[j]), 2);
+		}
+	}
+	return dFitness;
+}
+
+//no empty hours between courses
+double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
+{
+	if (!p_bHasEmptyHours)
+		return 0;
+
+	p_bHasEmptyHours = false;
+	g_bActive = false;
+	return -4;
+}
+
+//can t put days on ineligible days
+double Catalog::GetInactiveDaysFitness(int p_nDay, int p_nHour, const std::vector<std::pair<int, int>>& p_inactiveDays) {
+	auto date = std::make_pair(p_nDay, p_nHour);
+	if (std::find(p_inactiveDays.begin(), p_inactiveDays.end(), date) != p_inactiveDays.end()) {
+		g_bActive = false;
+		return -10;
+	}
+	return 0;
+}
