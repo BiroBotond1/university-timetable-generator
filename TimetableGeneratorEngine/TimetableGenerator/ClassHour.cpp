@@ -2,8 +2,6 @@
 #include "Global.h"
 #include "HelperFunctions.h"
 
-ClassHour::ClassHour() {}
-
 ClassHour::ClassHour(const nlohmann::json& jsonHour) {
 	m_strID = jsonHour["_id"].get<std::string>();
 	m_nNumber = jsonHour["number"];
@@ -15,22 +13,6 @@ ClassHour::ClassHour(const nlohmann::json& jsonHour) {
 
 bool ClassHour::HasLocation() {
 	return g_subjects[m_strSubjectID].HasLocations();
-}
-
-std::string ClassHour::GetID() {
-	return m_strID;
-}
-
-std::string ClassHour::GetSubjectID() {
-	return m_strSubjectID;
-}
-
-std::string ClassHour::GetTeacherID() {
-	return m_strTeacherID;
-}
-
-std::string ClassHour::GetClassID() {
-	return m_strClassID;
 }
 
 void ClassHour::AddClassHoursToCatalog() {

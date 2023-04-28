@@ -68,13 +68,13 @@ double Fitness() {
 void WriteCatalog() {
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
     for (auto clas : g_classes) {
-        classCatalogs[clas.first] = clas.second.GetCatalog().GetJSONObj();
+        classCatalogs[clas.first] = clas.second.GetCatalog()->GetJSONObj();
     }
     for (auto teacher : g_teachers) {
-        teacherCatalogs[teacher.first] = teacher.second.GetCatalog().GetJSONObj();
+        teacherCatalogs[teacher.first] = teacher.second.GetCatalog()->GetJSONObj();
     }
     for (auto location : g_locations) {
-        locationsCatalogs[location.first] = location.second.GetCatalog().GetJSONObj();
+        locationsCatalogs[location.first] = location.second.GetCatalog()->GetJSONObj();
     }
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
@@ -84,9 +84,9 @@ void WriteCatalog() {
 
 bool ChangeLocations(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, std::string p_strLocationID, ClassHour p_classHour, int p_nDay, int p_nHour) {
     std::string classID = p_classHour.GetClassID();
-    std::string oldLocationID = p_classes[classID].GetCatalog().GetLocationID(p_nDay, p_nHour);
+    std::string oldLocationID = p_classes[classID].GetCatalog()->GetLocationID(p_nDay, p_nHour);
     std::string teacherID = p_classHour.GetTeacherID();
-    if (!p_locations[p_strLocationID].GetCatalog().IsFreeDay(p_nDay, p_nHour)) {
+    if (!p_locations[p_strLocationID].GetCatalog()->IsFreeDay(p_nDay, p_nHour)) {
         return false;
     }
     p_locations[oldLocationID].DeleteClassHour(p_nDay, p_nHour);
