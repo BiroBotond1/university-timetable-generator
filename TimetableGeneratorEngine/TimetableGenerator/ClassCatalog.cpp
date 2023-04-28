@@ -24,7 +24,10 @@ double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::str
 }
 
 double ClassCatalog::GetFitnessValue() {
-	double dFitness = 0;
+	if (!m_bChanged)
+		return m_dFitness;
+
+	m_dFitness = 0;
 	std::vector<int> vCourseNumbers(m_catalog.size(), 0);
 	g_bActive = true;
 
@@ -44,11 +47,11 @@ double ClassCatalog::GetFitnessValue() {
 				AddCourseNumberOnADay(m_catalog[nDay][nHour], mCourseNumberOnADay);
 
 			if (g_bClassCatalogNoHoleHour)
-				dFitness += GetNoHoleHoursFitness(hasEmptyHours);
+				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours);
 
 			//the courses starts at 8
 			if(g_bClassCatalogCoursesStartsAtEight)
-				dFitness += std::abs(nDay - 8);
+				m_dFitness += std::abs(nDay - 8);
 		}
 
 		if(g_bClassCatalogOneTypeOfCourseOnADay)
@@ -56,11 +59,12 @@ double ClassCatalog::GetFitnessValue() {
 	}
 
 	if (g_bClassCatalogEvenHours)
-		dFitness += GetEvenDaysFitness(vCourseNumbers);
+		m_dFitness += GetEvenDaysFitness(vCourseNumbers);
 
 	if (g_bActive) {
-		dFitness += 1000;
+		m_dFitness += 1000;
 	}
 
-	return dFitness;
+	m_bChanged = false;
+	return m_dFitness;
 }

@@ -38,23 +38,23 @@ void Read(std::string fileName) {
 }
 
 void InitCatalogs() {
-    for (auto classHour : g_classHours)
+    for (auto &classHour : g_classHours)
     {
         classHour.second.AddClassHoursToCatalog();
     }
 }
 
-double Fitness(std::unordered_map<std::string, Class> p_classes, std::unordered_map<std::string, Teacher> p_teachers, std::unordered_map<std::string, Location> p_locations) {
+double Fitness(std::unordered_map<std::string, Class> &p_classes, std::unordered_map<std::string, Teacher> &p_teachers, std::unordered_map<std::string, Location> &p_locations) {
     double fitnessValue = 0;
-    for (auto clas : p_classes)
+    for (auto &clas : p_classes)
     {
         fitnessValue += clas.second.GetFitnessValue();
     }
-    for (auto teacher : p_teachers)
+    for (auto &teacher : p_teachers)
     {
         fitnessValue += teacher.second.GetFitnessValue();
     }
-    for (auto location : p_locations)
+    for (auto &location : p_locations)
     {
         fitnessValue += location.second.GetFitnessValue();
     }
@@ -207,6 +207,7 @@ int main()
     Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
     InitCatalogs();
     Fitness();
+    //Fitness();
     //WriteCatalog();
     //std::cout << "-----------------------------------------" << std::endl;
     auto t_start = std::chrono::high_resolution_clock::now();
@@ -214,5 +215,5 @@ int main()
     auto t_end = std::chrono::high_resolution_clock::now();
     WriteCatalog();
     double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-    //std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
+   // std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

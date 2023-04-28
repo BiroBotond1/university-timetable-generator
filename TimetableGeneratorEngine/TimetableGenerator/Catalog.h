@@ -6,6 +6,8 @@
 class Catalog
 {
 protected:
+	bool m_bChanged;
+	double m_dFitness;
 	std::vector<std::vector<std::string>> m_catalog;
 	std::vector<std::vector<std::string>> m_locations;
 public:

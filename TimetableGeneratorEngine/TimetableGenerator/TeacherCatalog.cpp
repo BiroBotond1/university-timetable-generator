@@ -6,7 +6,10 @@ TeacherCatalog::TeacherCatalog() {};
 TeacherCatalog::TeacherCatalog(std::string p_strTeacherID) : m_strTeacherID(p_strTeacherID) {}
 
 double TeacherCatalog::GetFitnessValue() {
-	double dFitness = 0;
+	if (!m_bChanged)
+		return m_dFitness;
+
+	m_dFitness = 0;
 	g_bActive = true;
 	std::vector<int> coursesNumbers(m_catalog.size(), 0);
 
@@ -21,19 +24,20 @@ double TeacherCatalog::GetFitnessValue() {
 
 			coursesNumbers[nDay]++;
 			
-			dFitness += GetInactiveDaysFitness(nDay, nHour, g_teachers[m_strTeacherID].GetInappropriateDates());
+			m_dFitness += GetInactiveDaysFitness(nDay, nHour, g_teachers[m_strTeacherID].GetInappropriateDates());
 
 			if (g_bTeacherCatalogNoHoleHour)
-				dFitness += GetNoHoleHoursFitness(hasEmptyHours);
+				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours);
 		}
 	}
 	
 	if (g_bTeacherCatalogEvenHours)
-		dFitness += GetEvenDaysFitness(coursesNumbers);
+		m_dFitness += GetEvenDaysFitness(coursesNumbers);
 
 	if (g_bActive) {
-		dFitness += 1000;
+		m_dFitness += 1000;
 	}
 
-	return dFitness;
+	m_bChanged = false;
+	return m_dFitness;
 }

@@ -3,6 +3,8 @@
 
 
 Catalog::Catalog() {
+	m_bChanged = true;
+	m_dFitness = 0;
 	m_catalog = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
 	m_locations = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
 }
@@ -20,6 +22,7 @@ std::string Catalog::GetClassHourID(int p_nDay, int p_nHour) {
 }
 
 void Catalog::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
+	m_bChanged = true;
 	std::string strClassHourID = m_catalog[p_nDay1][p_nHour1];
 	m_catalog[p_nDay1][p_nHour1] = m_catalog[p_nDay2][p_nHour2];
 	m_catalog[p_nDay2][p_nHour2] = strClassHourID;
@@ -35,6 +38,7 @@ void Catalog::DeleteClassHour(int p_nDay, int p_nHour) {
 }
 
 void Catalog::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {
+	m_bChanged = true;
 	m_catalog[p_nDay][p_nHour] = p_strClassHourID;
 	m_locations[p_nDay][p_nHour] = p_strLocationID;
 }
