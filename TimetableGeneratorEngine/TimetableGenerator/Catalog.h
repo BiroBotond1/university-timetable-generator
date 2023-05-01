@@ -12,6 +12,7 @@ protected:
 	std::vector<std::vector<std::string>> m_locations;
 public:
 	Catalog();
+	Catalog(const Catalog& rhsCatalog);
 	bool IsFreeDay(int p_nDay, int p_nHour);
 	void Add(int p_nDay, int p_nHour, std::string p_strSubCourseID);
 	virtual double GetFitnessValue() = 0;

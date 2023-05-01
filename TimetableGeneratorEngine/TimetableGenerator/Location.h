@@ -12,4 +12,5 @@ public:
 	Location(const nlohmann::json& jsonLocation);
 	std::vector<std::pair<int, int>>	GetReservedDates();
 	void								DeleteClassHour(int p_nDay, int p_nHour);
+	void operator=(const Location& rhsLocation);
 };

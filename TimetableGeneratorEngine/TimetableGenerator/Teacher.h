@@ -11,4 +11,5 @@ public:
 	Teacher() {}
 	Teacher(const nlohmann::json& jsonTeacher);
 	std::vector<std::pair<int, int>> 	GetInappropriateDates();
+	void operator=(const Teacher& rhsTeacher);
 };

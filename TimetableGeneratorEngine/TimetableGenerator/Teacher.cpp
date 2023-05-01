@@ -3,7 +3,7 @@
 
 Teacher::Teacher(const nlohmann::json &jsonTeacher) {
 	m_strID = jsonTeacher["_id"].get<std::string>();
-	m_catalog = std::make_shared<TeacherCatalog>(TeacherCatalog{ m_strID });
+	m_catalog = new TeacherCatalog{ m_strID };
 	m_strName = jsonTeacher["name"].get<std::string>();
 	int nDay = 0, nHour;
 	for (auto hours : jsonTeacher["inappropriateDates"])
@@ -21,4 +21,11 @@ Teacher::Teacher(const nlohmann::json &jsonTeacher) {
 
 std::vector<std::pair<int, int>> Teacher::GetInappropriateDates() {
 	return m_vInappropriateDates;
+}
+
+void Teacher::operator=(const Teacher& rhsTeacher) {
+	m_strID = rhsTeacher.m_strID;
+	m_strName = rhsTeacher.m_strName;
+	m_vInappropriateDates = rhsTeacher.m_vInappropriateDates;
+	m_catalog = new TeacherCatalog(*rhsTeacher.m_catalog, m_strID);
 }

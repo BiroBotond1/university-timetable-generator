@@ -165,7 +165,6 @@ double LinearAnnealing(int i) {
     return g_initialTemperature / (1 + 0.5 * i);
 }
 
-
 void SimulatedAnnealing() {
     std::unordered_map<std::string, Class> p_classesBest = g_classes;
     std::unordered_map<std::string, Teacher> p_teachersBest = g_teachers;
@@ -200,7 +199,6 @@ void SimulatedAnnealing() {
     g_teachers = p_teachersBest;
     g_locations = p_locationsBest;
 }
-
 
 int main()
 {

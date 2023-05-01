@@ -5,6 +5,9 @@ TeacherCatalog::TeacherCatalog() {};
 
 TeacherCatalog::TeacherCatalog(std::string p_strTeacherID) : m_strTeacherID(p_strTeacherID) {}
 
+TeacherCatalog::TeacherCatalog(const Catalog& rhsTeacherCatalog, std::string p_strTeacherID)
+	: Catalog(rhsTeacherCatalog), m_strTeacherID(p_strTeacherID) {}
+
 double TeacherCatalog::GetFitnessValue() {
 	if (!m_bChanged)
 		return m_dFitness;

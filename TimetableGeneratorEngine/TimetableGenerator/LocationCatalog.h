@@ -9,6 +9,7 @@ private:
 public:
 	LocationCatalog();
 	LocationCatalog(std::string p_strLocationID);
+	LocationCatalog(const Catalog& rhsLocationCatalog, std::string p_strLocationID);
 	double GetFitnessValue() override;
 };
 

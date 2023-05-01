@@ -1,7 +1,9 @@
 #include "ClassCatalog.h"
 #include "Global.h"
 
-ClassCatalog::ClassCatalog() : m_nCourseNumber(0) {}
+ClassCatalog::ClassCatalog() {}
+
+ClassCatalog::ClassCatalog(const Catalog& rhsClassCatalog) : Catalog(rhsClassCatalog) {}
 
 void ClassCatalog::AddCourseNumberOnADay(std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay) {
 	if (p_mCourseNumberOnADay.find(strClassHourID) != p_mCourseNumberOnADay.end())

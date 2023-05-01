@@ -9,6 +9,13 @@ Catalog::Catalog() {
 	m_locations = std::vector<std::vector<std::string>>(DAY_COUNT, std::vector<std::string>(HOUR_COUNT, ""));
 }
 
+Catalog::Catalog(const Catalog& rhsCatalog) {
+	m_bChanged = rhsCatalog.m_bChanged;
+	m_dFitness = rhsCatalog.m_dFitness;
+	m_catalog = rhsCatalog.m_catalog;
+	m_locations = rhsCatalog.m_locations;
+}
+
 bool Catalog::IsFreeDay(int p_nDay, int p_nHour) {
 	return m_catalog[p_nDay][p_nHour].compare("") == 0;
 }

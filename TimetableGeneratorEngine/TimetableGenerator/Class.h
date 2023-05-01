@@ -11,5 +11,6 @@ public:
 	std::string			GetClassHourID(int p_nDay, int p_nHour);
 	std::string			GetTeacherID(int p_nDay, int p_nHour);
 	std::string			GetLocationID(int p_nDay, int p_nHour);
+	void operator=(const Class& rhsClass);
 };
 
