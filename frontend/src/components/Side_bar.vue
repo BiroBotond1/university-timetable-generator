@@ -5,6 +5,16 @@
         TimetableGenerator
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-progress-circular v-if="generating"
+      :width="8"
+      indeterminate
+      color="white"
+    ></v-progress-circular>
+    <v-alert v-if="notification"
+    color="success"
+    icon="$success"
+    density="compact">
+      Generating is done!"</v-alert>
     </v-app-bar>
 
     <v-navigation-drawer 
@@ -25,7 +35,8 @@
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
-          <v-list-item v-for="item in catalogItems" :key="item.title" link :to="item.route">
+          <v-list-item v-for="item in catalogItems" 
+          :key="item.title" link :to="item.route" :disabled = generating>
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -40,6 +51,9 @@
 </template>
 
 <script>
+
+import store from '../store/index.js';
+
 export default {
   name: 'App',
   data: () => ({
@@ -55,11 +69,18 @@ export default {
     { title: 'Class Catalogs', icon: 'mdi-calendar-clock-outline', route: '/classCatalogs' },
     { title: 'Teacher Catalogs', icon: 'mdi-calendar-account-outline', route: '/teacherCatalogs' },
     { title: 'Location Catalogs', icon: 'mdi-file-marker', route: '/locationCatalogs' },
-    ]
+    ],
   }),
+  computed: {
+    generating () {
+      return store.getters.getGeneration
+    },
+    notification () {
+      return store.getters.getNotification
+    },
+  },
 };
 </script>
 
 <style>
-
 </style>

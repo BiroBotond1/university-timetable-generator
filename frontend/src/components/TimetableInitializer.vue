@@ -80,6 +80,12 @@
                 label="Even hours through the week in teacher catalogs"
                 ></v-switch>
             </v-row>
+            <v-row>
+                <v-switch
+                v-model="coursesWeightInClass"
+                label="Courses weight in class catalogs"
+                ></v-switch>
+            </v-row>
             <v-btn type="submit" block class="mt-2" :disabled="!valid">Submit</v-btn>
             <v-btn block class="mt-2" @click="reset">
             clear
@@ -90,6 +96,7 @@
 
 <script>
 import axios from 'axios'
+import store from '../store/index.js';
 
 export default {
     name: 'TimetableInitializer',
@@ -102,6 +109,7 @@ export default {
         evenHoursInClass: true,
         noHoleHoursInTeacher: true,
         evenHoursInTeacher: true,
+        coursesWeightInClass: true,
         changesNumber: null,
         maxIteration: null,
         initialTemperature: null,
@@ -130,6 +138,7 @@ export default {
 
     methods: {
       async submit () {
+        store.commit('IsGenerating');
         const params = {
         ChangesNumber: this.changesNumber,
         MaxIteration: this.maxIteration,
@@ -140,12 +149,15 @@ export default {
         EvenHoursInClass: this.evenHoursInClass,
         NoHoleHoursInTeacher: this.noHoleHoursInTeacher,
         EvenHoursInTeacher: this.evenHoursInTeacher,
+        CoursesWeightInClass: this.coursesWeightInClass,
         }
-
-        axios
+        await axios
             .post('http://127.0.0.1:3000/timetable/proba', params)
             .catch(error => console.log(error));
-            
+        store.commit('GenerationDone');
+        store.state.notification = true
+        setTimeout(() => store.state.notification = false, 5000);
+
       },
       reset () {
         this.$refs.form.reset()

@@ -52,8 +52,12 @@ double ClassCatalog::GetFitnessValue() {
 				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours);
 
 			//the courses starts at 8
-			if(g_bClassCatalogCoursesStartsAtEight)
-				m_dFitness += std::abs(nDay - 8);
+			if (g_bClassCatalogCoursesStartsAtEight) {
+				if(g_bClassCatalogCoursesWeight) 
+					m_dFitness += std::abs(nDay - 8) * g_classHours[m_catalog[nDay][nHour]].GetWeight();
+				else 
+					m_dFitness += std::abs(nDay - 8);
+			}
 		}
 
 		if(g_bClassCatalogOneTypeOfCourseOnADay)

@@ -19,6 +19,7 @@ void Read(std::string fileName) {
     g_bClassCatalogEvenHours = data["EvenHoursInClass"].get<bool>();
     g_bTeacherCatalogNoHoleHour = data["NoHoleHoursInTeacher"].get<bool>();
     g_bTeacherCatalogEvenHours = data["EvenHoursInTeacher"].get<bool>();
+    g_bClassCatalogCoursesWeight = data["CoursesWeightInClass"].get<bool>();
     for (auto jsonTeacher : data["teachers"]) {
         g_teachers[jsonTeacher["_id"]] = Teacher{jsonTeacher};
     }
@@ -213,5 +214,5 @@ int main()
     auto t_end = std::chrono::high_resolution_clock::now();
     WriteCatalog();
     double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-   // std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
+    //std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

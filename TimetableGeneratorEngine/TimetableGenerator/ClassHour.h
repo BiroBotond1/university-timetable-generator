@@ -16,5 +16,6 @@ public:
 	std::string GetSubjectID() { return m_strSubjectID; }
 	std::string GetTeacherID() { return m_strTeacherID; }
 	std::string GetClassID() { return m_strClassID; }
+	double GetWeight() { return m_dWeight; }
 	bool HasLocation();
 };

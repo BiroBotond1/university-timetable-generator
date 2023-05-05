@@ -16,3 +16,4 @@ bool										g_bClassCatalogEvenHours;
 bool										g_bClassCatalogNoHoleHour;
 bool										g_bClassCatalogOneTypeOfCourseOnADay;
 bool										g_bClassCatalogCoursesStartsAtEight;
+bool										g_bClassCatalogCoursesWeight;

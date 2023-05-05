@@ -10,7 +10,7 @@
 #define HOUR_COUNT 8
 #define START_HOUR 8
 
-extern std::unordered_map<std::string,Teacher>		g_teachers;
+extern std::unordered_map<std::string, Teacher>		g_teachers;
 extern std::unordered_map<std::string, Location>	g_locations;
 extern std::unordered_map<std::string, Class>		g_classes;
 extern std::unordered_map<std::string, Subject>		g_subjects;
@@ -26,3 +26,4 @@ extern bool											g_bClassCatalogEvenHours;
 extern bool											g_bClassCatalogNoHoleHour;
 extern bool											g_bClassCatalogOneTypeOfCourseOnADay;
 extern bool											g_bClassCatalogCoursesStartsAtEight;
+extern bool											g_bClassCatalogCoursesWeight;
