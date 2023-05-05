@@ -8,8 +8,8 @@ private:
 	std::string m_strTeacherID;
 public:
 	TeacherCatalog();
-	TeacherCatalog(const Catalog& rhsTeacherCatalog, std::string p_strTeacherID);
-	TeacherCatalog(std::string p_strTeacherID);
-	double GetFitnessValue() override;
+	TeacherCatalog(const Catalog& rhsTeacherCatalog, const std::string p_strTeacherID);
+	TeacherCatalog(const std::string p_strTeacherID);
+	const double GetFitnessValue() override;
 };
 

@@ -48,14 +48,14 @@
     <ClCompile Include="Catalog.cpp">
       <Filter>Source Files\Catalog</Filter>
     </ClCompile>
-    <ClCompile Include="LocationCatalog.cpp">
-      <Filter>Source Files\Catalog</Filter>
-    </ClCompile>
     <ClCompile Include="TeacherCatalog.cpp">
       <Filter>Source Files\Catalog</Filter>
     </ClCompile>
     <ClCompile Include="ClassCatalog.cpp">
       <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="LocationCatalog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

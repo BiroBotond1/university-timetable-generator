@@ -19,11 +19,11 @@ Location::Location(const nlohmann::json &jsonLocation) {
 	}
 }
 
-std::vector<std::pair<int, int>> Location::GetReservedDates() {
+const std::vector<std::pair<int, int>>& Location::GetReservedDates() {
 	return m_vReservedDates;
 }
 
-void Location::DeleteClassHour(int p_nDay, int p_nHour) {
+void Location::DeleteClassHour(const int p_nDay, const int p_nHour) {
 	m_catalog->DeleteClassHour(p_nDay, p_nHour);
 }
 

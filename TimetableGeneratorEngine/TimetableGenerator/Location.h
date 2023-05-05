@@ -10,7 +10,7 @@ class Location :public EntityWithCatalog
 public:
 	Location() {}
 	Location(const nlohmann::json& jsonLocation);
-	std::vector<std::pair<int, int>>	GetReservedDates();
-	void								DeleteClassHour(int p_nDay, int p_nHour);
+	const std::vector<std::pair<int, int>>&	GetReservedDates();
+	void									DeleteClassHour(const int p_nDay,const int p_nHour);
 	void operator=(const Location& rhsLocation);
 };

@@ -4,10 +4,10 @@
 
 class ClassCatalog : public Catalog
 {
+	const void		AddCourseNumberOnADay(const std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+	const double	GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
 public:
 	ClassCatalog();
 	ClassCatalog(const Catalog& rhsClassCatalog);
-	void AddCourseNumberOnADay(std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
-	double GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
-	double GetFitnessValue() override;
+	const double GetFitnessValue() override;
 };

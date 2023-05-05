@@ -9,6 +9,6 @@ Subject::Subject(const nlohmann::json& jsonSubject) {
 	}
 }
 
-std::string Subject::GetRandomLocationID() {
+const std::string Subject::GetRandomLocationID() {
 	return m_locationIDs[RandInt(0, int(m_locationIDs.size() - 1))];
 }

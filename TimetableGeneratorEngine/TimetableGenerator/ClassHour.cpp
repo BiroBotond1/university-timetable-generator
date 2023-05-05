@@ -11,7 +11,7 @@ ClassHour::ClassHour(const nlohmann::json& jsonHour) {
 	m_dWeight = jsonHour["weight"];
 }
 
-bool ClassHour::HasLocation() {
+const bool ClassHour::HasLocation() {
 	return g_subjects[m_strSubjectID].HasLocations();
 }
 

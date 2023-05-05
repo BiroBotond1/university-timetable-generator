@@ -8,7 +8,7 @@ class Subject : public EntityWithName
 public:
 	Subject() {}
 	Subject(const nlohmann::json& jsonSubject);
-	bool HasLocations() { return !m_locationIDs.empty(); }
-	std::string GetRandomLocationID();
+	const bool HasLocations() { return !m_locationIDs.empty(); }
+	const std::string GetRandomLocationID();
 };
 

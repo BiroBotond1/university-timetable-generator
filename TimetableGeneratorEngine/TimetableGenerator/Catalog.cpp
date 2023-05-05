@@ -16,19 +16,15 @@ Catalog::Catalog(const Catalog& rhsCatalog) {
 	m_locations = rhsCatalog.m_locations;
 }
 
-bool Catalog::IsFreeDay(int p_nDay, int p_nHour) {
+const bool Catalog::IsFreeDay(const int p_nDay, const int p_nHour) {
 	return m_catalog[p_nDay][p_nHour].compare("") == 0;
 }
 
-void Catalog::Add(int p_nDay, int p_nHour, std::string p_strSubCourseID) {
+void Catalog::Add(const int p_nDay, const int p_nHour, const std::string p_strSubCourseID) {
 	m_catalog[p_nDay][p_nHour] = p_strSubCourseID;
 }
 
-std::string Catalog::GetClassHourID(int p_nDay, int p_nHour) {
-	return m_catalog[p_nDay][p_nHour];
-}
-
-void Catalog::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
+void Catalog::Swap(const int p_nDay1, const int p_nHour1, const int p_nDay2, const int p_nHour2) {
 	m_bChanged = true;
 	std::string strClassHourID = m_catalog[p_nDay1][p_nHour1];
 	m_catalog[p_nDay1][p_nHour1] = m_catalog[p_nDay2][p_nHour2];
@@ -39,26 +35,30 @@ void Catalog::Change(int p_nDay1, int p_nHour1, int p_nDay2, int p_nHour2) {
 	m_locations[p_nDay2][p_nHour2] = strLocationID;
 }
 
-void Catalog::DeleteClassHour(int p_nDay, int p_nHour) {
-	m_catalog[p_nDay][p_nHour] = "";
-	m_locations[p_nDay][p_nHour] = "";
+const std::string Catalog::GetClassHourID(const int p_nDay, const int p_nHour) {
+	return m_catalog[p_nDay][p_nHour];
 }
 
-void Catalog::SetClassHour(std::string p_strClassHourID, std::string p_strLocationID, int p_nDay, int p_nHour) {
+void Catalog::SetClassHour(const std::string p_strClassHourID, const std::string p_strLocationID, const int p_nDay, const int p_nHour) {
 	m_bChanged = true;
 	m_catalog[p_nDay][p_nHour] = p_strClassHourID;
 	m_locations[p_nDay][p_nHour] = p_strLocationID;
 }
 
-std::string Catalog::GetLocationID(int p_nDay, int p_nHour) {
+void Catalog::DeleteClassHour(const int p_nDay, const int p_nHour) {
+	m_catalog[p_nDay][p_nHour] = "";
+	m_locations[p_nDay][p_nHour] = "";
+}
+
+const std::string Catalog::GetLocationID(const int p_nDay, const int p_nHour) {
 	return m_locations[p_nDay][p_nHour];
 }
 
-void Catalog::SetLocationID(std::string p_strLocationID, int p_nDay, int p_nHour) {
+void Catalog::SetLocationID(const std::string p_strLocationID, const int p_nDay, const int p_nHour) {
 	m_locations[p_nDay][p_nHour] = p_strLocationID;
 }
 
-nlohmann::json Catalog::GetJSONObj() {
+const nlohmann::json Catalog::GetJSONObj() {
 	nlohmann::json json;
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
 		nlohmann::json array;
@@ -76,7 +76,7 @@ nlohmann::json Catalog::GetJSONObj() {
 }
 
 //even hours
-double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber) {
+const double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber) {
 	double dFitness = 0;
 	for (int i = 0; i < p_coursesNumber.size(); i++) {
 		for (int j = 0; j < p_coursesNumber.size(); j++) {
@@ -87,7 +87,7 @@ double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber) {
 }
 
 //no empty hours between courses
-double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
+const double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
 {
 	if (!p_bHasEmptyHours)
 		return 0;
@@ -98,7 +98,7 @@ double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
 }
 
 //can t put days on ineligible days
-double Catalog::GetInactiveDaysFitness(int p_nDay, int p_nHour, const std::vector<std::pair<int, int>>& p_inactiveDays) {
+const double Catalog::GetInactiveDaysFitness(const int p_nDay, const int p_nHour, const std::vector<std::pair<int, int>>& p_inactiveDays) {
 	auto date = std::make_pair(p_nDay, p_nHour);
 	if (std::find(p_inactiveDays.begin(), p_inactiveDays.end(), date) != p_inactiveDays.end()) {
 		g_bActive = false;

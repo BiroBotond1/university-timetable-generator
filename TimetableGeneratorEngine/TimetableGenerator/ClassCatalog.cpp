@@ -5,7 +5,7 @@ ClassCatalog::ClassCatalog() {}
 
 ClassCatalog::ClassCatalog(const Catalog& rhsClassCatalog) : Catalog(rhsClassCatalog) {}
 
-void ClassCatalog::AddCourseNumberOnADay(std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay) {
+const void ClassCatalog::AddCourseNumberOnADay(const std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay) {
 	if (p_mCourseNumberOnADay.find(strClassHourID) != p_mCourseNumberOnADay.end())
 		p_mCourseNumberOnADay[strClassHourID]++;
 	else
@@ -13,7 +13,7 @@ void ClassCatalog::AddCourseNumberOnADay(std::string strClassHourID, std::unorde
 }
 
 //just 1 type of course on each day
-double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay) {
+const double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay) {
 	double dFitness = 0;
 	for (auto& courseNumber : p_mCourseNumberOnADay) {
 		if (courseNumber.second > 1) {
@@ -25,7 +25,7 @@ double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::str
 	return dFitness;
 }
 
-double ClassCatalog::GetFitnessValue() {
+const double ClassCatalog::GetFitnessValue() {
 	if (!m_bChanged)
 		return m_dFitness;
 

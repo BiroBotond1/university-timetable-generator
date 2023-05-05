@@ -10,6 +10,6 @@ class Teacher: public EntityWithCatalog
 public:
 	Teacher() {}
 	Teacher(const nlohmann::json& jsonTeacher);
-	std::vector<std::pair<int, int>> 	GetInappropriateDates();
+	const std::vector<std::pair<int, int>>& 	GetInappropriateDates();
 	void operator=(const Teacher& rhsTeacher);
 };

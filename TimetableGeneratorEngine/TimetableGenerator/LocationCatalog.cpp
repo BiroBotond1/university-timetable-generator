@@ -3,12 +3,12 @@
 
 LocationCatalog::LocationCatalog() {}
 
-LocationCatalog::LocationCatalog(std::string p_strLocationID) : m_strLocationID(p_strLocationID) {}
+LocationCatalog::LocationCatalog(const std::string p_strLocationID) : m_strLocationID(p_strLocationID) {}
 
-LocationCatalog::LocationCatalog(const Catalog& rhsLocationCatalog, std::string p_strLocationID)
+LocationCatalog::LocationCatalog(const Catalog& rhsLocationCatalog, const std::string p_strLocationID)
 	: Catalog(rhsLocationCatalog), m_strLocationID(p_strLocationID) {}
 
-double LocationCatalog::GetFitnessValue() {
+const double LocationCatalog::GetFitnessValue() {
 	if (!m_bChanged)
 		return m_dFitness;
 

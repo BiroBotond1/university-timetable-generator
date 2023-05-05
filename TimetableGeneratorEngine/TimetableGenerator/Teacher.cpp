@@ -19,7 +19,7 @@ Teacher::Teacher(const nlohmann::json &jsonTeacher) {
 	}
 }
 
-std::vector<std::pair<int, int>> Teacher::GetInappropriateDates() {
+const std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates() {
 	return m_vInappropriateDates;
 }
 

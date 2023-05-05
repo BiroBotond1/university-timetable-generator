@@ -8,8 +8,8 @@ private:
 	std::string m_strLocationID;
 public:
 	LocationCatalog();
-	LocationCatalog(std::string p_strLocationID);
-	LocationCatalog(const Catalog& rhsLocationCatalog, std::string p_strLocationID);
-	double GetFitnessValue() override;
+	LocationCatalog(const std::string p_strLocationID);
+	LocationCatalog(const Catalog& rhsLocationCatalog, const std::string p_strLocationID);
+	const double GetFitnessValue() override;
 };
 
