@@ -47,15 +47,15 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="blue-darken-1"
-                variant="text"
+                color="#E53935"
+                class="white--text"
                 @click="close"
               >
                 Cancel
               </v-btn>
               <v-btn
-                color="blue-darken-1"
-                variant="text"
+                color="#1E88E5"
+                class="white--text"
                 @click="save"
               >
                 Save
@@ -68,8 +68,8 @@
             <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+              <v-btn color="#E53935" class="white--text" @click="closeDelete">Cancel</v-btn>
+              <v-btn color="#1E88E5" class="white--text" @click="deleteItemConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
