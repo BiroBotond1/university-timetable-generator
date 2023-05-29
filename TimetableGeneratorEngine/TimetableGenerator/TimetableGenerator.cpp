@@ -10,9 +10,6 @@ using json = nlohmann::json;
 void Read(std::string fileName) {
     std::ifstream fin(fileName);
     json data = json::parse(fin);
-    g_changeNumber = data["ChangesNumber"];
-    g_maxIteration = data["MaxIteration"];
-    g_initialTemperature = data["InitialTemperature"];
     g_bClassCatalogOneTypeOfCourseOnADay = data["OneTypeOfCourseOnADayClass"].get<bool>();
     g_bClassCatalogCoursesStartsAtEight = data["ClassCoursesStartsAtEight"].get<bool>();
     g_bClassCatalogNoHoleHour = data["NoHoleHoursInClass"].get<bool>();
@@ -157,13 +154,17 @@ void Change(std::unordered_map<std::string, Class> &p_classes, std::unordered_ma
 }
 
 void Changes(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
-    for (int i = 0; i < g_changeNumber; i++) {
+    for (int i = 0; i < 1; i++) {
         Change(p_classes, p_teachers, p_locations);
     }
 }
 
 double LinearAnnealing(int i) {
-    return g_initialTemperature / (1 + 0.5 * i);
+    return 10000 / (1 + 0.5 * i);
+}
+
+bool StopConnditionIsMet() {
+    return g_bActive;
 }
 
 void SimulatedAnnealing() {
@@ -174,9 +175,9 @@ void SimulatedAnnealing() {
     std::unordered_map<std::string, Teacher> p_teachers;
     std::unordered_map<std::string, Location> p_locations;
     g_bActive = false;
-    double t = g_initialTemperature;
-    int i = 0;
-    while (i < g_maxIteration && t > 0.00001) {
+    double t = 10000;
+    int i = 0, nStepsWithNoBetterSolution = 0;
+    while (nStepsWithNoBetterSolution < 10000) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;
@@ -189,8 +190,10 @@ void SimulatedAnnealing() {
             g_locations = p_locations;
         }
         i++;
+        nStepsWithNoBetterSolution++;
         t = LinearAnnealing(i);
         if (Fitness() > Fitness(p_classesBest, p_teachersBest, p_locationsBest)) {
+            nStepsWithNoBetterSolution = 0;
             p_classesBest = g_classes;
             p_teachersBest = g_teachers;
             p_locationsBest = g_locations;
@@ -214,5 +217,5 @@ int main()
     auto t_end = std::chrono::high_resolution_clock::now();
     WriteCatalog();
     double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-    std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
+   // std::cout << std::endl << std::endl << "Elapsed time: " << elapsed_time_ms << " ms";
 }

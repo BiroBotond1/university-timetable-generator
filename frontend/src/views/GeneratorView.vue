@@ -1,12 +1,12 @@
 <template>
   <v-app>
-  <Sidebar />
-  <v-main>
-    <v-container fluid>
-      <TimetableInitializer />
-  <router-view></router-view>
-</v-container>
-  </v-main>
+    <Sidebar />
+    <v-main>
+      <v-container fluid>
+        <TimetableInitializer />
+        <router-view></router-view>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 

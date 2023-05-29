@@ -1,49 +1,7 @@
 <template>
     <v-form v-model="valid" ref="form" @submit.prevent="submit" method="Post">
         <v-container>
-            <v-row >
-                <v-col
-                cols="12"
-                md="12"
-                >
-                <v-text-field
-                    v-model.number="changesNumber"
-                    :rules="numberRules"
-                    :counter="10"
-                    label="Changes in one generation"
-                    type="number"
-                    required
-                ></v-text-field>
-                </v-col>
-
-                <v-col
-                cols="12"
-                md="12"
-                >
-                <v-text-field
-                    v-model.number="maxIteration"
-                    :rules="numberRules"
-                    :counter="10"
-                    label="Max iteration"
-                    type="number"
-                    required
-                ></v-text-field>
-                </v-col>
-
-                <v-col
-                cols="12"
-                md="12"
-                >
-                <v-text-field
-                    v-model.number="initialTemperature"
-                    :rules="numberRules"
-                    :counter="10"
-                    label="Initial temperature"
-                    type="number"
-                    required
-                ></v-text-field>
-                </v-col>
-            </v-row>
+            <h1 align="center">Generate Timetable</h1>
             <v-row>
                 <v-switch
                 v-model="oneTypeOfCourseOnADayClass"
@@ -86,8 +44,10 @@
                 label="Courses weight in class catalogs"
                 ></v-switch>
             </v-row>
-            <v-btn type="submit" block class="mt-2" :disabled="!valid">Submit</v-btn>
-            <v-btn block class="mt-2" @click="reset">
+            <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="!valid">
+                Generate
+            </v-btn>
+            <v-btn block class="mt-2 white--text" @click="reset" color="#E53935">
             clear
             </v-btn>
         </v-container>
@@ -110,9 +70,6 @@ export default {
         noHoleHoursInTeacher: true,
         evenHoursInTeacher: true,
         coursesWeightInClass: true,
-        changesNumber: null,
-        maxIteration: null,
-        initialTemperature: null,
         courseNumber: null,
         courses: [],
         numberRules: [
@@ -140,9 +97,6 @@ export default {
       async submit () {
         store.commit('IsGenerating');
         const params = {
-        ChangesNumber: this.changesNumber,
-        MaxIteration: this.maxIteration,
-        InitialTemperature: this.initialTemperature,
         OneTypeOfCourseOnADayClass:this.oneTypeOfCourseOnADayClass,
         ClassCoursesStartsAtEight: this.classCoursesStartsAtEight,
         NoHoleHoursInClass: this.noHoleHoursInClass,
