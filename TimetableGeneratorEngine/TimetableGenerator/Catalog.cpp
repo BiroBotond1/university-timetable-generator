@@ -1,7 +1,6 @@
 #include "Catalog.h"
 #include "Global.h"
 
-
 Catalog::Catalog() {
 	m_bChanged = true;
 	m_dFitness = 0;

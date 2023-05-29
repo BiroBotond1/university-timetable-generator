@@ -135,9 +135,6 @@
       <HashCode>AAJAAAAAAAFAABAAAQAAAAAAAAAAEAEAAAAAAAAAAAg=</HashCode>
       <FileName>EntityWithCatalog.h</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="m_catalog" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="Location">
     <Position X="8" Y="4.5" Width="1.5" />

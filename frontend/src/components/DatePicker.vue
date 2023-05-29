@@ -84,8 +84,6 @@ import Vue from 'vue'
             return parseInt(hour.substring(0, hour.indexOf('-'))) - 8;
         },
         chooseItem (day, hour) {
-            console.log(day)
-            console.log(hour)
             if( this.dates[day][hour] === 0)
             {
                 Vue.set(this.dates[day], hour, -1);

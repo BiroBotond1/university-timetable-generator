@@ -65,13 +65,13 @@ double Fitness() {
 
 void WriteCatalog() {
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
-    for (auto clas : g_classes) {
+    for (auto &clas : g_classes) {
         classCatalogs[clas.first] = clas.second.GetCatalog()->GetJSONObj();
     }
-    for (auto teacher : g_teachers) {
+    for (auto &teacher : g_teachers) {
         teacherCatalogs[teacher.first] = teacher.second.GetCatalog()->GetJSONObj();
     }
-    for (auto location : g_locations) {
+    for (auto &location : g_locations) {
         locationsCatalogs[location.first] = location.second.GetCatalog()->GetJSONObj();
     }
     res["classCatalogs"] = classCatalogs;

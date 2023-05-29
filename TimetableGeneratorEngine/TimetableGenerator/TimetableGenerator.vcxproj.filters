@@ -55,7 +55,7 @@
       <Filter>Source Files\Catalog</Filter>
     </ClCompile>
     <ClCompile Include="LocationCatalog.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Catalog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,5 +120,6 @@
     <None Include="out.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

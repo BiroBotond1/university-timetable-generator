@@ -214,7 +214,6 @@ export default {
           this.allSubjects = response.data.data
         },
         async editItem (item) {
-            console.log(this.classHours)
           await this.fetchClasses()
           await this.fetchTeachers()
           await this.fetchSubjects()

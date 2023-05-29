@@ -4,13 +4,19 @@
 Class::Class(const nlohmann::json& jsonClass) {
 	m_strID = jsonClass["_id"].get<std::string>();
 	m_strName = jsonClass["name"].get<std::string>();
-	m_catalog = new ClassCatalog();
+	m_catalog = std::make_unique<ClassCatalog>();
 }
 
 void Class::operator=(const Class& rhsClass) {
 	m_strID = rhsClass.m_strID;
 	m_strName = rhsClass.m_strName;
-	m_catalog = new ClassCatalog(*rhsClass.m_catalog);
+	m_catalog = std::make_unique<ClassCatalog>(*rhsClass.m_catalog);
+}
+
+Class::Class(const Class& rhsClass) {
+	m_strID = rhsClass.m_strID;
+	m_strName = rhsClass.m_strName;
+	m_catalog = std::make_unique<ClassCatalog>(*rhsClass.m_catalog);
 }
 
 const std::string Class::GetClassHourID(const int p_nDay, const int p_nHour) {
