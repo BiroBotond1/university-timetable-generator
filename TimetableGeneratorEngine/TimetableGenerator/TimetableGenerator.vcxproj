@@ -158,6 +158,7 @@
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Teacher.cpp" />
     <ClCompile Include="TeacherCatalog.cpp" />
+    <ClCompile Include="Service.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +180,7 @@
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Teacher.h" />
     <ClInclude Include="TeacherCatalog.h" />
+    <ClInclude Include="TimetableGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
