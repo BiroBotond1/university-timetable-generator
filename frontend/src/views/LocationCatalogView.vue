@@ -1,14 +1,14 @@
 <template>
-    <v-app>
+  <v-app>
     <Sidebar />
     <v-main>
       <v-container fluid>
         <LocationCatalogs />
-    <router-view></router-view>
-  </v-container>
+        <router-view></router-view>
+      </v-container>
     </v-main>
-    </v-app>
-  </template>
+  </v-app>
+</template>
   
   <script>
   import { defineComponent } from 'vue';

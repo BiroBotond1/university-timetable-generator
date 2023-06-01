@@ -1,12 +1,12 @@
 <template>
   <v-app>
-  <Sidebar />
-  <v-main>
-    <v-container fluid>
-      <SubjectsDataTable />
-  <router-view></router-view>
-</v-container>
-  </v-main>
+    <v-main>
+      <v-container fluid>
+        <Sidebar />
+        <SubjectsDataTable />
+        <router-view></router-view>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 

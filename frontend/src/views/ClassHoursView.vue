@@ -1,14 +1,14 @@
 <template>
-    <v-app>
-    <Sidebar />
+  <v-app>
     <v-main>
       <v-container fluid>
+        <Sidebar />
         <ClassHoursDataTable />
-    <router-view></router-view>
-  </v-container>
+        <router-view></router-view>
+      </v-container>
     </v-main>
-    </v-app>
-  </template>
+  </v-app>
+</template>
   
   <script>
   import { defineComponent } from 'vue';

@@ -16,47 +16,47 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: GeneratorView
+    name: 'Generator',
+    component: GeneratorView,
   },
   {
     path: '/subjects',
-    name: 'sunjects',
-    component: SubjectsView
+    name: 'Subjects',
+    component: SubjectsView,
   },
   {
     path: '/locations',
-    name: 'locations',
+    name: 'Locations',
     component: LocationsView
   },
   {
     path: '/teachers',
-    name: 'teachers',
+    name: 'Teachers',
     component: TeachersView
   },
   {
     path: '/classes',
-    name: 'classes',
+    name: 'Classes',
     component: ClassesView
   },
   {
     path: '/classHours',
-    name: 'classHours',
+    name: 'ClassHours',
     component: ClassHoursView
   },
   {
     path: '/classCatalogs',
-    name: 'classCatalogs',
+    name: 'Class Catalogs',
     component: ClassCatalogView
   },
   {
     path: '/teacherCatalogs',
-    name: 'teacherCatalogs',
+    name: 'Teacher Catalogs',
     component: TeacherCatalogView
   },
   {
     path: '/locationCatalogs',
-    name: 'locationCatalogs',
+    name: 'Location Catalogs',
     component: LocationCatalogView
   },
 ]
@@ -66,5 +66,10 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  document.title = to.name;
+  next();
+});
 
 export default router

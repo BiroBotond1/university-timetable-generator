@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <Sidebar />
     <v-main>
       <v-container fluid>
+        <Sidebar />
         <TimetableInitializer />
         <router-view></router-view>
       </v-container>
