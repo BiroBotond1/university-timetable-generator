@@ -92,6 +92,11 @@
         mdi-delete
       </v-icon>
     </template>
+    <template v-slot:[`item.reservedDates`]="{ item }"> 
+      <a target="_blank" @click="editItem(item)">
+              Click to see
+      </a>
+    </template>
     </v-data-table>
 </template>
 
