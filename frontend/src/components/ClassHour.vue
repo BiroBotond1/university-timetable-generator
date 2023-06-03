@@ -1,22 +1,13 @@
 <template>
     <div app>
-        <br>
-        <v-row app v-if="hour.subject" class="d-flex">
-            <label> {{ hour.subject }} </label>
-        </v-row>
-
-        <v-row app v-if="hour.teacher" class="d-flex">
-            <label> {{ hour.teacher }} </label>
-        </v-row> 
-
-        <v-row app v-if="hour.location" class="d-flex">
-            <label> {{ hour.location }} </label>
-        </v-row> 
-
-        <v-row app v-if="hour.class" class="d-flex">
-            <label> {{ hour.class }} </label>
-        </v-row> 
-        <br>
+        <div class="timetable-hour-title">
+        <span class="subject">{{ hour.subject }}</span>
+        </div>
+        <div class="timetable-hour-info">
+        <span v-if="hour.teacher" class="teacher" >{{ hour.teacher }}</span>
+        <span v-if="hour.class" class="class">{{ hour.class }}</span>
+        <span v-if="hour.location" class="location">{{ hour.location }}</span> 
+        </div>
     </div>
  </template>
  
@@ -30,6 +21,39 @@
   }
 
 </script>
- 
- <style>
- </style>
+
+  <style scoped>
+  .timetable-hour {
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+  }
+  
+  .timetable-hour-title {
+    font-size: 0.9em;
+  }
+  
+  .timetable-hour-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 2px;
+    font-size: 0.8em;
+    font-weight: bold;
+  }
+  
+  .subject {
+    color: #000000;
+  }
+
+  .teacher {
+    color: #443dafb5;
+  }
+  
+  .class {
+    color: #ff2b2bba;
+  }
+  .location {
+    color: #2b762e;
+  }
+  </style>

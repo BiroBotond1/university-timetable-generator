@@ -7,7 +7,7 @@
     :items="items"
     class="border">
         <template v-slot:[`item.monday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]" />
+            <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]"/>
         </template>
         <template v-slot:[`item.tuesday`]="{ item }"> 
             <ClassHourComponent :hour="catalog[1][convertHourToInt(item.hours)]" />
@@ -157,4 +157,5 @@ import ClassHourComponent from '../ClassHour.vue'
   border: 1px solid black;
   border-collapse: collapse;
 }
+
  </style>
