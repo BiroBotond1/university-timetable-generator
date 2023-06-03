@@ -110,7 +110,7 @@ std::string TimetableGenerator::GetRandomClassID() {
 }
 
 void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
-    std::string strClassID = "64345afe10265ba59827241e";//GetRandomClassID();
+    std::string strClassID = GetRandomClassID();//"64345afe10265ba59827241e";
     int nDay1 = RandInt(0, 4);
     int nHour1 = RandInt(0, 7);
     int nDay2 = RandInt(0, 4);
@@ -164,9 +164,9 @@ void TimetableGenerator::SimulatedAnnealing() {
     std::unordered_map<std::string, Teacher> p_teachers;
     std::unordered_map<std::string, Location> p_locations;
     g_bActive = false;
-    double t = 10000;
+    double t = 100000;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (nStepsWithNoBetterSolution < 10000) {
+    while (nStepsWithNoBetterSolution < 20000) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;
