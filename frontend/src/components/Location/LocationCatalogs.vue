@@ -20,6 +20,14 @@
         </v-list>
     </v-navigation-drawer>
     <locationCatalog ref="locationCatalog"/>
+    <div class="color-container">
+      <div class="color-box subjectColor"></div>
+      <div class="color-label">Subject</div>
+      <div class="color-box classColor"></div>
+      <div class="color-label">Class</div>
+      <div class="color-box teacherColor"></div>
+      <div class="color-label">Teacher</div>
+    </div>
 </v-app>
  </template>
  
@@ -60,7 +68,39 @@ import locationCatalog from './LocationCatalog.vue'
  
 
 <style>
+
+.subjectColor {
+  background-color: #000000;
+}
+
+.classColor {
+  background-color:#ff2b2bba;
+}
+
+.teacherColor {
+  background-color:#443dafb5;
+}
+
 .active {
   background: rgb(105, 105, 105);
+}
+
+.color-container {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.color-box {
+  width: 18px;
+  height: 18px;
+  margin: 2px;
+}
+
+.color-label {
+  margin-top: 2px;
+  text-align: center;
+  margin-right: 15px;
 }
 </style>

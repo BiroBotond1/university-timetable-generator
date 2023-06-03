@@ -16,6 +16,7 @@ public:
 	const std::string GetSubjectID() { return m_strSubjectID; }
 	const std::string GetTeacherID() { return m_strTeacherID; }
 	const std::string GetClassID() { return m_strClassID; }
+	std::string GetClassRoom();
 	const double GetWeight() { return m_dWeight; }
 	const bool HasLocation();
 };

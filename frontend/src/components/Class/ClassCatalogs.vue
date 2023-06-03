@@ -1,6 +1,6 @@
 
 <template>
-    <v-app>
+    <div app>
     <v-navigation-drawer
         app 
         permanent
@@ -20,8 +20,17 @@
         </v-list>
     </v-navigation-drawer>
     <classCatalog ref="classCatalog"/>
-</v-app>
+    <div class="color-container">
+      <div class="color-box subjectColor"></div>
+      <div class="color-label">Subject</div>
+      <div class="color-box teacherColor"></div>
+      <div class="color-label">Teacher</div>
+      <div class="color-box locationColor"></div>
+      <div class="color-label">Location</div>
+    </div>
+  </div>
  </template>
+
  
  <script>
 import axios from 'axios'
@@ -59,7 +68,38 @@ import classCatalog from './ClassCatalog.vue'
  
 
 <style>
+.subjectColor {
+  background-color: #000000;
+}
+
+.teacherColor {
+  background-color:#443dafb5;
+}
+
+.locationColor {
+  background-color: #2b762e;
+}
+
 .active {
   background: rgb(105, 105, 105);
+}
+
+.color-container {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.color-box {
+  width: 18px;
+  height: 18px;
+  margin: 2px;
+}
+
+.color-label {
+  margin-top: 2px;
+  text-align: center;
+  margin-right: 15px;
 }
 </style>

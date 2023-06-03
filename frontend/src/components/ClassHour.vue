@@ -23,11 +23,6 @@
 </script>
 
   <style scoped>
-  .timetable-hour {
-    width: 100%;
-    height: 100%;
-    padding: 2px;
-  }
   
   .timetable-hour-title {
     font-size: 0.9em;

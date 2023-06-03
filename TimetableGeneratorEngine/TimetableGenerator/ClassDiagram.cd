@@ -13,7 +13,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QAAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>QCAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAgAAAgAAA=</HashCode>
       <FileName>Class.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -101,7 +101,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AQAQACAACAAAAEAAAAAAAAAAIAgAAAAAUAAAIgAAAgA=</HashCode>
+      <HashCode>AQAQACAACAAAAEAAAAAAAAAAIAgAAAAAUAAAIgAgAgA=</HashCode>
       <FileName>ClassHour.h</FileName>
     </TypeIdentifier>
   </Class>

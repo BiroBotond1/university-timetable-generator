@@ -67,6 +67,7 @@ const nlohmann::json Catalog::GetJSONObj() {
 			classHour["subjectID"] = g_classHours[m_catalog[nDay][nHour]].GetSubjectID();
 			classHour["teacherID"] = g_classHours[m_catalog[nDay][nHour]].GetTeacherID();
 			classHour["locationID"] = m_locations[nDay][nHour];
+			classHour["classRoom"] = g_classHours[m_catalog[nDay][nHour]].GetClassRoom();
 			array.push_back(classHour);
 		}
 		json.push_back(array);

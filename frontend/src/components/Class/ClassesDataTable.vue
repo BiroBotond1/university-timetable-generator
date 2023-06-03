@@ -41,6 +41,10 @@
                   v-model="editedItem.name"
                   label="Class name"
                 ></v-text-field>   
+                <v-text-field
+                  v-model="editedItem.location"
+                  label="Class room"
+                ></v-text-field>   
               </v-container>
             </v-card-text>
 
@@ -104,6 +108,7 @@ export default {
             dialogDelete: false,
             headers: [ 
                 {text: 'Name', value: 'name',},
+                {text: 'Classroom', value: 'location',},
                 {text: 'Actions', value: 'actions', sortable: false}
             ],
             classes: [],
@@ -111,6 +116,7 @@ export default {
             editedItem: {
               _id: '',  
               name: '',
+              location: '',
             },
         }
     },
@@ -153,6 +159,7 @@ export default {
             await this.fetchClass()
           } else {
             this.editedItem.name = ''
+            this.editedItem.location = ''
           }
           this.dialog = true
           
@@ -181,7 +188,8 @@ export default {
 
       async save () {
         let classs = {
-          name: this.editedItem.name
+          name: this.editedItem.name,
+          location: this.editedItem.location
         }
         if (this.editedIndex > -1) {
           await axios.
