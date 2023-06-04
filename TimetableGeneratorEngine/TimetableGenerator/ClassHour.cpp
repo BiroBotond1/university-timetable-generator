@@ -15,13 +15,6 @@ const bool ClassHour::HasLocation() {
 	return g_subjects[m_strSubjectID].HasLocations();
 }
 
-std::string ClassHour::GetClassRoom() {
-	if (m_strClassID.compare("") == 0) {
-		return "";
-	}
-	return g_classes[m_strClassID].GetClassRoom();
-}
-
 void ClassHour::AddClassHoursToCatalog() {
 	int day, hour; 
 	std::string strLocationID;

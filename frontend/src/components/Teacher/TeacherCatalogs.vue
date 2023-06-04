@@ -42,6 +42,9 @@ import teacherCatalog from './TeacherCatalog.vue'
 
     async created () {
       await this.fetchTeachers()
+      if(this.teachers.length > 0) {
+        this.selectTeacher(this.teachers[0]._id)
+      }
     },
 
     components: {

@@ -44,6 +44,9 @@ import classCatalog from './ClassCatalog.vue'
 
     async created () {
       await this.fetchClasses()
+      if(this.classes.length > 0) {
+        this.selectClass(this.classes[0]._id)
+      }
     },
 
     components: {

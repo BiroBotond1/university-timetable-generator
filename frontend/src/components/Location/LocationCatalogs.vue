@@ -43,6 +43,9 @@ import locationCatalog from './LocationCatalog.vue'
 
     async created () {
       await this.fetchLocations()
+      if(this.locations.length > 0) {
+        this.selectLocation(this.locations[0]._id)
+      }
     },
 
     components: {

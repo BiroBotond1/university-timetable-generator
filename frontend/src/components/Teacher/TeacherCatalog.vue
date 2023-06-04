@@ -138,10 +138,10 @@ import ClassHourComponent from '../ClassHour.vue'
                         if(clas._id === catalogClassHours[day][hour].classID)
                         {
                             classHour.class = clas.name
+                            if (classHour.location === '') {
+                                classHour.location = clas.location;
+                            }
                         }
-                    }
-                    if(classHour.location === '') {
-                        classHour.location = catalogClassHours[day][hour].classRoom;
                     }
                 }
                 Vue.set(this.catalog[day], hour, classHour)

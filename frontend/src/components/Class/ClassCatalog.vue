@@ -1,5 +1,8 @@
 <template>
-    <v-data-table app
+    <div app>
+        <div class="classRoomLabel"> Class Room: <span class="locationLabelColor">{{ classRoom }} </span>
+        </div>
+    <v-data-table
     :items-per-page="-1"
     hide-default-footer
     :headers="headers"
@@ -21,6 +24,7 @@
             <ClassHourComponent :hour="catalog[4][convertHourToInt(item.hours)]" />
         </template>
     </v-data-table>
+    </div>
  </template>
  
  <script>
@@ -53,6 +57,7 @@ import ClassHourComponent from '../ClassHour.vue'
         teachers: [],
         locations: [],
         subjects: [],
+        classRoom: '',
         catalog:
            [["", "", "", "", "", "", "", ""],
            ["", "", "", "", "", "", "", ""],
@@ -104,6 +109,7 @@ import ClassHourComponent from '../ClassHour.vue'
           get('http://127.0.0.1:3000/api/class/' + this.classID)
           .catch(error => console.log(error))
           let catalogClassHours = response.data.data.catalog
+          this.classRoom = response.data.data.location
           for(var day = 0; day < this.catalog.length; day++)
           {
             for(var hour = 0; hour < this.catalog[day].length; hour++) {
@@ -139,9 +145,6 @@ import ClassHourComponent from '../ClassHour.vue'
                             classHour.teacher = teacher.name
                         }
                     }
-                    if(classHour.location === '') {
-                        classHour.location = catalogClassHours[day][hour].classRoom;
-                    }
                 }
                 Vue.set(this.catalog[day], hour, classHour)
             }
@@ -156,6 +159,15 @@ import ClassHourComponent from '../ClassHour.vue'
 </script>
  
  <style>
+ .locationLabelColor {
+    color: #2b762e;
+ }
+
+ .classRoomLabel {
+    margin-bottom: 25px;
+    font-weight: bold;
+ }
+
  .border{
   border: 1px solid black;
   border-collapse: collapse;

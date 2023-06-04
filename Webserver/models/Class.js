@@ -7,8 +7,7 @@ const ClassSchema = new mongoose.Schema({
     catalog: [[{classID: String,
         subjectID: String,
         teacherID: String,
-        locationID: String, 
-        classRoom: String}]]
+        locationID: String}]]
 });
 
 exports.ClassSchema = ClassSchema;
