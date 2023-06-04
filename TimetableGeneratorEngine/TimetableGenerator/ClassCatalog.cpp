@@ -17,7 +17,7 @@ const double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<st
 	double dFitness = 0;
 	for (auto& courseNumber : p_mCourseNumberOnADay) {
 		if (courseNumber.second > 1) {
-			dFitness -= courseNumber.second * 2;
+			dFitness -= (courseNumber.second * 2);
 			g_bActive = false;
 		}
 		courseNumber.second = 0;
@@ -61,7 +61,7 @@ const double ClassCatalog::GetFitnessValue() {
 		}
 
 		if(g_bClassCatalogOneTypeOfCourseOnADay)
-			GetFitnessOneTypeOfCourseOnADay(mCourseNumberOnADay);
+			m_dFitness += GetFitnessOneTypeOfCourseOnADay(mCourseNumberOnADay);
 	}
 
 	if (g_bClassCatalogEvenHours)
