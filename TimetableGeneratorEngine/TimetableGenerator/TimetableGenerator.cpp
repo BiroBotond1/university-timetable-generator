@@ -70,6 +70,7 @@ void TimetableGenerator::WriteCatalog() {
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
     res["locationCatalogs"] = locationsCatalogs;
+    res["active"] = g_bActive;
     std::cout << res;
 }
 
@@ -110,11 +111,24 @@ std::string TimetableGenerator::GetRandomClassID() {
 }
 
 void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
-    std::string strClassID = GetRandomClassID();//"64345afe10265ba59827241e";
-    int nDay1 = RandInt(0, 4);
-    int nHour1 = RandInt(0, 7);
-    int nDay2 = RandInt(0, 4);
-    int nHour2 = RandInt(0, 7);
+    std::string strClassID = GetRandomClassID();
+
+    int nDay1;
+    int nHour1;
+    int nDay2;
+    int nHour2;
+    std::string strTeacherID1;
+    std::string strTeacherID2;
+    do {
+        nDay1 = RandInt(0, 4);
+        nHour1 = RandInt(0, 7);
+        nDay2 = RandInt(0, 4);
+        nHour2 = RandInt(0, 7);
+        strTeacherID1 = p_classes[strClassID].GetTeacherID(nDay1, nHour1);
+        strTeacherID2 = p_classes[strClassID].GetTeacherID(nDay2, nHour2);
+    } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog()->IsFreeDay(nDay2, nHour2))
+            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog()->IsFreeDay(nDay1, nHour1)));
+    
 
     ClassHour classHour1 = g_classHours[p_classes[strClassID].GetClassHourID(nDay1, nHour1)];
     ClassHour classHour2 = g_classHours[p_classes[strClassID].GetClassHourID(nDay2, nHour2)];
@@ -153,7 +167,7 @@ void TimetableGenerator::Changes(std::unordered_map<std::string, Class>& p_class
 }
 
 double TimetableGenerator::LinearAnnealing(int i) {
-    return 10000 / (1 + 0.5 * i);
+    return 10000 / (1 + 0.1 * i);
 }
 
 void TimetableGenerator::SimulatedAnnealing() {
@@ -164,9 +178,9 @@ void TimetableGenerator::SimulatedAnnealing() {
     std::unordered_map<std::string, Teacher> p_teachers;
     std::unordered_map<std::string, Location> p_locations;
     g_bActive = false;
-    double t = 1000000;
+    double t = 10000000;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (nStepsWithNoBetterSolution < 50000) {
+    while (nStepsWithNoBetterSolution < 1000000) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;

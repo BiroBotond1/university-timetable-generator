@@ -37,6 +37,7 @@ router.post('/proba', async (req, res) => {
         os.execCommand("TimetableGenerator.exe").then(result => {
             console.log("success");
             let catalogs = JSON.parse(result)
+            console.log(catalogs.active)
             for(var classID in catalogs["classCatalogs"]) {
                 classService.addCatalog(classID, catalogs["classCatalogs"][classID])
             }
