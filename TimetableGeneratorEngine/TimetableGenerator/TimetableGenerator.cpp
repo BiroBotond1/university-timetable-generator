@@ -164,9 +164,9 @@ void TimetableGenerator::SimulatedAnnealing() {
     std::unordered_map<std::string, Teacher> p_teachers;
     std::unordered_map<std::string, Location> p_locations;
     g_bActive = false;
-    double t = 10000;
+    double t = 1000000;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (nStepsWithNoBetterSolution < 10000) {
+    while (nStepsWithNoBetterSolution < 50000) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;
