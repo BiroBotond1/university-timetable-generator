@@ -9,7 +9,7 @@ const void ClassCatalog::AddCourseNumberOnADay(const std::string strClassHourID,
 	if (p_mCourseNumberOnADay.find(strClassHourID) != p_mCourseNumberOnADay.end())
 		p_mCourseNumberOnADay[strClassHourID]++;
 	else
-		p_mCourseNumberOnADay[strClassHourID] = 0;
+		p_mCourseNumberOnADay[strClassHourID] = 1;
 }
 
 //just 1 type of course on each day
