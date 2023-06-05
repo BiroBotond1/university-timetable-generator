@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app">
     <v-main>
       <router-view/>
     </v-main>
@@ -15,3 +15,10 @@ export default {
   }),
 };
 </script>
+
+<style>
+.theme--light.v-application {
+  background-color: #F2F2F2
+}
+
+</style>

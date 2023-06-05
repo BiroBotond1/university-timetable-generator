@@ -1,6 +1,11 @@
 <template>
    <div>
-    <v-app-bar app clipped-left clipped-right flat dark>
+    <v-app-bar 
+    color="#1D0C59"
+    app 
+    clipped-left 
+    clipped-right 
+    flat dark>
       <v-toolbar-title>
         TimetableGenerator
       </v-toolbar-title>
@@ -18,6 +23,7 @@
     </v-app-bar>
 
     <v-navigation-drawer 
+        color="#1D0C59"
         app 
         permanent
         clipped 

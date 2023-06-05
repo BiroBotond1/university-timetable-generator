@@ -56,9 +56,6 @@
             <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="!valid">
                 Generate
             </v-btn>
-            <v-btn block class="mt-2 white--text" @click="reset" color="#E53935">
-            clear
-            </v-btn>
         </v-container>
     </v-form>
 </template>
@@ -81,25 +78,6 @@ export default {
         coursesWeightInClass: true,
         courseNumber: null,
         courses: [],
-        numberRules: [
-            value => {
-                if (value) return true
-                
-                return 'This number is required.'
-            },
-            value => {
-                if (value >= 0) return true
-
-                return 'The number has to be greater than 0.'
-            }
-        ],
-        nameRules: [
-            value => {
-                if (value) return true
-
-                return 'This name is required.'
-            }
-        ]
     }),
 
     methods: {
@@ -121,9 +99,6 @@ export default {
         store.state.notification = true
         setTimeout(() => store.state.notification = false, 5000);
 
-      },
-      reset () {
-        this.$refs.form.reset()
       },
     },
 };

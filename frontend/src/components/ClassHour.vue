@@ -26,6 +26,7 @@
   
   .timetable-hour-title {
     font-size: 0.9em;
+    font-weight: bold;
   }
   
   .timetable-hour-info {

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app >
     <v-main>
       <v-container fluid>
         <Sidebar />
