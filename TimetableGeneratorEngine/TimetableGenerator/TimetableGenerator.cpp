@@ -96,13 +96,51 @@ void TimetableGenerator::SwapLocations(std::unordered_map<std::string, Location>
         p_locations[strLocationID2].Change(day1, hour1, day2, hour2);
 }
 
-void TimetableGenerator::SwapTeachers(std::unordered_map<std::string, Teacher>& p_teachers, Class& p_class, int day1, int hour1, int day2, int hour2) {
+void TimetableGenerator::SwapTeachers(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, Class& p_class, int day1, int hour1, int day2, int hour2) {   
     std::string strTeacherID1 = p_class.GetTeacherID(day1, hour1);
     std::string strTeacherID2 = p_class.GetTeacherID(day2, hour2);
-    if (strTeacherID1.compare("") != 0)
-        p_teachers[strTeacherID1].Change(day1, hour1, day2, hour2);
-    if (strTeacherID2.compare("") != 0)
+    if (strTeacherID1.compare("") != 0) {
+        if (!p_teachers[strTeacherID1].GetCatalog()->IsFreeDay(day2, hour2)) {
+            std::string strClassHourID = p_teachers[strTeacherID1].GetCatalog()->GetClassHourID(day2, hour2);
+            Class& clas = p_classes[g_classHours[strClassHourID].GetClassID()];
+            ChangeClass(p_classes, p_teachers, p_locations, clas, strClassHourID, day1, hour1);
+        }
+        p_teachers[strTeacherID1].Change(day1, hour1, day2, hour2); 
+    }
+        
+    if (strTeacherID2.compare("") != 0) {
+        if (!p_teachers[strTeacherID2].GetCatalog()->IsFreeDay(day1, hour1)) {
+            ChangeClass(p_classes, p_teachers, p_locations, p_teachers[strTeacherID2], g_classHours[p_teachers[strTeacherID2].GetCatalog()->GetClassHourID(day2, hour2)].GetClassID(), day1, hour1);
+        }
         p_teachers[strTeacherID2].Change(day1, hour1, day2, hour2);
+        
+    }
+        
+}
+
+void TimetableGenerator::ChangeClass(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, Class& p_clas, std::string strClassHourID, int day, int hour) {
+    if (p_clas.GetCatalog()->IsFreeDay(day, hour)) {
+        p_clas.GetCatalog()->SetClassHour(strClassHourID, "", day, hour);
+        return;
+    }
+
+    std::string actClassHourID = p_clas.GetCatalog()->GetClassHourID(day, hour);
+    p_clas.GetCatalog()->SetClassHour(strClassHourID, "", day, hour);
+
+    std::string classID = g_classHours[actClassHourID].GetClassID();
+    Class clas = p_classes[classID];
+    
+    //p_teacher.GetCatalog()->SetClassHour(strClassHourID, "", day, hour);
+    ChangeTeacher(p_classes, p_teachers, p_locations, clas, actClassHourID, day, hour);
+}
+
+void TimetableGenerator::ChangeTeacher(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, Class& p_class, std::string classHourID, int day, int hour) {
+    if (p_class.GetCatalog()->IsFreeDay(day, hour))
+        return;
+    std::string actClassHourID = p_class.GetCatalog()->GetClassHourID(day, hour);
+    Teacher teacher = p_teachers[g_classHours[actClassHourID].GetTeacherID()];
+    p_class.GetCatalog()->SetClassHour(classHourID, "", day, hour);
+    ChangeClass(p_classes, p_teachers, p_locations, teacher, actClassHourID, day, hour);
 }
 
 std::string TimetableGenerator::GetRandomClassID() {
@@ -141,7 +179,7 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
 
     SwapLocations(p_locations, p_classes[strClassID], nDay1, nHour1, nDay2, nHour2);
 
-    SwapTeachers(p_teachers, p_classes[strClassID], nDay1, nHour1, nDay2, nHour2);
+    SwapTeachers(p_classes, p_teachers, p_locations, p_classes[strClassID], nDay1, nHour1, nDay2, nHour2);
 
     p_classes[strClassID].Change(nDay1, nHour1, nDay2, nHour2);
 }
