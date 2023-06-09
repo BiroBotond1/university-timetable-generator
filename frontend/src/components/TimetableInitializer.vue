@@ -7,21 +7,21 @@
                 <v-switch
                 color="#0D47A1"
                 v-model="oneTypeOfCourseOnADayClass"
-                label="Only one type of course on a day"
+                label="Classes can have only one lesson from a subject on a given day"
                 ></v-switch>
             </v-row>
             <v-row>
                 <v-switch
                 color="#0D47A1"
                 v-model="classCoursesStartsAtEight"
-                label="Class courses starts at 8:00"
+                label="All classes start their lessons at eight o'clock in the morning"
                 ></v-switch>
             </v-row>
             <v-row>
                 <v-switch
                 color="#0D47A1"
                 v-model="noHoleHoursInClass"
-                label="No hole hour in class catalogs"
+                label="All classes should have their lessons consistently scheduled back-to-back, meaning no class should have any gaps in their schedule"
                 ></v-switch>
             </v-row>
             <h3>Soft contraints:</h3>
@@ -29,28 +29,28 @@
                 <v-switch
                 color="#90CAF9"
                 v-model="evenHoursInClass"
-                label="Even hours through the week in class catalogs"
+                label="Classes should have an equal number of hours per day, so that there is as little difference as possible between the number of hours on different days of the week, and their lessons should be evenly distributed"
                 ></v-switch>
             </v-row>
             <v-row>
                 <v-switch
                 color="#90CAF9"
                 v-model="noHoleHoursInTeacher"
-                label="No hole hour in teacher catalogs"
+                label="Teachers should have as few gaps in their schedules as possible"
                 ></v-switch>
             </v-row>
             <v-row>
                 <v-switch
                 color="#90CAF9"
                 v-model="evenHoursInTeacher"
-                label="Even hours through the week in teacher catalogs"
+                label="Teachers should have an equal number of hours per day, so that there is as little difference as possible between the number of hours on different days of the week, and their lessons should be evenly distributed"
                 ></v-switch>
             </v-row>
             <v-row>
                 <v-switch
                 color="#90CAF9"
                 v-model="coursesWeightInClass"
-                label="Courses weight in class catalogs"
+                label="It is advisable to schedule prioritized subjects for each class as early as possible"
                 ></v-switch>
             </v-row>
             <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="!valid">

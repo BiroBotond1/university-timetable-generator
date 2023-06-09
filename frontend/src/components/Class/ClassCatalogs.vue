@@ -2,6 +2,7 @@
 <template>
     <div app>
     <v-navigation-drawer
+        color="#1D0C59"
         app 
         permanent
         clipped 
