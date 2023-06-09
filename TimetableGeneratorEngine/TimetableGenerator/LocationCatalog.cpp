@@ -8,12 +8,12 @@ LocationCatalog::LocationCatalog(const std::string p_strLocationID) : m_strLocat
 LocationCatalog::LocationCatalog(const Catalog& rhsLocationCatalog, const std::string p_strLocationID)
 	: Catalog(rhsLocationCatalog), m_strLocationID(p_strLocationID) {}
 
-const double LocationCatalog::GetFitnessValue() {
+std::tuple<double, bool> LocationCatalog::Evaluate() {
 	if (!m_bChanged)
-		return m_dFitness;
+		return std::make_tuple(m_dFitness, m_bActive);
 
 	m_dFitness = 0;
-	g_bActive = true;
+	m_bActive = true;
 
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
 		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++) {
@@ -26,10 +26,10 @@ const double LocationCatalog::GetFitnessValue() {
 	}
 
 	//ensure if the catalog is correct don t change that
-	if (g_bActive) {
+	if (m_bActive) {
 		m_dFitness += 1000;
 	}
 
 	m_bChanged = false;
-	return m_dFitness;
+	return std::make_tuple(m_dFitness, m_bActive);
 }

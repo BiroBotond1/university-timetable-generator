@@ -9,6 +9,7 @@ Catalog::Catalog() {
 }
 
 Catalog::Catalog(const Catalog& rhsCatalog) {
+	m_bActive = rhsCatalog.m_bActive;
 	m_bChanged = rhsCatalog.m_bChanged;
 	m_dFitness = rhsCatalog.m_dFitness;
 	m_catalog = rhsCatalog.m_catalog;
@@ -86,13 +87,14 @@ const double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber
 }
 
 //no empty hours between courses
-const double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
+const double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours, bool bStrongConstraint)
 {
 	if (!p_bHasEmptyHours)
 		return 0;
 
 	p_bHasEmptyHours = false;
-	g_bActive = false;
+	if(bStrongConstraint)
+		m_bActive = false;
 	return -4;
 }
 
@@ -100,7 +102,7 @@ const double Catalog::GetNoHoleHoursFitness(bool& p_bHasEmptyHours)
 const double Catalog::GetInactiveDaysFitness(const int p_nDay, const int p_nHour, const std::vector<std::pair<int, int>>& p_inactiveDays) {
 	auto date = std::make_pair(p_nDay, p_nHour);
 	if (std::find(p_inactiveDays.begin(), p_inactiveDays.end(), date) != p_inactiveDays.end()) {
-		g_bActive = false;
+		m_bActive = false;
 		return -10;
 	}
 	return 0;

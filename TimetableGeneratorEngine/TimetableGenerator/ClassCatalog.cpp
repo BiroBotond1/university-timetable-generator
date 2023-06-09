@@ -18,20 +18,20 @@ const double ClassCatalog::GetFitnessOneTypeOfCourseOnADay(std::unordered_map<st
 	for (auto& courseNumber : p_mCourseNumberOnADay) {
 		if (courseNumber.second > 1) {
 			dFitness -= (courseNumber.second * 2);
-			g_bActive = false;
+			m_bActive = false;
 		}
 		courseNumber.second = 0;
 	}
 	return dFitness;
 }
 
-const double ClassCatalog::GetFitnessValue() {
+std::tuple<double, bool> ClassCatalog::Evaluate() {
 	if (!m_bChanged)
-		return m_dFitness;
+		return std::make_tuple(m_dFitness, m_bActive);
 
 	m_dFitness = 0;
 	std::vector<int> vCourseNumbers(m_catalog.size(), 0);
-	g_bActive = true;
+	m_bActive = true;
 
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
 		std::unordered_map<std::string, int> mCourseNumberOnADay;
@@ -49,7 +49,7 @@ const double ClassCatalog::GetFitnessValue() {
 				AddCourseNumberOnADay(m_catalog[nDay][nHour], mCourseNumberOnADay);
 
 			if (g_bClassCatalogNoHoleHour)
-				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours);
+				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours, true);
 
 			//the courses starts at 8
 			if (g_bClassCatalogCoursesStartsAtEight) {
@@ -67,10 +67,10 @@ const double ClassCatalog::GetFitnessValue() {
 	if (g_bClassCatalogEvenHours)
 		m_dFitness += GetEvenDaysFitness(vCourseNumbers);
 
-	if (g_bActive) {
+	if (m_bActive) {
 		m_dFitness += 1000;
 	}
 
 	m_bChanged = false;
-	return m_dFitness;
+	return std::make_tuple(m_dFitness, m_bActive);
 }

@@ -10,6 +10,6 @@ public:
 	TeacherCatalog();
 	TeacherCatalog(const Catalog& rhsTeacherCatalog, const std::string p_strTeacherID);
 	TeacherCatalog(const std::string p_strTeacherID);
-	const double GetFitnessValue() override;
+	std::tuple<double, bool> Evaluate() override;
 };
 

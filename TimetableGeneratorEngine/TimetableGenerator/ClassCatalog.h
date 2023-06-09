@@ -9,5 +9,5 @@ class ClassCatalog : public Catalog
 public:
 	ClassCatalog();
 	ClassCatalog(const Catalog& rhsClassCatalog);
-	const double GetFitnessValue() override;
+	std::tuple<double, bool> Evaluate() override;
 };

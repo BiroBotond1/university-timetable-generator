@@ -6,7 +6,6 @@ std::unordered_map<std::string, Class>      g_classes;
 std::unordered_map<std::string, Subject>    g_subjects;
 std::unordered_map<std::string, ClassHour>  g_classHours;
 std::vector<std::string>					g_classIDs;
-bool										g_bActive;
 bool										g_bTeacherCatalogEvenHours;
 bool										g_bTeacherCatalogNoHoleHour;
 bool										g_bClassCatalogEvenHours;

@@ -16,7 +16,6 @@ extern std::unordered_map<std::string, Class>		g_classes;
 extern std::unordered_map<std::string, Subject>		g_subjects;
 extern std::unordered_map<std::string, ClassHour>	g_classHours;
 extern std::vector<std::string>						g_classIDs; 
-extern bool											g_bActive;
 extern bool											g_bTeacherCatalogEvenHours;
 extern bool											g_bTeacherCatalogNoHoleHour;
 extern bool											g_bClassCatalogEvenHours;

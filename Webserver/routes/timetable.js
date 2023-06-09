@@ -35,9 +35,12 @@ router.post('/proba', async (req, res) => {
         fs.writeFileSync("../TimetableGeneratorEngine/TimetableGenerator/in.json", obj);
 
         os.execCommand("TimetableGenerator.exe").then(result => {
-            console.log("success");
             let catalogs = JSON.parse(result)
-            console.log(catalogs.active)
+            console.log('Active: '+ catalogs.active)
+            console.log('Class fitnes: ' + catalogs.fitnesClas)
+            console.log('Teacher fitnes: ' + catalogs.fitnesTeacher)
+            console.log('Location fitnes: ' + catalogs.fitnesLocation)
+            console.log('Elapsed time: ' + catalogs.elapsedTime)
             for(var classID in catalogs["classCatalogs"]) {
                 classService.addCatalog(classID, catalogs["classCatalogs"][classID])
             }

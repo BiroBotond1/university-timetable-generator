@@ -8,12 +8,12 @@ TeacherCatalog::TeacherCatalog(const std::string p_strTeacherID) : m_strTeacherI
 TeacherCatalog::TeacherCatalog(const Catalog& rhsTeacherCatalog, const std::string p_strTeacherID)
 	: Catalog(rhsTeacherCatalog), m_strTeacherID(p_strTeacherID) {}
 
-const double TeacherCatalog::GetFitnessValue() {
+std::tuple<double, bool> TeacherCatalog::Evaluate() {
 	if (!m_bChanged)
-		return m_dFitness;
+		return std::make_tuple(m_dFitness, m_bActive);
 
 	m_dFitness = 0;
-	g_bActive = true;
+	m_bActive = true;
 	std::vector<int> coursesNumbers(m_catalog.size(), 0);
 
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++) {
@@ -30,17 +30,17 @@ const double TeacherCatalog::GetFitnessValue() {
 			m_dFitness += GetInactiveDaysFitness(nDay, nHour, g_teachers[m_strTeacherID].GetInappropriateDates());
 
 			if (g_bTeacherCatalogNoHoleHour)
-				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours);
+				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours, false);
 		}
 	}
 	
 	if (g_bTeacherCatalogEvenHours)
 		m_dFitness += GetEvenDaysFitness(coursesNumbers);
 
-	if (g_bActive) {
+	if (m_bActive) {
 		m_dFitness += 1000;
 	}
 
 	m_bChanged = false;
-	return m_dFitness;
+	return std::make_tuple(m_dFitness, m_bActive);
 }

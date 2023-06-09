@@ -10,6 +10,6 @@ public:
 	LocationCatalog();
 	LocationCatalog(const std::string p_strLocationID);
 	LocationCatalog(const Catalog& rhsLocationCatalog, const std::string p_strLocationID);
-	const double GetFitnessValue() override;
+	std::tuple<double, bool> Evaluate() override;
 };
 

@@ -29,6 +29,7 @@ void TimetableGenerator::Read(std::string fileName) {
 }
 
 void TimetableGenerator::InitCatalogs() {
+    m_bActive = false;
     for (auto& classHour : g_classHours)
     {
         classHour.second.AddClassHoursToCatalog();
@@ -36,24 +37,39 @@ void TimetableGenerator::InitCatalogs() {
 }
 
 double TimetableGenerator::Fitness(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
-    double fitnessValue = 0;
+    auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(p_classes, p_teachers, p_locations);
+    return dFitnessClass + dFitnessTeacher + dFitnessLocation;
+}
+
+std::tuple<double, double, double, bool> TimetableGenerator::Evaluate(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
+    double dFitnessValueClass = 0, dFitnessValueTeacher = 0, dFitnessValueLocation = 0;
+    bool bActive = true;
     for (auto& clas : p_classes)
     {
-        fitnessValue += clas.second.GetFitnessValue();
+        auto [dActfitness, bActActive] = clas.second.Evaluate();
+        dFitnessValueClass += dActfitness;
+        bActive = bActive && bActActive;
     }
+    
     for (auto& teacher : p_teachers)
     {
-        fitnessValue += teacher.second.GetFitnessValue();
+        auto [dActfitness, bActActive] = teacher.second.Evaluate();
+        dFitnessValueTeacher += dActfitness;
+        bActive = bActive && bActActive;
     }
     for (auto& location : p_locations)
     {
-        fitnessValue += location.second.GetFitnessValue();
+        auto [dActfitness, bActActive] = location.second.Evaluate();
+        dFitnessValueLocation += dActfitness;
+        bActive = bActive && bActActive;
     }
-    return fitnessValue;
+    return std::make_tuple(dFitnessValueClass, dFitnessValueTeacher, dFitnessValueLocation, bActive);
 }
 
 double TimetableGenerator::Fitness() {
-    return Fitness(g_classes, g_teachers, g_locations);
+    auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(g_classes, g_teachers, g_locations);
+    m_bActive = bActive;
+    return dFitnessClass + dFitnessTeacher + dFitnessLocation;
 }
 
 void TimetableGenerator::WriteCatalog() {
@@ -70,7 +86,11 @@ void TimetableGenerator::WriteCatalog() {
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
     res["locationCatalogs"] = locationsCatalogs;
-    res["active"] = g_bActive;
+    res["active"] = m_bActive;
+    res["fitnesClas"] = m_fitnessClass;
+    res["fitnesTeacher"] = m_fitnessTeacher;
+    res["fitnesLocation"] = m_fitnessLocation;
+    res["elapsedTime"] = m_elapsedTime;
     std::cout << res;
 }
 
@@ -119,6 +139,8 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
     int nHour2;
     std::string strTeacherID1;
     std::string strTeacherID2;
+    std::string strLocationID1;
+    std::string strLocationID2;
     do {
         nDay1 = RandInt(0, 4);
         nHour1 = RandInt(0, 7);
@@ -126,8 +148,12 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
         nHour2 = RandInt(0, 7);
         strTeacherID1 = p_classes[strClassID].GetTeacherID(nDay1, nHour1);
         strTeacherID2 = p_classes[strClassID].GetTeacherID(nDay2, nHour2);
+        strLocationID1 = p_classes[strClassID].GetLocationID(nDay1, nHour1);
+        strLocationID2 = p_classes[strClassID].GetLocationID(nDay2, nHour2);
     } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog()->IsFreeDay(nDay2, nHour2))
-            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog()->IsFreeDay(nDay1, nHour1)));
+            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog()->IsFreeDay(nDay1, nHour1))
+            || (strLocationID1.compare("") != 0 && !p_locations[strLocationID1].GetCatalog()->IsFreeDay(nDay1, nHour1))
+            || (strLocationID2.compare("") != 0 && !p_locations[strLocationID2].GetCatalog()->IsFreeDay(nDay2, nHour2)));
     
 
     ClassHour classHour1 = g_classHours[p_classes[strClassID].GetClassHourID(nDay1, nHour1)];
@@ -166,8 +192,8 @@ void TimetableGenerator::Changes(std::unordered_map<std::string, Class>& p_class
     }
 }
 
-double TimetableGenerator::LinearAnnealing(int i) {
-    return 10000 / (1 + 0.1 * i);
+double TimetableGenerator::LinearAnnealing(double t, int i) {
+    return t / (1 + 0.01* i);
 }
 
 void TimetableGenerator::SimulatedAnnealing() {
@@ -177,10 +203,12 @@ void TimetableGenerator::SimulatedAnnealing() {
     std::unordered_map<std::string, Class> p_classes;
     std::unordered_map<std::string, Teacher> p_teachers;
     std::unordered_map<std::string, Location> p_locations;
-    g_bActive = false;
-    double t = 10000000;
+    std::ofstream testDatas("Plot_data.txt");
+    auto t_start = std::chrono::high_resolution_clock::now();
+    double initialT = 300000, t;
+    t = initialT;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (nStepsWithNoBetterSolution < 1000000) {
+    while (/*nStepsWithNoBetterSolution < 10000*/t > 2.5/*g_bActive == false*/) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;
@@ -194,14 +222,27 @@ void TimetableGenerator::SimulatedAnnealing() {
         }
         i++;
         nStepsWithNoBetterSolution++;
-        t = LinearAnnealing(i);
+        t = LinearAnnealing(initialT, i);
         if (Fitness() > Fitness(p_classesBest, p_teachersBest, p_locationsBest)) {
             nStepsWithNoBetterSolution = 0;
             p_classesBest = g_classes;
             p_teachersBest = g_teachers;
             p_locationsBest = g_locations;
         }
+        if (i % 1000 == 0) {
+            auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(p_classesBest, p_teachersBest, p_locationsBest);
+            testDatas << dFitnessClass << " " << dFitnessTeacher << " " << dFitnessLocation << " " << t << " ";
+        }
+        
     }
+    auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(p_classesBest, p_teachersBest, p_locationsBest);
+    m_fitnessClass = dFitnessClass;
+    m_fitnessTeacher = dFitnessTeacher;
+    m_fitnessLocation = dFitnessLocation;
+    auto t_act = std::chrono::high_resolution_clock::now();
+    m_elapsedTime = std::chrono::duration<double, std::milli>(t_act - t_start).count();
+    testDatas.close();
+
     g_classes = p_classesBest;
     g_teachers = p_teachersBest;
     g_locations = p_locationsBest;
