@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <div app>
     <v-navigation-drawer
         color="#1D0C59"
         app 
@@ -19,7 +19,7 @@
           </v-list-item>
         </v-list>
     </v-navigation-drawer>
-    <teacherCatalog ref="teacherCatalog"/>
+    <teacherCatalog id="teacherCatalog" ref="teacherCatalog"/>
     <div class="color-container">
       <div class="color-box subjectColor"></div>
       <div class="color-label">Subject</div>
@@ -28,7 +28,9 @@
       <div class="color-box locationColor"></div>
       <div class="color-label">Location</div>
     </div>
-</v-app>
+    <br>
+    <v-btn class="white--text" color="#1E88E5" block @click="print"> Print</v-btn>
+  </div>
  </template>
  
  <script>
@@ -62,6 +64,28 @@ import teacherCatalog from './TeacherCatalog.vue'
         selectTeacher(teacherID) {
             this.$refs.teacherCatalog.teacherID = teacherID
             this.$forceUpdate();
+        },
+        print() {
+          const prtHtml = document.getElementById('teacherCatalog').innerHTML;
+          let stylesHtml = '';
+          for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+            stylesHtml += node.outerHTML;
+          }
+          const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+          WinPrint.document.write(`<!DOCTYPE html>
+          <html>
+            <head>
+              ${stylesHtml}
+            </head>
+            <body>
+              ${prtHtml}
+            </body>
+          </html>`);
+
+          WinPrint.document.close();
+          WinPrint.focus();
+          WinPrint.print();
+          WinPrint.close();
         }
     },
 }

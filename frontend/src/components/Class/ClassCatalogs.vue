@@ -20,7 +20,7 @@
           </v-list-item>
         </v-list>
     </v-navigation-drawer>
-    <classCatalog ref="classCatalog"/>
+    <classCatalog id="classCatalog" ref="classCatalog"/>
     <div class="color-container">
       <div class="color-box subjectColor"></div>
       <div class="color-label">Subject</div>
@@ -29,6 +29,8 @@
       <div class="color-box locationColor"></div>
       <div class="color-label">Location</div>
     </div>
+    <br>
+    <v-btn class="white--text" color="#1E88E5" block @click="print"> Print</v-btn>
   </div>
  </template>
 
@@ -64,6 +66,28 @@ import classCatalog from './ClassCatalog.vue'
         selectClass(classID) {
             this.$refs.classCatalog.classID = classID
             this.$forceUpdate();
+        },
+        print() {
+          const prtHtml = document.getElementById('classCatalog').innerHTML;
+          let stylesHtml = '';
+          for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+            stylesHtml += node.outerHTML;
+          }
+          const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+          WinPrint.document.write(`<!DOCTYPE html>
+          <html>
+            <head>
+              ${stylesHtml}
+            </head>
+            <body>
+              ${prtHtml}
+            </body>
+          </html>`);
+
+          WinPrint.document.close();
+          WinPrint.focus();
+          WinPrint.print();
+          WinPrint.close();
         }
     },
 }
