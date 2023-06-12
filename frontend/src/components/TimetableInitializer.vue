@@ -2,7 +2,7 @@
     <v-form v-model="valid" ref="form" @submit.prevent="submit" method="Post">
         <v-container>
             <h1 align="center">Generate Timetable</h1>
-            <h3>Hard contraints:</h3>
+            <h3>Hard constraints:</h3>
             <v-row>
                 <v-switch
                 color="#0D47A1"
@@ -24,7 +24,7 @@
                 label="All classes should have their lessons consistently scheduled back-to-back, meaning no class should have any gaps in their schedule"
                 ></v-switch>
             </v-row>
-            <h3>Soft contraints:</h3>
+            <h3>Soft constraints:</h3>
             <v-row>
                 <v-switch
                 color="#90CAF9"
