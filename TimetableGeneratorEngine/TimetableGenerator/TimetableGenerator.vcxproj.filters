@@ -48,15 +48,6 @@
     <ClCompile Include="Catalog.cpp">
       <Filter>Source Files\Catalog</Filter>
     </ClCompile>
-    <ClCompile Include="TeacherCatalog.cpp">
-      <Filter>Source Files\Catalog</Filter>
-    </ClCompile>
-    <ClCompile Include="ClassCatalog.cpp">
-      <Filter>Source Files\Catalog</Filter>
-    </ClCompile>
-    <ClCompile Include="LocationCatalog.cpp">
-      <Filter>Source Files\Catalog</Filter>
-    </ClCompile>
     <ClCompile Include="TimetableGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,15 +83,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Catalog.h">
-      <Filter>Header Files\Catalog</Filter>
-    </ClInclude>
-    <ClInclude Include="ClassCatalog.h">
-      <Filter>Header Files\Catalog</Filter>
-    </ClInclude>
-    <ClInclude Include="TeacherCatalog.h">
-      <Filter>Header Files\Catalog</Filter>
-    </ClInclude>
-    <ClInclude Include="LocationCatalog.h">
       <Filter>Header Files\Catalog</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "LocationCatalog.h"
+#include "Catalog.h"
 #include "EntityWithCatalog.h"
 
 class Location :public EntityWithCatalog
@@ -10,8 +10,8 @@ class Location :public EntityWithCatalog
 public:
 	Location() {}
 	Location(const nlohmann::json& jsonLocation);
-	Location(const Location& rhsLocation);
+	//Location(const Location& rhsLocation);
 	const std::vector<std::pair<int, int>>&	GetReservedDates();
 	void DeleteClassHour(const int p_nDay,const int p_nHour);
-	void operator=(const Location& rhsLocation);
+	//void operator=(const Location& rhsLocation);
 };

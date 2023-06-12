@@ -10,20 +10,20 @@ void TimetableGenerator::Read(std::string fileName) {
     g_bTeacherCatalogNoHoleHour = data["NoHoleHoursInTeacher"].get<bool>();
     g_bTeacherCatalogEvenHours = data["EvenHoursInTeacher"].get<bool>();
     g_bClassCatalogCoursesWeight = data["CoursesWeightInClass"].get<bool>();
-    for (auto jsonTeacher : data["teachers"]) {
+    for (auto &jsonTeacher : data["teachers"]) {
         g_teachers[jsonTeacher["_id"]] = Teacher{ jsonTeacher };
     }
-    for (auto jsonLocation : data["locations"]) {
+    for (auto &jsonLocation : data["locations"]) {
         g_locations[jsonLocation["_id"]] = Location{ jsonLocation };
     }
-    for (auto jsonClass : data["classes"]) {
+    for (auto &jsonClass : data["classes"]) {
         g_classes[jsonClass["_id"]] = Class{ jsonClass };
         g_classIDs.push_back(jsonClass["_id"]);
     }
-    for (auto jsonSubject : data["subjects"]) {
+    for (auto &jsonSubject : data["subjects"]) {
         g_subjects[jsonSubject["_id"]] = Subject{ jsonSubject };
     }
-    for (auto jsonClassHour : data["classHours"]) {
+    for (auto &jsonClassHour : data["classHours"]) {
         g_classHours[jsonClassHour["_id"]] = ClassHour{ jsonClassHour };
     }
 }
@@ -46,20 +46,20 @@ std::tuple<double, double, double, bool> TimetableGenerator::Evaluate(std::unord
     bool bActive = true;
     for (auto& clas : p_classes)
     {
-        auto [dActfitness, bActActive] = clas.second.Evaluate();
+        auto [dActfitness, bActActive] = clas.second.EvaluateClass();
         dFitnessValueClass += dActfitness;
         bActive = bActive && bActActive;
     }
     
     for (auto& teacher : p_teachers)
     {
-        auto [dActfitness, bActActive] = teacher.second.Evaluate();
+        auto [dActfitness, bActActive] = teacher.second.EvaluateTeacher(teacher.first);
         dFitnessValueTeacher += dActfitness;
         bActive = bActive && bActActive;
     }
     for (auto& location : p_locations)
     {
-        auto [dActfitness, bActActive] = location.second.Evaluate();
+        auto [dActfitness, bActActive] = location.second.EvaluateLocation(location.first);
         dFitnessValueLocation += dActfitness;
         bActive = bActive && bActActive;
     }
@@ -75,13 +75,13 @@ double TimetableGenerator::Fitness() {
 void TimetableGenerator::WriteCatalog() {
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
     for (auto& clas : g_classes) {
-        classCatalogs[clas.first] = clas.second.GetCatalog()->GetJSONObj();
+        classCatalogs[clas.first] = clas.second.GetCatalog().GetJSONObj();
     }
     for (auto& teacher : g_teachers) {
-        teacherCatalogs[teacher.first] = teacher.second.GetCatalog()->GetJSONObj();
+        teacherCatalogs[teacher.first] = teacher.second.GetCatalog().GetJSONObj();
     }
     for (auto& location : g_locations) {
-        locationsCatalogs[location.first] = location.second.GetCatalog()->GetJSONObj();
+        locationsCatalogs[location.first] = location.second.GetCatalog().GetJSONObj();
     }
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
@@ -96,9 +96,9 @@ void TimetableGenerator::WriteCatalog() {
 
 bool TimetableGenerator::ChangeLocations(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, std::string p_strLocationID, ClassHour p_classHour, int p_nDay, int p_nHour) {
     std::string classID = p_classHour.GetClassID();
-    std::string oldLocationID = p_classes[classID].GetCatalog()->GetLocationID(p_nDay, p_nHour);
+    std::string oldLocationID = p_classes[classID].GetCatalog().GetLocationID(p_nDay, p_nHour);
     std::string teacherID = p_classHour.GetTeacherID();
-    if (!p_locations[p_strLocationID].GetCatalog()->IsFreeDay(p_nDay, p_nHour)) {
+    if (!p_locations[p_strLocationID].GetCatalog().IsFreeDay(p_nDay, p_nHour)) {
         return false;
     }
     p_locations[oldLocationID].DeleteClassHour(p_nDay, p_nHour);
@@ -150,10 +150,10 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
         strTeacherID2 = p_classes[strClassID].GetTeacherID(nDay2, nHour2);
         strLocationID1 = p_classes[strClassID].GetLocationID(nDay1, nHour1);
         strLocationID2 = p_classes[strClassID].GetLocationID(nDay2, nHour2);
-    } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog()->IsFreeDay(nDay2, nHour2))
-            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog()->IsFreeDay(nDay1, nHour1))
-            || (strLocationID1.compare("") != 0 && !p_locations[strLocationID1].GetCatalog()->IsFreeDay(nDay1, nHour1))
-            || (strLocationID2.compare("") != 0 && !p_locations[strLocationID2].GetCatalog()->IsFreeDay(nDay2, nHour2)));
+    } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog().IsFreeDay(nDay2, nHour2))
+            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog().IsFreeDay(nDay1, nHour1))
+            || (strLocationID1.compare("") != 0 && !p_locations[strLocationID1].GetCatalog().IsFreeDay(nDay1, nHour1))
+            || (strLocationID2.compare("") != 0 && !p_locations[strLocationID2].GetCatalog().IsFreeDay(nDay2, nHour2)));
     
 
     ClassHour classHour1 = g_classHours[p_classes[strClassID].GetClassHourID(nDay1, nHour1)];
@@ -205,10 +205,10 @@ void TimetableGenerator::SimulatedAnnealing() {
     std::unordered_map<std::string, Location> p_locations;
     std::ofstream testDatas("Plot_data.txt");
     auto t_start = std::chrono::high_resolution_clock::now();
-    double initialT = 300000, t;
+    double initialT = 100000, t;
     t = initialT;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (/*nStepsWithNoBetterSolution < 10000*/t > 2.5/*g_bActive == false*/) {
+    while (/*nStepsWithNoBetterSolution < 10000*/t > 1/*g_bActive == false*/) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;

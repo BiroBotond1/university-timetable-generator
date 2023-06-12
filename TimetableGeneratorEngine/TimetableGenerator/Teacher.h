@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "TeacherCatalog.h"
+#include "Catalog.h"
 #include "EntityWithCatalog.h"
 
 class Teacher: public EntityWithCatalog 
@@ -10,7 +10,5 @@ class Teacher: public EntityWithCatalog
 public:
 	Teacher() {}
 	Teacher(const nlohmann::json& jsonTeacher);
-	Teacher(const Teacher& rhsTeacher);
 	const std::vector<std::pair<int, int>>& 	GetInappropriateDates();
-	void operator=(const Teacher& rhsTeacher);
 };

@@ -7,13 +7,12 @@
       <Method Name="GetClassHourID" Hidden="true" />
       <Method Name="GetLocationID" Hidden="true" />
       <Method Name="GetTeacherID" Hidden="true" />
-      <Method Name="operator=" Hidden="true" />
     </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QAAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>QAAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Class.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -25,7 +24,6 @@
       <Method Name="DeleteClassHour" Hidden="true" />
       <Method Name="GetClassHourID" Hidden="true" />
       <Method Name="GetEvenDaysFitness" Hidden="true" />
-      <Method Name="GetFitnessValue" Hidden="true" />
       <Method Name="GetInactiveDaysFitness" Hidden="true" />
       <Method Name="GetJSONObj" Hidden="true" />
       <Method Name="GetLocationID" Hidden="true" />
@@ -39,7 +37,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>wAJIAAAAAIAAESAAAQAAAAABAAABkAgAAAAAAAAAQAg=</HashCode>
+      <HashCode>wAJIAAQAAIAAESQAAAAAAAABAABBkAgAAAQAAAAAQJg=</HashCode>
       <FileName>Catalog.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -127,12 +125,11 @@
       <Method Name="Change" Hidden="true" />
       <Method Name="EntityWithCatalog" Hidden="true" />
       <Method Name="GetCatalog" Hidden="true" />
-      <Method Name="GetFitnessValue" Hidden="true" />
       <Method Name="IsFreeDay" Hidden="true" />
       <Method Name="SetClassHour" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AAJAAAAAAAFAABAAAQAAAAAAAAAAEAEAAAAAAAAAAAg=</HashCode>
+      <HashCode>AAJAAUAAAAFAABAAAAAAAAAAAAAAEAEAAAACAAAAAAg=</HashCode>
       <FileName>EntityWithCatalog.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -142,13 +139,12 @@
       <Method Name="DeleteClassHour" Hidden="true" />
       <Method Name="GetReservedDates" Hidden="true" />
       <Method Name="Location" Hidden="true" />
-      <Method Name="operator=" Hidden="true" />
     </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAIACAAAAAAAgAAAAAAgAAAAAAI=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAIACAAAAAAAgAAAAAAAAAAAAAI=</HashCode>
       <FileName>Location.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -168,14 +164,13 @@
     <Position X="6" Y="4.5" Width="1.5" />
     <Members>
       <Method Name="GetInappropriateDates" Hidden="true" />
-      <Method Name="operator=" Hidden="true" />
       <Method Name="Teacher" Hidden="true" />
     </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAFAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAFAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Teacher.h</FileName>
     </TypeIdentifier>
   </Class>

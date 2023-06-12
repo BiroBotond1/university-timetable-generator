@@ -157,11 +157,8 @@
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="ClassHour.cpp" />
     <ClCompile Include="Location.cpp" />
-    <ClCompile Include="LocationCatalog.cpp" />
-    <ClCompile Include="ClassCatalog.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Teacher.cpp" />
-    <ClCompile Include="TeacherCatalog.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
@@ -178,12 +175,9 @@
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="ClassHour.h" />
     <ClInclude Include="Location.h" />
-    <ClInclude Include="LocationCatalog.h" />
-    <ClInclude Include="ClassCatalog.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Teacher.h" />
-    <ClInclude Include="TeacherCatalog.h" />
     <ClInclude Include="TimetableGenerator.h" />
   </ItemGroup>
   <ItemGroup>
