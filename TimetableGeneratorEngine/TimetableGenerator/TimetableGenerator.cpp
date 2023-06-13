@@ -130,9 +130,7 @@ std::string TimetableGenerator::GetRandomClassID() {
     return g_classIDs[RandInt(0, int(g_classIDs.size() - 1))];
 }
 
-void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
-    std::string strClassID = GetRandomClassID();
-
+std::tuple<int, int, int, int> TimetableGenerator::GetRandomFreeHourTime(std::string p_strtClassID, std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
     int nDay1;
     int nHour1;
     int nDay2;
@@ -146,15 +144,22 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
         nHour1 = RandInt(0, 7);
         nDay2 = RandInt(0, 4);
         nHour2 = RandInt(0, 7);
-        strTeacherID1 = p_classes[strClassID].GetTeacherID(nDay1, nHour1);
-        strTeacherID2 = p_classes[strClassID].GetTeacherID(nDay2, nHour2);
-        strLocationID1 = p_classes[strClassID].GetLocationID(nDay1, nHour1);
-        strLocationID2 = p_classes[strClassID].GetLocationID(nDay2, nHour2);
-    } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog().IsFreeDay(nDay2, nHour2))
-            || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog().IsFreeDay(nDay1, nHour1))
-            || (strLocationID1.compare("") != 0 && !p_locations[strLocationID1].GetCatalog().IsFreeDay(nDay1, nHour1))
-            || (strLocationID2.compare("") != 0 && !p_locations[strLocationID2].GetCatalog().IsFreeDay(nDay2, nHour2)));
-    
+        strTeacherID1 = p_classes[p_strtClassID].GetTeacherID(nDay1, nHour1);
+        strTeacherID2 = p_classes[p_strtClassID].GetTeacherID(nDay2, nHour2);
+        strLocationID1 = p_classes[p_strtClassID].GetLocationID(nDay1, nHour1);
+        strLocationID2 = p_classes[p_strtClassID].GetLocationID(nDay2, nHour2);
+    } while ((strTeacherID1.compare("") != 0 && !p_teachers[strTeacherID1].GetCatalog().IsFreeDay(nDay2, nHour2)) 
+        || (strTeacherID2.compare("") != 0 && !p_teachers[strTeacherID2].GetCatalog().IsFreeDay(nDay1, nHour1))
+        || (strLocationID1.compare("") != 0 && !p_locations[strLocationID1].GetCatalog().IsFreeDay(nDay2, nHour2))
+        || (strLocationID2.compare("") != 0 && !p_locations[strLocationID2].GetCatalog().IsFreeDay(nDay1, nHour1))
+        || (strTeacherID1.compare("") == 0 && strTeacherID2.compare("") == 0));
+
+    return std::make_tuple(nDay1, nHour1, nDay2, nHour2);
+}
+
+void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
+    std::string strClassID = GetRandomClassID(); 
+    auto [nDay1, nHour1, nDay2, nHour2] = GetRandomFreeHourTime(strClassID, p_classes, p_teachers, p_locations);
 
     ClassHour classHour1 = g_classHours[p_classes[strClassID].GetClassHourID(nDay1, nHour1)];
     ClassHour classHour2 = g_classHours[p_classes[strClassID].GetClassHourID(nDay2, nHour2)];
@@ -193,7 +198,7 @@ void TimetableGenerator::Changes(std::unordered_map<std::string, Class>& p_class
 }
 
 double TimetableGenerator::LinearAnnealing(double t, int i) {
-    return t / (1 + 0.01* i);
+    return t / (1 + 0.01 * i);
 }
 
 void TimetableGenerator::SimulatedAnnealing() {
@@ -208,7 +213,7 @@ void TimetableGenerator::SimulatedAnnealing() {
     double initialT = 100000, t;
     t = initialT;
     int i = 0, nStepsWithNoBetterSolution = 0;
-    while (/*nStepsWithNoBetterSolution < 10000*/t > 1/*g_bActive == false*/) {
+    while (/*nStepsWithNoBetterSolution < 10000*/t > 2.5/*g_bActive == false*/) {
         p_classes = g_classes;
         p_teachers = g_teachers;
         p_locations = g_locations;
@@ -240,7 +245,7 @@ void TimetableGenerator::SimulatedAnnealing() {
     m_fitnessTeacher = dFitnessTeacher;
     m_fitnessLocation = dFitnessLocation;
     auto t_act = std::chrono::high_resolution_clock::now();
-    m_elapsedTime = std::chrono::duration<double, std::milli>(t_act - t_start).count();
+    m_elapsedTime = std::chrono::duration<double>(t_act - t_start).count();
     testDatas.close();
 
     g_classes = p_classesBest;
