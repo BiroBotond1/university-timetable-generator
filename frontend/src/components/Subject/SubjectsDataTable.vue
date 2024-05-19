@@ -153,19 +153,19 @@ export default {
   methods: {
     async fetchLocations() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/location')
+          get('http://127.0.0.1:3000/api/locations')
           .catch(error => console.log(error))
           this.allLocations = response.data.data
         },
     async fetchSubjects() {
         let response = await axios.
-        get('http://127.0.0.1:3000/api/subject')
+        get('http://127.0.0.1:3000/api/subjects')
         .catch(error => console.log(error))
         this.subjects = response.data.data
       },
       async fetchSubject() {
       let response = await axios
-          .get('http://127.0.0.1:3000/api/subject/' + this.subjects[this.editedIndex]._id)
+          .get('http://127.0.0.1:3000/api/subjects/' + this.subjects[this.editedIndex]._id)
           .catch(error => console.log(error))
           this.editedItem = response.data.data
     },
@@ -189,7 +189,7 @@ export default {
 
     async deleteItemConfirm () {
       await axios
-        .delete('http://127.0.0.1:3000/api/subject/' + this.editedItem._id)
+        .delete('http://127.0.0.1:3000/api/subjects/' + this.editedItem._id)
         .catch(error => console.log(error))
       await this.fetchSubjects()
       this.closeDelete()
@@ -209,11 +209,11 @@ export default {
       }
       if (this.editedIndex > -1) {
         await axios.
-        put('http://127.0.0.1:3000/api/subject/' + this.subjects[this.editedIndex]._id, subject)
+        patch('http://127.0.0.1:3000/api/subject/' + this.subjects[this.editedIndex]._id, subject)
         .catch(error => console.log(error))
       } else {
         await axios.
-        post('http://127.0.0.1:3000/api/subject', subject)
+        post('http://127.0.0.1:3000/api/subjects', subject)
         .catch(error => console.log(error))
       }
       await this.fetchSubjects()

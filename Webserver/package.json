@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:server": "nodemon index.js --ignore '../client/'",
-    "start:client": "npm run serve --previx '../client/'",
-    "dev": "concurrently \"npm run start:server\" \"npm run start:client\""
+    "nstart": "nodemon index.js --ignore '../client/'",
+    "start": "npm run serve --previx '../client/'"
   },
   "author": "Biro Botond",
   "license": "ISC",

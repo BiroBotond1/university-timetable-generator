@@ -10,8 +10,8 @@ public:
 	Class(const nlohmann::json& jsonClass);
 	//Class(const Class& rhsClass);
 	//void operator=(const Class& rhsClass);
-	const std::string	GetClassHourID(const int p_nDay, const int p_nHour);
-	const std::string	GetTeacherID(const int p_nDay, const int p_nHour);
-	const std::string	GetLocationID(const int p_nDay, const int p_nHour);
+	const std::string	GetClassHourID(Time p_time);
+	const std::string	GetTeacherID(Time p_time);
+	const std::string	GetLocationID(Time p_time);
 };
 

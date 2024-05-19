@@ -143,13 +143,13 @@ export default {
     methods: {
       async fetchClasses() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/class')
+          get('http://127.0.0.1:3000/api/classes')
           .catch(error => console.log(error))
           this.classes = response.data.data
         },
         async fetchClass() {
         let response = await axios
-            .get('http://127.0.0.1:3000/api/class/' + this.classes[this.editedIndex]._id)
+            .get('http://127.0.0.1:3000/api/classes/' + this.classes[this.editedIndex]._id)
             .catch(error => console.log(error))
             this.editedItem = response.data.data
       },
@@ -193,11 +193,11 @@ export default {
         }
         if (this.editedIndex > -1) {
           await axios.
-          put('http://127.0.0.1:3000/api/class/' + this.classes[this.editedIndex]._id, classs)
+          patch('http://127.0.0.1:3000/api/classes/' + this.classes[this.editedIndex]._id, classs)
           .catch(error => console.log(error))
         } else {
           await axios.
-          post('http://127.0.0.1:3000/api/class', classs)
+          post('http://127.0.0.1:3000/api/classes', classs)
           .catch(error => console.log(error))
         }
         await this.fetchClasses()

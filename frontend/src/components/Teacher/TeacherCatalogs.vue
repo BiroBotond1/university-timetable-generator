@@ -57,7 +57,7 @@ import teacherCatalog from './TeacherCatalog.vue'
     methods: {
         async fetchTeachers() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/teacher')
+          get('http://127.0.0.1:3000/api/teachers')
           .catch(error => console.log(error))
           this.teachers = response.data.data
         },

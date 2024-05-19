@@ -150,13 +150,13 @@ export default {
     methods: {
       async fetchTeachers() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/teacher')
+          get('http://127.0.0.1:3000/api/teachers')
           .catch(error => console.log(error))
           this.teachers = response.data.data
         },
         async fetchTeacher() {
         let response = await axios
-            .get('http://127.0.0.1:3000/api/teacher/' + this.teachers[this.editedIndex]._id)
+            .get('http://127.0.0.1:3000/api/teachers/' + this.teachers[this.editedIndex]._id)
             .catch(error => console.log(error))
             this.editedItem = response.data.data
       },
@@ -189,7 +189,7 @@ export default {
 
       async deleteItemConfirm () {
         await axios
-          .delete('http://127.0.0.1:3000/api/teacher/' + this.editedItem._id)
+          .delete('http://127.0.0.1:3000/api/teachers/' + this.editedItem._id)
           .catch(error => console.log(error))
         await this.fetchTeachers()
         this.closeDelete()
@@ -209,11 +209,11 @@ export default {
         }
         if (this.editedIndex > -1) {
           await axios.
-          put('http://127.0.0.1:3000/api/teacher/' + this.teachers[this.editedIndex]._id, teacher)
+          patch('http://127.0.0.1:3000/api/teachers/' + this.teachers[this.editedIndex]._id, teacher)
           .catch(error => console.log(error))
         } else {
           await axios.
-          post('http://127.0.0.1:3000/api/teacher', teacher)
+          post('http://127.0.0.1:3000/api/teachers', teacher)
           .catch(error => console.log(error))
         }
         await this.fetchTeachers()

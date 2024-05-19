@@ -58,7 +58,7 @@ import locationCatalog from './LocationCatalog.vue'
     methods: {
         async fetchLocations() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/location')
+          get('http://127.0.0.1:3000/api/locations')
           .catch(error => console.log(error))
           this.locations = response.data.data
         },

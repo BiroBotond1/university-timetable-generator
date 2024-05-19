@@ -59,7 +59,7 @@ import classCatalog from './ClassCatalog.vue'
     methods: {
         async fetchClasses() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/class')
+          get('http://127.0.0.1:3000/api/classes')
           .catch(error => console.log(error))
           this.classes = response.data.data
         },

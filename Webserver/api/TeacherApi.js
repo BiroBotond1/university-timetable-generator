@@ -10,6 +10,6 @@ const {
 const router = express.Router();
 
 router.route("/").get(getAllTeachers).post(createTeacher);
-router.route("/:id").get(getTeacherById).put(updateTeacher).delete(deleteTeacher);
+router.route("/:id").get(getTeacherById).patch(updateTeacher).delete(deleteTeacher);
 
 module.exports = router;

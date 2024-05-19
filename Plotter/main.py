@@ -22,6 +22,10 @@ for data in plot_data:
 fig, ax = plt.subplots(1,3)
 
 fig.tight_layout()
+fitnessClass.pop()
+#fitnessLocation.pop()
+fitnessTeacher.pop()
+
 ax[0].plot(temp, np.asarray(fitnessClass, float))
 ax[0].set_title('Class')
 ax[0].set_xticks([])

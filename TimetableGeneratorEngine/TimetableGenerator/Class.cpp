@@ -7,18 +7,18 @@ Class::Class(const nlohmann::json& jsonClass) {
 	m_catalog = Catalog();
 }
 
-const std::string Class::GetClassHourID(const int p_nDay, const int p_nHour) {
-	return m_catalog.GetClassHourID(p_nDay, p_nHour);
+const std::string Class::GetClassHourID(Time p_time) {
+	return m_catalog.GetClassHourID(p_time);
 }
 
-const std::string Class::GetTeacherID(const int p_nDay, const int p_nHour) {
-	if (m_catalog.IsFreeDay(p_nDay, p_nHour))
+const std::string Class::GetTeacherID(Time p_time) {
+	if (m_catalog.IsFreeDay(p_time))
 		return "";
-	return g_classHours[m_catalog.GetClassHourID(p_nDay, p_nHour)].GetTeacherID();
+	return g_classHours[m_catalog.GetClassHourID(p_time)].GetTeacherID();
 }
 
-const std::string Class::GetLocationID(const int p_nDay, const int p_nHour) {
-	if (m_catalog.IsFreeDay(p_nDay, p_nHour))
+const std::string Class::GetLocationID(Time p_time) {
+	if (m_catalog.IsFreeDay(p_time))
 		return "";
-	return m_catalog.GetLocationID(p_nDay, p_nHour);
+	return m_catalog.GetLocationID(p_time);
 }

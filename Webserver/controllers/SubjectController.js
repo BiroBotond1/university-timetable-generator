@@ -12,7 +12,7 @@ exports.getAllSubjects = async (req, res) => {
 exports.createSubject = async (req, res) => {
     try {
         const subject = await subjectService.createSubject(req.body);
-        res.json({data: subject, status: "success"});
+        res.status(201).json({data: subject, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
     }
@@ -21,6 +21,9 @@ exports.createSubject = async (req, res) => {
 exports.getSubjectById = async (req, res) => {
     try {
         const subject = await subjectService.getSubjectById(req.params.id);
+        if(!subject) {
+            return res.status(404).json({ error: "Subject not found"})
+        }
         res.json({data: subject, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -30,6 +33,9 @@ exports.getSubjectById = async (req, res) => {
 exports.updateSubject = async (req, res) => {
     try {
         const subject = await subjectService.updateSubject(req.params.id, req.body);
+        if(!subject) {
+            return res.status(404).json({ error: "Subject not found"})
+        }
         res.json({data: subject, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -39,6 +45,9 @@ exports.updateSubject = async (req, res) => {
 exports.deleteSubject = async (req, res) => {
     try {
         const subject = await subjectService.deleteSubject(req.params.id);
+        if(!subject) {
+            return res.status(404).json({ error: "Subject not found"})
+        }
         res.json({data: subject, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});

@@ -10,6 +10,6 @@ const {
 const router = express.Router();
 
 router.route("/").get(getAllClassHours).post(createClassHour);
-router.route("/:id").get(getClassHourById).put(updateClassHour).delete(deleteClassHour);
+router.route("/:id").get(getClassHourById).patch(updateClassHour).delete(deleteClassHour);
 
 module.exports = router;

@@ -81,19 +81,19 @@ import ClassHourComponent from '../ClassHour.vue'
     methods: {
         async fetchSubjects() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/subject')
+          get('http://127.0.0.1:3000/api/subjects')
           .catch(error => console.log(error))
           this.subjects = response.data.data
         },
         async fetchTeachers() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/teacher')
+          get('http://127.0.0.1:3000/api/teachers')
           .catch(error => console.log(error))
           this.teachers = response.data.data
         },
         async fetchClasses() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/class')
+          get('http://127.0.0.1:3000/api/classes')
           .catch(error => console.log(error))
           this.classes = response.data.data
         },
@@ -102,7 +102,7 @@ import ClassHourComponent from '../ClassHour.vue'
           await this.fetchSubjects()
           await this.fetchTeachers()
           let response = await axios.
-          get('http://127.0.0.1:3000/api/location/' + this.locationID)
+          get('http://127.0.0.1:3000/api/locations/' + this.locationID)
           .catch(error => console.log(error))
           let catalogClassHours = response.data.data.catalog
           for(var day = 0; day < this.catalog.length; day++)

@@ -16,26 +16,25 @@ const bool ClassHour::HasLocation() {
 }
 
 void ClassHour::AddClassHoursToCatalog() {
-	int day, hour; 
+	Time time;
 	std::string strLocationID;
 	for (int i = 0; i < m_nNumber; i++) {
 		do {
-			day = RandInt(0, DAY_COUNT-1);
-			hour = RandInt(0, HOUR_COUNT-1);
+			time = Time{ RandInt(0, DAY_COUNT - 1), RandInt(0, HOUR_COUNT - 1)};
 			if (HasLocation())
 				strLocationID = g_subjects[m_strSubjectID].GetRandomLocationID();
-		} while (!g_classes[m_strClassID].IsFreeDay(day, hour) || !g_teachers[m_strTeacherID].IsFreeDay(day, hour)
-			|| (HasLocation() && !g_locations[strLocationID].IsFreeDay(day, hour)));
+		} while (!g_classes[m_strClassID].IsFreeDay(time) || !g_teachers[m_strTeacherID].IsFreeDay(time)
+			|| (HasLocation() && !g_locations[strLocationID].IsFreeDay(time)));
 
 		if (HasLocation()) {
-			g_locations[strLocationID].Add(day, hour, m_strID);
-			g_classes[m_strClassID].SetClassHour(m_strID, strLocationID, day, hour);
-			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, day, hour);
-			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, day, hour);
+			g_locations[strLocationID].Add(time, m_strID);
+			g_classes[m_strClassID].SetClassHour(m_strID, strLocationID, time);
+			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, time);
+			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, time);
 			return;
 		} 
 
-		g_classes[m_strClassID].Add(day, hour, m_strID);
-		g_teachers[m_strTeacherID].Add(day, hour, m_strID);		
+		g_classes[m_strClassID].Add(time, m_strID);
+		g_teachers[m_strTeacherID].Add(time, m_strID);
 	}
 } 

@@ -10,6 +10,6 @@ const {
 const router = express.Router();
 
 router.route("/").get(getAllSubjects).post(createSubject);
-router.route("/:id").get(getSubjectById).put(updateSubject).delete(deleteSubject);
+router.route("/:id").get(getSubjectById).patch(updateSubject).delete(deleteSubject);
 
 module.exports = router;

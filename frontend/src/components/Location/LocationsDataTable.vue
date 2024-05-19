@@ -150,13 +150,13 @@ export default {
     methods: {
       async fetchLocations() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/location')
+          get('http://127.0.0.1:3000/api/locations')
           .catch(error => console.log(error))
           this.locations = response.data.data
         },
         async fetchLocation() {
         let response = await axios
-            .get('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id)
+            .get('http://127.0.0.1:3000/api/locations/' + this.locations[this.editedIndex]._id)
             .catch(error => console.log(error))
             this.editedItem = response.data.data
       },
@@ -189,7 +189,7 @@ export default {
 
       async deleteItemConfirm () {
         await axios
-          .delete('http://127.0.0.1:3000/api/location/' + this.editedItem._id)
+          .delete('http://127.0.0.1:3000/api/locations/' + this.editedItem._id)
           .catch(error => console.log(error))
         await this.fetchLocations()
         this.closeDelete()
@@ -209,11 +209,11 @@ export default {
         }
         if (this.editedIndex > -1) {
           await axios.
-          put('http://127.0.0.1:3000/api/location/' + this.locations[this.editedIndex]._id, location)
+          patch('http://127.0.0.1:3000/api/locations/' + this.locations[this.editedIndex]._id, location)
           .catch(error => console.log(error))
         } else {
           await axios.
-          post('http://127.0.0.1:3000/api/location', location)
+          post('http://127.0.0.1:3000/api/locations', location)
           .catch(error => console.log(error))
         }
         await this.fetchLocations()

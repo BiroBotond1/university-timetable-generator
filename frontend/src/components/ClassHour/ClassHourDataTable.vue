@@ -185,31 +185,31 @@ export default {
     methods: {
       async fetchClassHours() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/classHour')
+          get('http://127.0.0.1:3000/api/classHours')
           .catch(error => console.log(error))
           this.classHours = response.data.data
         },
       async fetchClassHour() {
         let response = await axios
-            .get('http://127.0.0.1:3000/api/classHour/' + this.classHours[this.editedIndex]._id)
+            .get('http://127.0.0.1:3000/api/classHours/' + this.classHours[this.editedIndex]._id)
             .catch(error => console.log(error))
             this.editedItem = response.data.data
       },
       async fetchClasses() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/class')
+          get('http://127.0.0.1:3000/api/classes')
           .catch(error => console.log(error))
           this.allClasses = response.data.data
         },
       async fetchTeachers() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/teacher')
+          get('http://127.0.0.1:3000/api/teachers')
           .catch(error => console.log(error))
           this.allTeachers = response.data.data
         },
       async fetchSubjects() {
           let response = await axios.
-          get('http://127.0.0.1:3000/api/subject')
+          get('http://127.0.0.1:3000/api/subjects')
           .catch(error => console.log(error))
           this.allSubjects = response.data.data
         },
@@ -234,7 +234,7 @@ export default {
 
       async deleteItemConfirm () {
         await axios
-          .delete('http://127.0.0.1:3000/api/classHour/' + this.editedItem._id)
+          .delete('http://127.0.0.1:3000/api/classHours/' + this.editedItem._id)
           .catch(error => console.log(error))
         await this.fetchClassHours()
         this.closeDelete()
@@ -257,11 +257,11 @@ export default {
         }
         if (this.editedIndex > -1) {
           await axios.
-          put('http://127.0.0.1:3000/api/classHour/' + this.classHours[this.editedIndex]._id, classHour)
+          patch('http://127.0.0.1:3000/api/classHours/' + this.classHours[this.editedIndex]._id, classHour)
           .catch(error => console.log(error))
         } else {
           await axios.
-          post('http://127.0.0.1:3000/api/classHour', classHour)
+          post('http://127.0.0.1:3000/api/classHours', classHour)
           .catch(error => console.log(error))
         }
         await this.fetchClassHours()

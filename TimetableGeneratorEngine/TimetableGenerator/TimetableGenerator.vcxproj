@@ -178,6 +178,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Teacher.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="TimetableGenerator.h" />
   </ItemGroup>
   <ItemGroup>

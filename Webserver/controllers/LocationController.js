@@ -12,7 +12,7 @@ exports.getAllLocations = async (req, res) => {
 exports.createLocation = async (req, res) => {
     try {
         const location = await locationService.createLocation(req.body);
-        res.json({data: location, status: "success"});
+        res.status(201).json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
     }
@@ -21,6 +21,9 @@ exports.createLocation = async (req, res) => {
 exports.getLocationById = async (req, res) => {
     try {
         const location = await locationService.getLocationById(req.params.id);
+        if(!location) {
+            return res.status(404).json({ error: "Location not found"})
+        }
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -30,6 +33,9 @@ exports.getLocationById = async (req, res) => {
 exports.updateLocation = async (req, res) => {
     try {
         const location = await locationService.updateLocation(req.params.id, req.body);
+        if(!location) {
+            return res.status(404).json({ error: "Location not found"})
+        }
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message});
@@ -39,6 +45,9 @@ exports.updateLocation = async (req, res) => {
 exports.deleteLocation = async (req, res) => {
     try {
         const location = await locationService.deleteLocation(req.params.id);
+        if(!location) {
+            return res.status(404).json({ error: "Location not found"})
+        }
         res.json({data: location, status: "success"});
     } catch (err) {
         res.status(500).json({error: err.message, alma: req});

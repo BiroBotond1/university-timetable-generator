@@ -53,7 +53,7 @@
                 label="It is advisable to schedule prioritized subjects for each class as early as possible"
                 ></v-switch>
             </v-row>
-            <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="!valid">
+            <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="generating">
                 Generate
             </v-btn>
         </v-container>
@@ -79,6 +79,12 @@ export default {
         courseNumber: null,
         courses: [],
     }),
+
+    computed: {
+        generating () {
+        return store.getters.getGeneration
+        }
+    },
 
     methods: {
       async submit () {

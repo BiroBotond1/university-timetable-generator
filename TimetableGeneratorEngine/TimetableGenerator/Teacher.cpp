@@ -5,9 +5,8 @@ Teacher::Teacher(const nlohmann::json &jsonTeacher) {
 	m_strID = jsonTeacher["_id"].get<std::string>();
 	m_catalog = Catalog();
 	m_strName = jsonTeacher["name"].get<std::string>();
-	(m_strID);
 	int nDay = 0, nHour;
-	for (auto hours : jsonTeacher["inappropriateDates"])
+	for (const auto& hours : jsonTeacher["inappropriateDates"])
 	{
 		nHour = 0;
 		for(auto valid : hours)

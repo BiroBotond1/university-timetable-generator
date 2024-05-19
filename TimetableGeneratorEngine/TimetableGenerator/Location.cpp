@@ -23,6 +23,6 @@ const std::vector<std::pair<int, int>>& Location::GetReservedDates() {
 	return m_vReservedDates;
 }
 
-void Location::DeleteClassHour(const int p_nDay, const int p_nHour) {
-	m_catalog.DeleteClassHour(p_nDay, p_nHour);
+void Location::DeleteClassHour(Time p_time) {
+	m_catalog.DeleteClassHour(p_time);
 }

@@ -10,6 +10,6 @@ const {
 const router = express.Router();
 
 router.route("/").get(getAllClasses).post(createClass);
-router.route("/:id").get(getClassById).put(updateClass).delete(deleteClass);
+router.route("/:id").get(getClassById).patch(updateClass).delete(deleteClass);
 
 module.exports = router;
