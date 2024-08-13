@@ -1,26 +1,16 @@
-
 <template>
-    <div app>
-    <v-navigation-drawer
-        color="#1D0C59"
-        app 
-        permanent
-        clipped 
-        dark 
-        right>
+  <div app>
+    <v-navigation-drawer color="#1D0C59" app permanent clipped dark right>
       <v-list dense nav>
-          <v-list-item 
-          v-for="item in classes"
-          :key="item._id"
-          :class="{active: item._id === $refs.classCatalog.classID}"
-          @click="selectClass(item._id)">
-            <v-list-item-content>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+        <v-list-item v-for="item in classes" :key="item._id"
+          :class="{ active: item._id === $refs.classCatalog.classID }" @click="selectClass(item._id)">
+          <v-list-item-content>
+            <v-list-item-title>{{ item.name }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
-    <classCatalog id="classCatalog" ref="classCatalog"/>
+    <classCatalog id="classCatalog" ref="classCatalog" />
     <div class="color-container">
       <div class="color-box subjectColor"></div>
       <div class="color-label">Subject</div>
@@ -32,49 +22,52 @@
     <br>
     <v-btn class="white--text" color="#1E88E5" block @click="print"> Print</v-btn>
   </div>
- </template>
+</template>
 
- 
- <script>
-import axios from 'axios'
+
+<script>
 import classCatalog from './ClassCatalog.vue'
- export default {
-    data () {
-      return {
-        classes: [],
+export default {
+  data() {
+    return {
+      classes: [],
+    }
+  },
+
+  async created() {
+    await this.fetchClasses()
+    if (this.classes.length > 0) {
+      this.selectClass(this.classes[0]._id)
+    }
+  },
+
+  components: {
+    classCatalog
+  },
+
+  methods: {
+    async fetchClasses() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/classes');
+        const classes = await response.json();
+        this.classes = classes.data
+      }
+      catch (error) {
+        console.log(error)
       }
     },
-
-    async created () {
-      await this.fetchClasses()
-      if(this.classes.length > 0) {
-        this.selectClass(this.classes[0]._id)
+    selectClass(classID) {
+      this.$refs.classCatalog.classID = classID
+      this.$forceUpdate();
+    },
+    print() {
+      const prtHtml = document.getElementById('classCatalog').innerHTML;
+      let stylesHtml = '';
+      for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+        stylesHtml += node.outerHTML;
       }
-    },
-
-    components: {
-        classCatalog
-    },
-
-    methods: {
-        async fetchClasses() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/classes')
-          .catch(error => console.log(error))
-          this.classes = response.data.data
-        },
-        selectClass(classID) {
-            this.$refs.classCatalog.classID = classID
-            this.$forceUpdate();
-        },
-        print() {
-          const prtHtml = document.getElementById('classCatalog').innerHTML;
-          let stylesHtml = '';
-          for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
-            stylesHtml += node.outerHTML;
-          }
-          const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-          WinPrint.document.write(`<!DOCTYPE html>
+      const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+      WinPrint.document.write(`<!DOCTYPE html>
           <html>
             <head>
               ${stylesHtml}
@@ -84,16 +77,16 @@ import classCatalog from './ClassCatalog.vue'
             </body>
           </html>`);
 
-          WinPrint.document.close();
-          WinPrint.focus();
-          WinPrint.print();
-          WinPrint.close();
-        }
-    },
+      WinPrint.document.close();
+      WinPrint.focus();
+      WinPrint.print();
+      WinPrint.close();
+    }
+  },
 }
-  
+
 </script>
- 
+
 
 <style>
 .subjectColor {
@@ -101,7 +94,7 @@ import classCatalog from './ClassCatalog.vue'
 }
 
 .teacherColor {
-  background-color:#443dafb5;
+  background-color: #443dafb5;
 }
 
 .locationColor {

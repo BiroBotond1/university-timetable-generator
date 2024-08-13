@@ -1,26 +1,16 @@
-
 <template>
-    <div app>
-    <v-navigation-drawer
-        color="#1D0C59"
-        app 
-        permanent
-        clipped 
-        dark 
-        right>
+  <div app>
+    <v-navigation-drawer color="#1D0C59" app permanent clipped dark right>
       <v-list dense nav>
-          <v-list-item 
-          v-for="item in locations"
-          :key="item._id"
-          :class="{active: item._id === $refs.locationCatalog.locationID}"
-          @click="selectLocation(item._id)">
-            <v-list-item-content>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+        <v-list-item v-for="item in locations" :key="item._id"
+          :class="{ active: item._id === $refs.locationCatalog.locationID }" @click="selectLocation(item._id)">
+          <v-list-item-content>
+            <v-list-item-title>{{ item.name }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
-    <locationCatalog id="locationCatalog" ref="locationCatalog"/>
+    <locationCatalog id="locationCatalog" ref="locationCatalog" />
     <div class="color-container">
       <div class="color-box subjectColor"></div>
       <div class="color-label">Subject</div>
@@ -32,49 +22,52 @@
     <br>
     <v-btn class="white--text" color="#1E88E5" block @click="print"> Print</v-btn>
   </div>
- </template>
- 
- <script>
-import axios from 'axios'
+</template>
+
+<script>
 import locationCatalog from './LocationCatalog.vue'
- export default {
-    data () {
-      return {
-        locations: "",
+export default {
+  data() {
+    return {
+      locations: "",
+    }
+  },
+
+  async created() {
+    await this.fetchLocations()
+    if (this.locations.length > 0) {
+      this.selectLocation(this.locations[0]._id)
+    }
+  },
+
+  components: {
+    locationCatalog
+  },
+
+  methods: {
+    async fetchLocations() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/locations');
+        const locations = await response.json()
+        this.locations = locations.data
+      }
+      catch (error) {
+        console.log(error)
       }
     },
-
-    async created () {
-      await this.fetchLocations()
-      if(this.locations.length > 0) {
-        this.selectLocation(this.locations[0]._id)
+    selectLocation(locationID) {
+      this.id = locationID
+      this.$refs.locationCatalog.locationID = locationID
+      this.$forceUpdate();
+    },
+    print() {
+      const prtHtml = document.getElementById('locationCatalog').innerHTML;
+      let stylesHtml = '';
+      for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+        stylesHtml += node.outerHTML;
       }
-    },
-
-    components: {
-        locationCatalog
-    },
-
-    methods: {
-        async fetchLocations() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/locations')
-          .catch(error => console.log(error))
-          this.locations = response.data.data
-        },
-        selectLocation(locationID) {
-            this.id = locationID
-            this.$refs.locationCatalog.locationID = locationID
-            this.$forceUpdate();
-        },
-        print() {
-          const prtHtml = document.getElementById('locationCatalog').innerHTML;
-          let stylesHtml = '';
-          for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
-            stylesHtml += node.outerHTML;
-          }
-          const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-          WinPrint.document.write(`<!DOCTYPE html>
+      const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+      WinPrint.document.write(`<!DOCTYPE html>
           <html>
             <head>
               ${stylesHtml}
@@ -84,29 +77,28 @@ import locationCatalog from './LocationCatalog.vue'
             </body>
           </html>`);
 
-          WinPrint.document.close();
-          WinPrint.focus();
-          WinPrint.print();
-          WinPrint.close();
-        }
-    },
+      WinPrint.document.close();
+      WinPrint.focus();
+      WinPrint.print();
+      WinPrint.close();
+    }
+  },
 }
-  
+
 </script>
- 
+
 
 <style>
-
 .subjectColor {
   background-color: #000000;
 }
 
 .classColor {
-  background-color:#ff2b2bba;
+  background-color: #ff2b2bba;
 }
 
 .teacherColor {
-  background-color:#443dafb5;
+  background-color: #443dafb5;
 }
 
 .active {

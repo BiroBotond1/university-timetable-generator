@@ -1,32 +1,13 @@
 <template>
-    <v-data-table
-        :headers="headers"
-        :items="teachers"
-        class="elevation-1" 
-    >
+  <v-data-table :headers="headers" :items="teachers" class="elevation-1">
     <template v-slot:top>
-      <v-toolbar
-        flat
-      >
+      <v-toolbar flat>
         <v-toolbar-title>Teachers</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
+        <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog
-          v-model="dialog"
-          max-width="800px"
-        >
+        <v-dialog v-model="dialog" max-width="800px">
           <template v-slot:activator="{ props }">
-            <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              v-bind="props"
-              @click="editItem(undefined)"
-            >
+            <v-btn color="primary" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
               New Teacher
             </v-btn>
           </template>
@@ -37,28 +18,17 @@
 
             <v-card-text>
               <v-container>
-                <v-text-field
-                  v-model="editedItem.name"
-                  label="Teacher name"
-                ></v-text-field>
-               <DatePicker  ref="teacherDatePicker"/>
+                <v-text-field v-model="editedItem.name" label="Teacher name"></v-text-field>
+                <DatePicker ref="teacherDatePicker" />
               </v-container>
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="#E53935"
-                class="white--text"
-                @click="close"
-              >
+              <v-btn color="#E53935" class="white--text" @click="close">
                 Cancel
               </v-btn>
-              <v-btn
-                color="#1E88E5"
-                class="white--text"
-                @click="save"
-              >
+              <v-btn color="#1E88E5" class="white--text" @click="save">
                 Save
               </v-btn>
             </v-card-actions>
@@ -78,152 +48,160 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        size="medium"
-        class="me-2"
-        @click="editItem(item)"
-      >
+      <v-icon size="medium" class="me-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon
-        size="medium"
-        @click="deleteItem(item)"
-      >
+      <v-icon size="medium" @click="deleteItem(item)">
         mdi-delete
       </v-icon>
     </template>
-    <template v-slot:[`item.inappropriateDates`]="{ item }"> 
+    <template v-slot:[`item.inappropriateDates`]="{ item }">
       <a target="_blank" @click="editItem(item)">
-              Click to see
+        Click to see
       </a>
     </template>
-    </v-data-table>
+  </v-data-table>
 </template>
 
 <script>
-import axios from 'axios'
 import DatePicker from '../DatePicker.vue'
 
 export default {
-    data () {
-        return {
-            dialog: false,
-            dialogDelete: false,
-            headers: [ 
-                {text: 'Name', value: 'name',},
-                {text: 'Inappropriate Dates', value: 'inappropriateDates'}, 
-                {text: 'Actions', value: 'actions', sortable: false}
-            ],
-            teachers: [],
-            editedIndex: -1,
-            editedItem: {
-              _id: '',  
-              name: '',
-              inappropriateDates:  []
-            },
-        }
-    },
-    
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Teacher' : 'Edit Teacher'
+  data() {
+    return {
+      dialog: false,
+      dialogDelete: false,
+      headers: [
+        { text: 'Name', value: 'name', },
+        { text: 'Inappropriate Dates', value: 'inappropriateDates' },
+        { text: 'Actions', value: 'actions', sortable: false }
+      ],
+      teachers: [],
+      editedIndex: -1,
+      editedItem: {
+        _id: '',
+        name: '',
+        inappropriateDates: []
       },
-    },
-
-    components: {
-      DatePicker: DatePicker
-    },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-      dialogDelete (val) {
-        val || this.closeDelete()
-      },
-    },
-
-    created () {
-      this.fetchTeachers()
-    },
-
-    methods: {
-      async fetchTeachers() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/teachers')
-          .catch(error => console.log(error))
-          this.teachers = response.data.data
-        },
-        async fetchTeacher() {
-        let response = await axios
-            .get('http://127.0.0.1:3000/api/teachers/' + this.teachers[this.editedIndex]._id)
-            .catch(error => console.log(error))
-            this.editedItem = response.data.data
-      },
-        async editItem (item) {
-          this.editedIndex = this.teachers.indexOf(item)
-          if(this.editedIndex !== -1) {
-            await this.fetchTeacher()
-          } else {
-            this.editedItem.name = ''
-            this.editedItem.inappropriateDates =  [
-           [0, 0, 0, 0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0, 0]
-          ]
-          }
-          this.dialog = true
-          this.$nextTick(() => {
-            this.$refs.teacherDatePicker.dates = this.editedItem.inappropriateDates
-        })
-          
-      },
-
-      async deleteItem (item) {
-        this.editedIndex = this.teachers.indexOf(item)
-        await this.fetchTeacher()
-        this.dialogDelete = true
-      },
-
-      async deleteItemConfirm () {
-        await axios
-          .delete('http://127.0.0.1:3000/api/teachers/' + this.editedItem._id)
-          .catch(error => console.log(error))
-        await this.fetchTeachers()
-        this.closeDelete()
-      },
-
-      close () {
-        this.dialog = false
-      },  
-      closeDelete () {
-        this.dialogDelete = false
-      },
-
-      async save () {
-        let teacher = {
-          name: this.editedItem.name,
-          inappropriateDates: Object.assign([], this.editedItem.inappropriateDates)
-        }
-        if (this.editedIndex > -1) {
-          await axios.
-          patch('http://127.0.0.1:3000/api/teachers/' + this.teachers[this.editedIndex]._id, teacher)
-          .catch(error => console.log(error))
-        } else {
-          await axios.
-          post('http://127.0.0.1:3000/api/teachers', teacher)
-          .catch(error => console.log(error))
-        }
-        await this.fetchTeachers()
-        this.close()
-      }
     }
+  },
+
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Teacher' : 'Edit Teacher'
+    },
+  },
+
+  components: {
+    DatePicker: DatePicker
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close()
+    },
+    dialogDelete(val) {
+      val || this.closeDelete()
+    },
+  },
+
+  async created() {
+    await this.fetchTeachers()
+    this.setupSocketListeners()
+  },
+
+  methods: {
+    async fetchTeachers() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/teachers')
+        const teachers = await response.json()
+        this.teachers = teachers.data
+      }
+      catch (error) {
+        console.log(error)
+      }
+    },
+
+    async setEditedItem() {
+      this.editedItem = this.teachers[this.editedIndex];
+    },
+    async editItem(item) {
+      this.editedIndex = this.teachers.indexOf(item)
+      if (this.editedIndex !== -1) {
+        await this.setEditedItem()
+      } else {
+        this.editedItem.name = ''
+        this.editedItem.inappropriateDates = [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      }
+      this.dialog = true
+      this.$nextTick(() => {
+        this.$refs.teacherDatePicker.dates = this.editedItem.inappropriateDates
+      })
+
+    },
+
+    async deleteItem(item) {
+      this.editedIndex = this.teachers.indexOf(item)
+      await this.setEditedItem()
+      this.dialogDelete = true
+    },
+
+    async deleteItemConfirm() {
+      this.$socket.emit('sendDeleteTeacher', { id: this.editedItem._id });
+      this.closeDelete()
+    },
+
+    close() {
+      this.dialog = false
+    },
+    closeDelete() {
+      this.dialogDelete = false
+    },
+
+    async save() {
+      let teacher = {
+        name: this.editedItem.name,
+        inappropriateDates: Object.assign([], this.editedItem.inappropriateDates)
+      }
+      if (this.editedIndex > -1) {
+        this.$socket.emit('sendUpdateTeacher', { id: this.editedItem._id, teacher: teacher });
+      } else {
+        this.$socket.emit('sendCreateTeacher', { teacher: teacher });
+      }
+      this.close()
+    },
+    setupSocketListeners() {
+      this.$socket.on('updateTeacher', async (obj) => {
+        const index = this.teachers.findIndex(teacher => teacher._id === obj.id);
+        if (index !== -1) {
+          this.$set(this.teachers, index, obj.teacher);
+        }
+      })
+      this.$socket.on('createTeacher', async (obj) => {
+        this.teachers.push(obj.teacher);
+      })
+      this.$socket.on('deleteTeacher', async (obj) => {
+        if (obj.error) {
+          console.log(obj.error)
+        }
+        else {
+          const index = this.teachers.findIndex(teacher => teacher._id === obj.id);
+          if (index !== -1) {
+            this.teachers.splice(index, 1);
+          }
+        }
+      })
+    }
+
+  }
 }
 
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -9,21 +9,20 @@
     </v-main>
   </v-app>
 </template>
-  
-  <script>
-  import { defineComponent } from 'vue';
-  
-  // Components
-  import Sidebar from '../components/Side_bar.vue'
-  import ClassHoursDataTable from '../components/ClassHour/ClassHourDataTable.vue'
 
-  export default defineComponent({
-    name: 'Side_bar',
-  
-    components: {
-        Sidebar,
-        ClassHoursDataTable,
+<script>
+import { defineComponent } from 'vue';
+
+// Components
+import Sidebar from '../components/Side_bar.vue'
+import ClassHoursDataTable from '../components/ClassHour/ClassHourDataTable.vue'
+
+export default defineComponent({
+  name: 'Side_bar',
+
+  components: {
+    Sidebar,
+    ClassHoursDataTable,
   },
-  });
-  </script>
-  
+});
+</script>

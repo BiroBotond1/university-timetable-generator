@@ -1,176 +1,179 @@
 <template>
-    <div app>
-        <div class="classRoomLabel"> Class Room: <span class="locationLabelColor">{{ classRoom }} </span>
-        </div>
-    <v-data-table
-    :items-per-page="-1"
-    hide-default-footer
-    :headers="headers"
-    :items="items"
-    class="border">
-        <template v-slot:[`item.monday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]"/>
-        </template>
-        <template v-slot:[`item.tuesday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[1][convertHourToInt(item.hours)]" />
-        </template>
-        <template v-slot:[`item.wednesday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[2][convertHourToInt(item.hours)]" />
-        </template>
-        <template v-slot:[`item.thursday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[3][convertHourToInt(item.hours)]" />
-        </template>
-        <template v-slot:[`item.friday`]="{ item }"> 
-            <ClassHourComponent :hour="catalog[4][convertHourToInt(item.hours)]" />
-        </template>
-    </v-data-table>
+  <div app>
+    <div class="classRoomLabel"> Class Room: <span class="locationLabelColor">{{ classRoom }} </span>
     </div>
- </template>
- 
- <script>
-import axios from 'axios'
+    <v-data-table :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border">
+      <template v-slot:[`item.monday`]="{ item }">
+        <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.tuesday`]="{ item }">
+        <ClassHourComponent :hour="catalog[1][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.wednesday`]="{ item }">
+        <ClassHourComponent :hour="catalog[2][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.thursday`]="{ item }">
+        <ClassHourComponent :hour="catalog[3][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.friday`]="{ item }">
+        <ClassHourComponent :hour="catalog[4][convertHourToInt(item.hours)]" />
+      </template>
+    </v-data-table>
+  </div>
+</template>
+
+<script>
 import Vue from 'vue'
 import ClassHourComponent from '../ClassHour.vue'
 
- export default {
-    data () {
-      return {
-        headers: [
-            {text: "Hours", value: "hours"},
-            {text: "Monday", value: "monday"},
-            {text: "Tuesday", value: "tuesday"},
-            {text: "Wednesday", value: "wednesday"},
-            {text: "Thursday", value: "thursday"},
-            {text: "Friday", value: "friday"},
-        ],
-        items: [
-            {hours: "8-9"},
-            {hours: "9-10"},
-            {hours: "10-11"},
-            {hours: "11-12"},
-            {hours: "12-13"},
-            {hours: "13-14"},
-            {hours: "14-15"},
-            {hours: "15-16"}
-        ],
-        classID: '',
-        teachers: [],
-        locations: [],
-        subjects: [],
-        classRoom: '',
-        catalog:
-           [["", "", "", "", "", "", "", ""],
-           ["", "", "", "", "", "", "", ""],
-           ["", "", "", "", "", "", "", ""],
-           ["", "", "", "", "", "", "", ""],
-           ["", "", "", "", "", "", "", ""]],
-        active: true
-      }
-    },
+export default {
+  data() {
+    return {
+      headers: [
+        { text: "Hours", value: "hours" },
+        { text: "Monday", value: "monday" },
+        { text: "Tuesday", value: "tuesday" },
+        { text: "Wednesday", value: "wednesday" },
+        { text: "Thursday", value: "thursday" },
+        { text: "Friday", value: "friday" },
+      ],
+      items: [
+        { hours: "8-9" },
+        { hours: "9-10" },
+        { hours: "10-11" },
+        { hours: "11-12" },
+        { hours: "12-13" },
+        { hours: "13-14" },
+        { hours: "14-15" },
+        { hours: "15-16" }
+      ],
+      classID: '',
+      teachers: [],
+      locations: [],
+      subjects: [],
+      classRoom: '',
+      catalog:
+        [["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""]],
+      active: true
+    }
+  },
 
-    async created () {
-      await this.fetchCatalog()
-    },
+  async created() {
+    await this.fetchCatalog()
+  },
 
-    components: {
-        ClassHourComponent
-    },
+  components: {
+    ClassHourComponent
+  },
 
-    watch: {
+  watch: {
     async classID() {
-       await this.fetchCatalog()
+      await this.fetchCatalog()
     },
   },
 
-    methods: {
-        async fetchSubjects() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/subjects')
-          .catch(error => console.log(error))
-          this.subjects = response.data.data
-        },
-        async fetchLocations() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/locations')
-          .catch(error => console.log(error))
-          this.locations = response.data.data
-        },
-        async fetchTeachers() {
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/teachers')
-          .catch(error => console.log(error))
-          this.teachers = response.data.data
-        },
-        async fetchCatalog() {
-          await this.fetchLocations();
-          await this.fetchSubjects();
-          await this.fetchTeachers();
-          let response = await axios.
-          get('http://127.0.0.1:3000/api/classes/' + this.classID)
-          .catch(error => console.log(error))
-          let catalogClassHours = response.data.data.catalog
-          this.classRoom = response.data.data.location
-          for(var day = 0; day < this.catalog.length; day++)
-          {
-            for(var hour = 0; hour < this.catalog[day].length; hour++) {
-                let classHour = {}
-                classHour.location = ''
-                if(!catalogClassHours) {
-                    classHour.subject = ''
-                    classHour.location = ''
-                    classHour.teacher = ''
-                    Vue.set(this.catalog[day], hour, classHour)
-                    continue
-                } 
-                if (catalogClassHours[day][hour] === '') {
-                    classHour.subject = ''
-                    classHour.location = ''
-                    classHour.teacher = ''
-                }else {
-                    for (const subject of this.subjects) {
-                        if(subject._id === catalogClassHours[day][hour].subjectID)
-                        {
-                            classHour.subject = subject.name
-                        }
-                    }
-                    for (const location of this.locations) {
-                        if(location._id === catalogClassHours[day][hour].locationID)
-                        {
-                            classHour.location = location.name
-                        }
-                    }
-                    for (const teacher of this.teachers) {
-                        if(teacher._id === catalogClassHours[day][hour].teacherID)
-                        {
-                            classHour.teacher = teacher.name
-                        }
-                    }
-                }
-                Vue.set(this.catalog[day], hour, classHour)
+  methods: {
+    async fetchSubjects() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/subjects');
+        const subjects = await response.json()
+        this.subjects = subjects.data
+      }
+      catch (error) {
+        console.log(error)
+      }
+    },
+
+    async fetchLocations() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/locations');
+        const locations = await response.json()
+        this.locations = locations.data
+      }
+      catch (error) {
+        console.log(error)
+      }
+    },
+    async fetchTeachers() {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/teachers');
+        const teachers = await response.json()
+        this.teachers = teachers.data
+      }
+      catch (error) {
+        console.log(error)
+      }
+    },
+    async fetchCatalog() {
+      await this.fetchLocations();
+      await this.fetchSubjects();
+      await this.fetchTeachers();
+      const response = await fetch('http://127.0.0.1:3000/api/classes/' + this.classID)
+        .catch(error => console.log(error))
+      const catalogObj = await response.json()
+      const catalogClassHours = catalogObj.data.catalog
+
+      this.classRoom = catalogObj.data.location
+      for (var day = 0; day < this.catalog.length; day++) {
+        for (var hour = 0; hour < this.catalog[day].length; hour++) {
+          let classHour = {}
+          classHour.location = ''
+          if (!catalogClassHours) {
+            classHour.subject = ''
+            classHour.location = ''
+            classHour.teacher = ''
+            Vue.set(this.catalog[day], hour, classHour)
+            continue
+          }
+          if (catalogClassHours[day][hour] === '') {
+            classHour.subject = ''
+            classHour.location = ''
+            classHour.teacher = ''
+          } else {
+            for (const subject of this.subjects) {
+              if (subject._id === catalogClassHours[day][hour].subjectID) {
+                classHour.subject = subject.name
+              }
+            }
+            for (const location of this.locations) {
+              if (location._id === catalogClassHours[day][hour].locationID) {
+                classHour.location = location.name
+              }
+            }
+            for (const teacher of this.teachers) {
+              if (teacher._id === catalogClassHours[day][hour].teacherID) {
+                classHour.teacher = teacher.name
+              }
             }
           }
-        },
-        convertHourToInt(hour) {
-            return parseInt(hour.substring(0, hour.indexOf('-'))) - 8;
-        },
+          Vue.set(this.catalog[day], hour, classHour)
+        }
+      }
     },
+    convertHourToInt(hour) {
+      return parseInt(hour.substring(0, hour.indexOf('-'))) - 8;
+    },
+  },
 }
-  
+
 </script>
- 
- <style>
- .locationLabelColor {
-    color: #2b762e;
- }
 
- .classRoomLabel {
-    margin-bottom: 25px;
-    font-weight: bold;
- }
+<style>
+.locationLabelColor {
+  color: #2b762e;
+}
 
- .border{
+.classRoomLabel {
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+.border {
   border: 1px solid black;
   border-collapse: collapse;
 }
-
- </style>
+</style>

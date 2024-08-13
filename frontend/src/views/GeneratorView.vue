@@ -23,6 +23,6 @@ export default defineComponent({
   components: {
     TimetableInitializer,
     Sidebar,
-},
+  },
 });
 </script>

@@ -21,8 +21,8 @@ export default defineComponent({
   name: 'Side_bar',
 
   components: {
-      Sidebar,
-      SubjectsDataTable,
-},
+    Sidebar,
+    SubjectsDataTable,
+  },
 });
 </script>
