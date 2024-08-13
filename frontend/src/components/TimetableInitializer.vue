@@ -36,6 +36,16 @@ export default {
   async created() {
     await this.fetchConstraints()
 
+    this.$socket.on('GenerationStarted', async () => {
+      store.state.generating = true
+    })
+
+    this.$socket.on('GenerationFinished', async () => {
+      store.state.generating = false
+      store.state.notification = true
+      setTimeout(() => store.state.notification = false, 5000);
+    })
+
     this.$socket.on('updateConstraints', async (updatedConstraint) => {
       this.updateConstraints(this.hardConstraints, updatedConstraint)
       this.updateConstraints(this.softConstraints, updatedConstraint)
@@ -50,13 +60,7 @@ export default {
 
   methods: {
     async submit() {
-      await fetch('http://127.0.0.1:3000/timetable/generateTimetable', {
-        method: "POST"
-      }).catch(error => console.log(error));
-
-      store.state.notification = true
-      setTimeout(() => store.state.notification = false, 5000);
-
+      this.$socket.emit('sendGenerationStarted');
     },
     async fetchConstraints() {
       try {

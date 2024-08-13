@@ -1,14 +1,11 @@
-const { Router } = require('express');
 const { exec } = require('child_process');
 const fs = require('fs');
-const classService = require('../services/ClassService.js');
-const classHourService = require('../services/ClassHourService.js');
-const locationService = require('../services/LocationService.js');
-const subjectService = require('../services/SubjectService.js');
-const teacherService = require('../services/TeacherService.js');
-const constraintService = require('../services/ConstraintService.js');
-
-const router = Router();
+const classService = require('./ClassService.js');
+const classHourService = require('./ClassHourService.js');
+const locationService = require('./LocationService.js');
+const subjectService = require('./SubjectService.js');
+const teacherService = require('./TeacherService.js');
+const constraintService = require('./ConstraintService.js');
 
 function OsFunction () {
   this.execCommand = function (cmd) {
@@ -25,14 +22,11 @@ function OsFunction () {
 
 const osFunc = new OsFunction();
 
-router.post('/generateTimetable', async (req, res) => {
+exports.generate = async () => {
   try {
     const inputString = await createInputString();
 
     await fs.writeFileSync('../TimetableGeneratorEngine/TimetableGenerator/in.json', inputString);
-
-    const data = JSON.stringify({'running': true});
-    client.publish('timetable/generation', data, {qos: 1, retain: true});
 
     osFunc.execCommand('TimetableGenerator.exe').then(async result => {
       const catalogs = JSON.parse(result);
@@ -42,19 +36,14 @@ router.post('/generateTimetable', async (req, res) => {
       console.log(`Location fitnes: ${  catalogs.fitnesLocation}`);
       console.log(`Elapsed time: ${  catalogs.elapsedTime}`);
 
-      const data2 = JSON.stringify({'running': false});
-      client.publish('timetable/generation', data2, {qos: 1, retain: true});
-
       await updateCatalogs(catalogs);
-
-      res.sendStatus(200);
     }).catch(err => {
       console.log('os >>>', err);
     });
   } catch (e) {
     console.log(e);
   }
-});
+}
 
 async function createInputString()
 {
@@ -87,5 +76,3 @@ async function updateCatalogs(catalogs) {
     await locationService.addCatalog(locationID, catalogs.locationCatalogs[locationID]);
   }
 }
-
-module.exports = router;
