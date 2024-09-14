@@ -32,7 +32,7 @@ void ClassHour::AddClassHoursToCatalog() {
 			g_classes[m_strClassID].SetClassHour(m_strID, strLocationID, time);
 			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, time);
 			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, time);
-			return;
+			continue;
 		} 
 
 		g_classes[m_strClassID].Add(time, m_strID);

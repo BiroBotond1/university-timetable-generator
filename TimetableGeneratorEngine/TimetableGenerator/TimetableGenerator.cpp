@@ -206,7 +206,7 @@ void TimetableGenerator::Changes(std::unordered_map<std::string, Class>& p_class
 }
 
 double TimetableGenerator::LinearAnnealing(double t, int i) {
-    return t / (1 + 0.01 * i);
+    return t / (1 + 0.1/*0.01*/ * i);
 }
 
 void TimetableGenerator::SimulatedAnnealing() {

@@ -24,11 +24,10 @@ const osFunc = new OsFunction();
 
 exports.generate = async () => {
   try {
+    
     const inputString = await createInputString();
-
     await fs.writeFileSync('../TimetableGeneratorEngine/TimetableGenerator/in.json', inputString);
-
-    osFunc.execCommand('TimetableGenerator.exe').then(async result => {
+    await osFunc.execCommand('TimetableGenerator.exe').then(async result => {
       const catalogs = JSON.parse(result);
       console.log(`Active: ${  catalogs.active}`);
       console.log(`Class fitnes: ${  catalogs.fitnesClas}`);
