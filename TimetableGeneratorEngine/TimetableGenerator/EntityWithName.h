@@ -1,6 +1,4 @@
 #pragma once
-
-#include "stdafx.h"
 #include "Entity.h"
 
 class EntityWithName : public Entity

@@ -1,21 +1,17 @@
 #pragma once
-
-#include <fstream>
-#include <algorithm>
 #include "Global.h"
-#include "HelperFunctions.h"
-#include <chrono>
 
 using json = nlohmann::json;
 
-
 class TimetableGenerator
 {
-	bool m_bActive;
-	double m_fitnessClass;
-	double m_fitnessTeacher;
-	double m_fitnessLocation;
-	double m_elapsedTime;
+public:
+	void Run();
+	void Read(std::string fileName);
+	void InitCatalogs();
+	void SimulatedAnnealing();
+	void WriteCatalog();
+
 protected:
 	double Fitness(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
 	std::tuple<double, double, double, bool> Evaluate(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
@@ -28,9 +24,11 @@ protected:
 	void Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
 	void Changes(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
 	double LinearAnnealing(double t, int i);
-public:
-	void Read(std::string fileName);
-	void InitCatalogs();
-	void SimulatedAnnealing();
-	void WriteCatalog();
+
+private:
+	bool m_bActive;
+	double m_fitnessClass;
+	double m_fitnessTeacher;
+	double m_fitnessLocation;
+	double m_elapsedTime;
 };

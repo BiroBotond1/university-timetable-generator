@@ -1,4 +1,17 @@
+#include "stdafx.h"
 #include "TimetableGenerator.h"
+#include "Random.h"
+#include <fstream>
+#include <algorithm>
+#include <chrono>
+
+void TimetableGenerator::Run()
+{
+    Read("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
+    InitCatalogs();
+    SimulatedAnnealing();
+    WriteCatalog();
+}
 
 void TimetableGenerator::Read(std::string fileName) {
     std::ifstream fin(fileName);
@@ -127,7 +140,7 @@ void TimetableGenerator::SwapTeachers(std::unordered_map<std::string, Teacher>& 
 }
 
 std::string TimetableGenerator::GetRandomClassID() {
-    return g_classIDs[RandInt(0, int(g_classIDs.size() - 1))];
+    return g_classIDs[Random::GetInt(0, int(g_classIDs.size() - 1))];
 }
 
 std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::string p_strtClassID, std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations) {
@@ -137,8 +150,8 @@ std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::string p_s
     std::string strLocationID1;
     std::string strLocationID2;
     do {
-        time1 = Time{ RandInt(0, 4), RandInt(0, 7) };
-        time2 = Time{ RandInt(0, 4), RandInt(0, 7) };
+        time1 = Time{ Random::GetInt(0, 4), Random::GetInt(0, 7) };
+        time2 = Time{ Random::GetInt(0, 4), Random::GetInt(0, 7) };
         strTeacherID1 = p_classes[p_strtClassID].GetTeacherID(time1);
         strTeacherID2 = p_classes[p_strtClassID].GetTeacherID(time2);
         strLocationID1 = p_classes[p_strtClassID].GetLocationID(time1);
@@ -164,7 +177,7 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
 
     if (g_subjects[strSubjectID1].HasLocations())      //change the location of a classhour
     {
-        if (Rand() <= 0.05) {
+        if (Random::Get() <= 0.05) {
             std::string locationID = g_subjects[strSubjectID1].GetRandomLocationID();
             if (ChangeLocations(p_classes, p_teachers, p_locations, locationID, classHour1, time1))
                 return;
@@ -172,7 +185,7 @@ void TimetableGenerator::Change(std::unordered_map<std::string, Class>& p_classe
     }
     if (g_subjects[strSubjectID2].HasLocations())
     {
-        if (Rand() <= 0.05) {
+        if (Random::Get() <= 0.05) {
             std::string locationID = g_subjects[strSubjectID2].GetRandomLocationID();
             if (ChangeLocations(p_classes, p_teachers, p_locations, locationID, classHour2, time2))
                 return;
@@ -215,7 +228,7 @@ void TimetableGenerator::SimulatedAnnealing() {
         Changes(p_classes, p_teachers, p_locations);
         double fitnessW = Fitness(p_classes, p_teachers, p_locations);
         double fitnessC = Fitness();
-        if (fitnessW > fitnessC || Rand() < exp((fitnessW - fitnessC) / t)) {
+        if (fitnessW > fitnessC || Random::Get() < exp((fitnessW - fitnessC) / t)) {
             g_classes = p_classes;
             g_teachers = p_teachers;
             g_locations = p_locations;

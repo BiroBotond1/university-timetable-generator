@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "Teacher.h"
 #include "Location.h"
 #include "Class.h"
@@ -23,3 +22,13 @@ extern bool											g_bClassCatalogNoHoleHour;
 extern bool											g_bClassCatalogOneTypeOfCourseOnADay;
 extern bool											g_bClassCatalogCoursesStartsAtEight;
 extern bool											g_bClassCatalogCoursesWeight;
+
+enum Day {
+	Monday = 0,
+	Tuesday = 1,
+	Wednesday = 2,
+	Thursday = 3,
+	Friday = 4,
+	Saturday = 5,
+	Sunday = 6,
+};

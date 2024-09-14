@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Teacher.h"
 #include "Global.h"
 

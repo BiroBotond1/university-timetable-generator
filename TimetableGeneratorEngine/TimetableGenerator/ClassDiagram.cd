@@ -1,46 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Class">
-    <Position X="4.25" Y="4.5" Width="1.5" />
-    <Members>
-      <Method Name="Class" Hidden="true" />
-      <Method Name="GetClassHourID" Hidden="true" />
-      <Method Name="GetLocationID" Hidden="true" />
-      <Method Name="GetTeacherID" Hidden="true" />
-    </Members>
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>QAAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Class.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Catalog">
-    <Position X="9.25" Y="0.5" Width="1.5" />
-    <Members>
-      <Method Name="Add" Hidden="true" />
-      <Method Name="Catalog" Hidden="true" />
-      <Method Name="DeleteClassHour" Hidden="true" />
-      <Method Name="GetClassHourID" Hidden="true" />
-      <Method Name="GetEvenDaysFitness" Hidden="true" />
-      <Method Name="GetInactiveDaysFitness" Hidden="true" />
-      <Method Name="GetJSONObj" Hidden="true" />
-      <Method Name="GetLocationID" Hidden="true" />
-      <Method Name="GetNoHoleHoursFitness" Hidden="true" />
-      <Method Name="IsFreeDay" Hidden="true" />
-      <Method Name="SetClassHour" Hidden="true" />
-      <Method Name="SetLocationID" Hidden="true" />
-      <Method Name="Swap" Hidden="true" />
-    </Members>
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>wAJIAAQAAIAAESQAAAAAAAABAABBkAgAAAQAAAAAQJg=</HashCode>
-      <FileName>Catalog.h</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="ClassCatalog">
     <Position X="7.5" Y="2.75" Width="1.5" />
     <Members>
@@ -76,6 +35,35 @@
       <FileName>TeacherCatalog.h</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="EntityWithName">
+    <Position X="2.25" Y="2" Width="1.5" />
+    <Members>
+      <Method Name="EntityWithName" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAA=</HashCode>
+      <FileName>EntityWithName.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Class">
+    <Position X="4.25" Y="4.5" Width="1.5" />
+    <Members>
+      <Method Name="Class" Hidden="true" />
+      <Method Name="GetClassHourID" Hidden="true" />
+      <Method Name="GetLocationID" Hidden="true" />
+      <Method Name="GetTeacherID" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>QAAIAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Class.h</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="ClassHour">
     <Position X="0.5" Y="4.5" Width="1.5" />
     <Members>
@@ -90,14 +78,6 @@
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="Entity" FixedFromPoint="true">
-      <Path>
-        <Point X="1.688" Y="1.603" />
-        <Point X="1.688" Y="4.125" />
-        <Point X="1.25" Y="4.125" />
-        <Point X="1.25" Y="4.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AQAQACAACAAAAEAAAAAAAAAAIAgAAAAAUAAAIgAAAgA=</HashCode>
       <FileName>ClassHour.h</FileName>
@@ -118,7 +98,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="EntityWithCatalog">
-    <Position X="4.75" Y="2.5" Width="1.5" />
+    <Position X="4.25" Y="1.75" Width="1.5" />
     <Members>
       <Method Name="~EntityWithCatalog" Hidden="true" />
       <Method Name="Add" Hidden="true" />
@@ -174,17 +154,29 @@
       <FileName>Teacher.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="EntityWithName">
-    <Position X="2.25" Y="2" Width="1.5" />
+  <Class Name="Catalog">
+    <Position X="9.25" Y="0.5" Width="1.5" />
     <Members>
-      <Method Name="EntityWithName" Hidden="true" />
+      <Method Name="Add" Hidden="true" />
+      <Method Name="Catalog" Hidden="true" />
+      <Method Name="DeleteClassHour" Hidden="true" />
+      <Method Name="GetClassHourID" Hidden="true" />
+      <Method Name="GetEvenDaysFitness" Hidden="true" />
+      <Method Name="GetInactiveDaysFitness" Hidden="true" />
+      <Method Name="GetJSONObj" Hidden="true" />
+      <Method Name="GetLocationID" Hidden="true" />
+      <Method Name="GetNoHoleHoursFitness" Hidden="true" />
+      <Method Name="IsFreeDay" Hidden="true" />
+      <Method Name="SetClassHour" Hidden="true" />
+      <Method Name="SetLocationID" Hidden="true" />
+      <Method Name="Swap" Hidden="true" />
     </Members>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAA=</HashCode>
-      <FileName>EntityWithName.h</FileName>
+      <HashCode>wAJIAAQAAIAAESQAAAAAAAABAABBkAgAAAQAAAAAQJg=</HashCode>
+      <FileName>Catalog.h</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

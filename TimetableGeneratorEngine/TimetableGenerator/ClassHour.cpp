@@ -1,6 +1,7 @@
+#include "stdafx.h"
 #include "ClassHour.h"
 #include "Global.h"
-#include "HelperFunctions.h"
+#include "Random.h"
 
 ClassHour::ClassHour(const nlohmann::json& jsonHour) {
 	m_strID = jsonHour["_id"].get<std::string>();
@@ -20,7 +21,7 @@ void ClassHour::AddClassHoursToCatalog() {
 	std::string strLocationID;
 	for (int i = 0; i < m_nNumber; i++) {
 		do {
-			time = Time{ RandInt(0, DAY_COUNT - 1), RandInt(0, HOUR_COUNT - 1)};
+			time = Time{ Random::GetInt(0, DAY_COUNT - 1), Random::GetInt(0, HOUR_COUNT - 1)};
 			if (HasLocation())
 				strLocationID = g_subjects[m_strSubjectID].GetRandomLocationID();
 		} while (!g_classes[m_strClassID].IsFreeDay(time) || !g_teachers[m_strTeacherID].IsFreeDay(time)

@@ -1,56 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Catalog">
-      <UniqueIdentifier>{01bb40ad-e608-4f2d-a3b0-1664131c6049}</UniqueIdentifier>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{e7df565d-da63-4e50-a9b3-b16c7a1ebe95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Catalog">
-      <UniqueIdentifier>{c5f66b5b-2f6f-46ea-86e3-2eaf5a4fa960}</UniqueIdentifier>
+    <Filter Include="Catalogs">
+      <UniqueIdentifier>{fae9b825-22f4-49d0-be82-cf06621e5f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{ce185d50-d793-4f92-bedc-d9d5951b6215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generator">
+      <UniqueIdentifier>{fdf7c76f-1f3e-4b33-bad5-6697bd665594}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Service.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Teacher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Location.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HelperFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Global.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Subject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="ClassHour.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Teacher.cpp">
+      <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Catalog.cpp">
-      <Filter>Source Files\Catalog</Filter>
+      <Filter>Catalogs</Filter>
     </ClCompile>
     <ClCompile Include="TimetableGenerator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Generator</Filter>
     </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">
@@ -58,47 +55,45 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Teacher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Location.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HelperFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Subject.h">
-      <Filter>Header Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="ClassHour.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Catalog.h">
-      <Filter>Header Files\Catalog</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="EntityWithCatalog.h">
-      <Filter>Header Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
-    <ClInclude Include="EntityWithName.h">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="Location.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Teacher.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog.h">
+      <Filter>Catalogs</Filter>
     </ClInclude>
     <ClInclude Include="TimetableGenerator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Generator</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Time.h">
-      <Filter>Header Files</Filter>
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="EntityWithName.h">
+      <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

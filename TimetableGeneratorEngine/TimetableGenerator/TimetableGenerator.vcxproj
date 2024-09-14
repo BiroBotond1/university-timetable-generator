@@ -94,6 +94,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,6 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +128,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +145,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;D:\Egyetem\Allamvizsga\university-timetable-generator\TimetableGeneratorEngine\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,13 +157,19 @@
   <ItemGroup>
     <ClCompile Include="Catalog.cpp" />
     <ClCompile Include="Class.cpp" />
-    <ClCompile Include="Global.cpp" />
-    <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="ClassHour.cpp" />
+    <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Location.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Teacher.cpp" />
-    <ClCompile Include="Service.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,12 +178,12 @@
   <ItemGroup>
     <ClInclude Include="Catalog.h" />
     <ClInclude Include="Class.h" />
+    <ClInclude Include="ClassHour.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityWithCatalog.h" />
     <ClInclude Include="EntityWithName.h" />
     <ClInclude Include="Global.h" />
-    <ClInclude Include="HelperFunctions.h" />
-    <ClInclude Include="ClassHour.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subject.h" />

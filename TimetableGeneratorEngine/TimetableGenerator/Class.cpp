@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Class.h"
 #include "global.h"
 

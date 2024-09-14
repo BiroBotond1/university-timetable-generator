@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "EntityWithName.h"
 
 class Subject : public EntityWithName

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
 #include "EntityWithName.h"
 #include "Catalog.h"
 

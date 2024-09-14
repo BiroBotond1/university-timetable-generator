@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Global.h"
 
 std::unordered_map<std::string, Teacher>    g_teachers;
