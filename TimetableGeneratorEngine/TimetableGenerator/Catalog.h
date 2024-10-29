@@ -1,34 +1,54 @@
 #pragma once
-#include "stdafx.h"
+#include "TimetableConfig.h"
+#include "ClassHour.h"
+
+class EntityWithCatalog;
+class Location;
+
+using ClassHourMap = std::unordered_map<std::string, std::shared_ptr<ClassHour>>;
+using LocationMap = std::unordered_map<std::string, std::shared_ptr<Location>>;
 
 class Catalog
 {
-protected:
-	bool m_bChanged;
-	bool m_bActive;
-	double m_dFitness;
-	std::vector<std::vector<std::string>> m_catalog;
-	std::vector<std::vector<std::string>> m_locations;
-
-	double		GetEvenDaysFitness(const std::vector<int>& coursesNumber);
-	double		GetNoHoleHoursFitness(bool& p_bHasEmptyHours, bool bStrongConstraint);
-	double		GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
-	void		AddCourseNumberOnADay(const std::string strClassHourID, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
-	double		GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
 public:
-	Catalog();
-	//Catalog(const Catalog& rhsCatalog);
-	const bool			IsFreeDay(Time p_time);
-	void				Add(Time p_Time, const std::string p_strSubCourseID);
+	Catalog(const TimetableConfig& p_conf);
+
+	bool				IsFreeDay(Time p_time);
+	void				Add(Time p_Time, std::shared_ptr<ClassHour> p_classHour);
 	void				Swap(Time p_time1, Time p_time2);
+
 	std::tuple<double, bool>	EvaluateClassCatalog();
-	std::tuple<double, bool>	EvaluateTeacherCatalog(std::string p_strTeacherID);
-	std::tuple<double, bool>	EvaluateLocationCatalog(std::string p_strLocationID);
-	const std::string	GetClassHourID(Time p_time);
-	void				SetClassHour(const std::string p_strClassHourID, const std::string p_strLocationID, Time p_Time);
-	void				DeleteClassHour(Time p_time);
-	const std::string	GetLocationID(Time p_time);
-	void				SetLocationID(const std::string p_strLocationID, const Time p_time);
+	std::tuple<double, bool>	EvaluateTeacherCatalog(EntityWithCatalog* p_entity);
+	std::tuple<double, bool>	EvaluateLocationCatalog(EntityWithCatalog* p_entity);
+
+	std::shared_ptr<ClassHour>	GetClassHour(const Time& p_time);
+	void						SetClassHour(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_Time);
+	void						DeleteClassHour(Time p_time);
+
+	std::shared_ptr<Location>	GetLocation(Time p_time);
+	void						SetLocation(std::shared_ptr<Location> p_Location, const Time p_time);
+
 	void				SetChange(bool p_bChanged) { m_bChanged = p_bChanged; }
+
 	const nlohmann::json GetJSONObj();
+
+	void				ChangePointers(const ClassHourMap& p_classHours, const LocationMap& p_locations);
+
+protected:
+	double		GetEvenDaysFitness(const std::vector<int>& coursesNumber);
+	double		GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
+	double		GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+	double		GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstraint);
+
+	void		AddCourseNumberOnADay(const ClassHour& p_classHour, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+
+protected:
+	bool	m_bChanged;
+	bool	m_bActive;
+	double	m_dFitness;
+
+	std::vector<std::vector<std::shared_ptr<ClassHour>>>	m_catalog;
+	std::vector<std::vector<std::shared_ptr<Location>>>		m_locations;
+
+	TimetableConfig m_conf;
 };

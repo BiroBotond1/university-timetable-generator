@@ -1,16 +1,17 @@
 #pragma once
-#include "Catalog.h"
 #include "EntityWithCatalog.h"
+
+class Location;
+class Teacher;
 
 class Class : public EntityWithCatalog
 {
 public:
-	Class() {}
-	Class(const nlohmann::json& jsonClass);
-	//Class(const Class& rhsClass);
-	//void operator=(const Class& rhsClass);
-	const std::string	GetClassHourID(Time p_time);
-	const std::string	GetTeacherID(Time p_time);
-	const std::string	GetLocationID(Time p_time);
+	Class(const nlohmann::json& jsonClass, const TimetableConfig& p_config);
+	Class(const Class& p_class) : EntityWithCatalog(p_class.m_id, p_class.m_name, p_class.m_catalog) {}
+
+	std::shared_ptr<Class> Clone() const;
+
+	std::shared_ptr<Teacher>	GetTeacher(Time p_time);
 };
 

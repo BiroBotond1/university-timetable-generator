@@ -1,34 +1,41 @@
 #pragma once
-#include "Global.h"
+#include "Database.h"
 
-using json = nlohmann::json;
+class Entity;
 
 class TimetableGenerator
 {
 public:
 	void Run();
-	void Read(std::string fileName);
+
 	void InitCatalogs();
 	void SimulatedAnnealing();
 	void WriteCatalog();
 
-protected:
-	double Fitness(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
-	std::tuple<double, double, double, bool> Evaluate(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
-	double Fitness();
-	bool ChangeLocations(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations, std::string p_strLocationID, ClassHour p_classHour, Time p_time);
-	void SwapLocations(std::unordered_map<std::string, Location>& p_locations, Class& p_class, Time p_time1, Time p_time2);
-	void SwapTeachers(std::unordered_map<std::string, Teacher>& p_teachers, Class& p_class, Time p_time1, Time p_time2);
-	std::tuple<Time, Time> GetRandomFreeHourTime(std::string p_strtClassID, std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
-	std::string GetRandomClassID();
-	void Change(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
-	void Changes(std::unordered_map<std::string, Class>& p_classes, std::unordered_map<std::string, Teacher>& p_teachers, std::unordered_map<std::string, Location>& p_locations);
+private:
+	void Changes(Database& p_db);
+	void Change(Database& p_db);
+	bool ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time);
+	void SwapLocations(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
+	void SwapTeachers(TeacherMap& p_teachers, std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
+
 	double LinearAnnealing(double t, int i);
 
+	double										Fitness();
+	double										Fitness(Database& p_db);
+	std::tuple<double, double, double, bool>	Evaluate(Database& p_db);
+
+	std::tuple<Time, Time>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class, TeacherMap& p_teachers, LocationMap& p_locations);
+
 private:
-	bool m_bActive;
-	double m_fitnessClass;
-	double m_fitnessTeacher;
-	double m_fitnessLocation;
-	double m_elapsedTime;
+	bool			m_bActive;
+	double			m_fitnessClass;
+	double			m_fitnessTeacher;
+	double			m_fitnessLocation;
+	double			m_elapsedTime;
+
+	Database	m_DB;
+
+	const double MAX_TEMP = 200000.0;
+	const double MIN_TEMP = 2.0;
 };

@@ -1,25 +1,19 @@
 #include "stdafx.h"
 #include "Class.h"
-#include "global.h"
+#include "Teacher.h"
+#include "Location.h"
 
-Class::Class(const nlohmann::json& jsonClass) {
-	m_strID = jsonClass["_id"].get<std::string>();
-	m_strName = jsonClass["name"].get<std::string>();
-	m_catalog = Catalog();
+Class::Class(const nlohmann::json& jsonClass, const TimetableConfig& p_config) : EntityWithCatalog(jsonClass, p_config) {}
+
+std::shared_ptr<Class> Class::Clone() const
+{
+	return std::make_shared<Class>(*this);
 }
 
-const std::string Class::GetClassHourID(Time p_time) {
-	return m_catalog.GetClassHourID(p_time);
-}
-
-const std::string Class::GetTeacherID(Time p_time) {
+std::shared_ptr<Teacher> Class::GetTeacher(Time p_time)
+{
 	if (m_catalog.IsFreeDay(p_time))
-		return "";
-	return g_classHours[m_catalog.GetClassHourID(p_time)].GetTeacherID();
-}
-
-const std::string Class::GetLocationID(Time p_time) {
-	if (m_catalog.IsFreeDay(p_time))
-		return "";
-	return m_catalog.GetLocationID(p_time);
+		return nullptr;
+	
+	return m_catalog.GetClassHour(p_time)->GetTeacher();
 }

@@ -3,10 +3,11 @@
 
 class EntityWithName : public Entity
 {
-protected:
-	std::string m_strName;
 public:
-	EntityWithName() {}
-	EntityWithName(std::string p_strID, std::string p_strName) : Entity(p_strID), m_strName(p_strName) {}
+	EntityWithName(const nlohmann::json& p_json) : Entity(p_json), m_name(p_json["name"].get<std::string>()) {};
+	EntityWithName(const std::string& p_id, const std::string& p_name) : m_name(p_name), Entity(p_id) {};
+
+protected:
+	std::string m_name;
 };
 

@@ -158,7 +158,7 @@
     <ClCompile Include="Catalog.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="ClassHour.cpp" />
-    <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Database.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
@@ -170,6 +170,7 @@
     </ClCompile>
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Teacher.cpp" />
+    <ClCompile Include="TimetableConfig.cpp" />
     <ClCompile Include="TimetableGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,16 +180,17 @@
     <ClInclude Include="Catalog.h" />
     <ClInclude Include="Class.h" />
     <ClInclude Include="ClassHour.h" />
+    <ClInclude Include="Database.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityWithCatalog.h" />
     <ClInclude Include="EntityWithName.h" />
-    <ClInclude Include="Global.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Teacher.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="TimetableConfig.h" />
     <ClInclude Include="TimetableGenerator.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,8 @@
 #include "stdafx.h"
 #include "Location.h"
-#include "Global.h"
 
-Location::Location(const nlohmann::json &jsonLocation) {
-	m_strID = jsonLocation["_id"].get<std::string>();
-	m_catalog = Catalog();
-	m_strName = jsonLocation["name"].get<std::string>();
+Location::Location(const nlohmann::json &jsonLocation, const TimetableConfig& p_config) : EntityWithCatalog(jsonLocation, p_config)
+{
 	int nDay = 0, nHour;
 	for (auto hours : jsonLocation["reservedDates"])
 	{
@@ -20,10 +17,17 @@ Location::Location(const nlohmann::json &jsonLocation) {
 	}
 }
 
-const std::vector<std::pair<int, int>>& Location::GetReservedDates() {
+std::shared_ptr<Location> Location::Clone() const
+{
+	return std::make_shared<Location>(*this);
+}
+
+std::vector<std::pair<int, int>>& Location::GetReservedDates()
+{
 	return m_vReservedDates;
 }
 
-void Location::DeleteClassHour(Time p_time) {
+void Location::DeleteClassHour(Time p_time) 
+{
 	m_catalog.DeleteClassHour(p_time);
 }

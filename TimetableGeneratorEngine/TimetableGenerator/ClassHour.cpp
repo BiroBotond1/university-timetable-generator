@@ -1,40 +1,56 @@
 #include "stdafx.h"
 #include "ClassHour.h"
-#include "Global.h"
 #include "Random.h"
+#include "Teacher.h"
+#include "Location.h"
+#include "Class.h"
+#include "Subject.h"
 
-ClassHour::ClassHour(const nlohmann::json& jsonHour) {
-	m_strID = jsonHour["_id"].get<std::string>();
+ClassHour::ClassHour(const nlohmann::json& jsonHour, std::shared_ptr<Teacher> p_teacher, std::shared_ptr<Class> p_class, std::shared_ptr<Subject> p_subject)
+	: m_teacher(p_teacher), m_class(p_class), m_subject(p_subject), Entity(jsonHour)	
+{
 	m_nNumber = jsonHour["number"];
-	m_strTeacherID = jsonHour["teacher"]["_id"].get<std::string>();
-	m_strClassID = jsonHour["class"]["_id"].get<std::string>();
-	m_strSubjectID = jsonHour["subject"]["_id"].get<std::string>();
 	m_dWeight = jsonHour["weight"];
 }
 
-const bool ClassHour::HasLocation() {
-	return g_subjects[m_strSubjectID].HasLocations();
+std::shared_ptr<ClassHour> ClassHour::Clone(const TeacherMap& p_teachers, const ClassMap& p_classes, const SubjectMap& p_subjects) const
+{
+	ClassHour copiedClassHour = *this;
+
+	copiedClassHour.m_teacher = p_teachers.at(m_teacher->GetId());
+	copiedClassHour.m_class = p_classes.at(m_class->GetId());
+	copiedClassHour.m_subject = p_subjects.at(m_subject->GetId());
+
+	return std::make_shared<ClassHour>(copiedClassHour);
 }
 
-void ClassHour::AddClassHoursToCatalog() {
+bool ClassHour::HasLocation() const
+{ 
+	return m_subject->HasLocations();
+}
+
+void ClassHour::AddClassHoursToCatalog() 
+{
 	Time time;
-	std::string strLocationID;
-	for (int i = 0; i < m_nNumber; i++) {
+	std::shared_ptr<Location> location;
+	for (int i = 0; i < m_nNumber; i++)
+	{
 		do {
 			time = Time{ Random::GetInt(0, DAY_COUNT - 1), Random::GetInt(0, HOUR_COUNT - 1)};
 			if (HasLocation())
-				strLocationID = g_subjects[m_strSubjectID].GetRandomLocationID();
-		} while (!g_classes[m_strClassID].IsFreeDay(time) || !g_teachers[m_strTeacherID].IsFreeDay(time)
-			|| (HasLocation() && !g_locations[strLocationID].IsFreeDay(time)));
+				location = m_subject->GetRandomLocation();
+		} while (!m_class->IsFreeDay(time) || !m_teacher->IsFreeDay(time)
+			|| (HasLocation() && !location->IsFreeDay(time)));
 
-		if (HasLocation()) {
-			g_locations[strLocationID].Add(time, m_strID);
-			g_classes[m_strClassID].SetClassHour(m_strID, strLocationID, time);
-			g_teachers[m_strTeacherID].SetClassHour(m_strID, strLocationID, time);
+		if (HasLocation())
+		{
+			location->Add(time, shared_from_this());
+			m_class->SetClassHour(shared_from_this(), location, time);
+			m_teacher->SetClassHour(shared_from_this(), location, time);
 			continue;
 		} 
 
-		g_classes[m_strClassID].Add(time, m_strID);
-		g_teachers[m_strTeacherID].Add(time, m_strID);
+		m_class->Add(time, shared_from_this());
+		m_teacher->Add(time, shared_from_this());
 	}
 } 
