@@ -75,48 +75,14 @@ json Database::WriteCatalog()
 
 void Database::DeepCopy(Database& p_copyDB)
 {
-    if (p_copyDB.IsEmpty())
-    {
-        p_copyDB.m_classIDs = m_classIDs;
-        p_copyDB.m_teachers = DeepCopyMap<Teacher>(m_teachers);
-        p_copyDB.m_locations = DeepCopyMap<Location>(m_locations);
-        p_copyDB.m_classes = DeepCopyMap<Class>(m_classes);
-        p_copyDB.m_subjects = DeepCopySubjects(p_copyDB);
-        p_copyDB.m_classHours = DeepCopyClassHours(p_copyDB);
-        ChangeCatalogPointers(p_copyDB);
-    }
-    else
-    {
-        /*for (auto& [id, teacher] : p_copyDB.m_teachers)
-        {
-            *teacher = *m_teachers[id];
-        }
-
-        for (auto& [id, location] : p_copyDB.m_locations)
-        {
-            *location = *m_locations[id];
-        }
-
-        for (auto& [id, clas] : p_copyDB.m_classes)
-        {
-            *clas = *m_classes[id];
-        }
-
-        for (auto& [id, subject] : p_copyDB.m_subjects)
-        {
-            *subject = *m_subjects[id];
-        }
-
-        for (auto& [id, classHour] : p_copyDB.m_classHours)
-        {
-            *classHour = *m_classHours[id];
-        }*/
-    }
-}
-
-bool Database::IsEmpty()
-{
-    return m_classHours.size() == 0;
+    p_copyDB.m_classIDs = m_classIDs;
+    p_copyDB.m_teachers = DeepCopyMap<Teacher>(m_teachers);
+    p_copyDB.m_locations = DeepCopyMap<Location>(m_locations);
+    p_copyDB.m_classes = DeepCopyMap<Class>(m_classes);
+    p_copyDB.m_subjects = DeepCopySubjects(p_copyDB);
+    p_copyDB.m_classHours = DeepCopyClassHours(p_copyDB);
+   
+    ChangeCatalogPointers(p_copyDB);
 }
 
 template <typename T>

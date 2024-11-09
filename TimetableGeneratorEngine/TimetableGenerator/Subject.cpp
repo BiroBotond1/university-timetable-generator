@@ -16,19 +16,17 @@ std::shared_ptr<Subject> Subject::Clone(const LocationMap& p_MapLocations) const
 {
 	auto clonedSubject = std::make_shared<Subject>(*this);
 
-	for (int i = 0; i < m_locations.size(); i++)
-	{
-		if (auto location = m_locations[i].lock())
-		{
-			clonedSubject->m_locations[i] = p_MapLocations.at(location->GetId()); //corresponds to a cloned pointer
-		}
-		else
-		{
-			assert(false);
-		}
-	}
+	clonedSubject->ChangePointers(p_MapLocations);
 
 	return clonedSubject;
+}
+
+void Subject::ChangePointers(const LocationMap& p_MapLocations)
+{
+	for (auto& location : m_locations)
+	{
+		location = p_MapLocations.at(location.lock()->GetId()); //corresponds to a cloned pointer
+	}
 }
 
 std::shared_ptr<Location> Subject::GetRandomLocation() const

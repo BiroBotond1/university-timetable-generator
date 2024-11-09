@@ -9,7 +9,7 @@
 
 void TimetableGenerator::Run()
 {
-    m_DB.Fill("../TimetableGeneratorEngine/TimetableGenerator/in.json");
+    m_DB.Fill("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
     InitCatalogs();
     SimulatedAnnealing();
     WriteCatalog();
@@ -75,7 +75,7 @@ void TimetableGenerator::SimulatedAnnealing()
     m_elapsedTime = std::chrono::duration<double>(t_act - t_start).count();
     testDatas.close();
 
-    m_DB = std::move(bestDB);
+    m_DB.DeepCopy(bestDB);
 }
 
 void TimetableGenerator::Changes(Database& p_db)

@@ -17,11 +17,16 @@ std::shared_ptr<ClassHour> ClassHour::Clone(const TeacherMap& p_teachers, const 
 {
 	auto copiedClassHour = std::make_shared<ClassHour>(*this);
 
-	copiedClassHour->m_teacher = p_teachers.at(m_teacher.lock()->GetId());
-	copiedClassHour->m_class = p_classes.at(m_class.lock()->GetId());
-	copiedClassHour->m_subject = p_subjects.at(m_subject.lock()->GetId());
+	copiedClassHour->ChangePointers(p_teachers, p_classes, p_subjects);
 
 	return copiedClassHour;
+}
+
+void ClassHour::ChangePointers(const TeacherMap& p_teachers, const ClassMap& p_classes, const SubjectMap& p_subjects)
+{
+	m_teacher = p_teachers.at(m_teacher.lock()->GetId());
+	m_class = p_classes.at(m_class.lock()->GetId());
+	m_subject = p_subjects.at(m_subject.lock()->GetId());
 }
 
 bool ClassHour::HasLocation() const

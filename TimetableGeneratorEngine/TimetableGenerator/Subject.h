@@ -16,6 +16,8 @@ public:
 	bool						HasLocations() const { return !m_locations.empty(); }
 	std::shared_ptr<Location>	GetRandomLocation() const;
 
+	void						ChangePointers(const LocationMap& p_MapLocations);
+
 private:
 	std::vector<std::weak_ptr<Location>>	m_locations;
 };

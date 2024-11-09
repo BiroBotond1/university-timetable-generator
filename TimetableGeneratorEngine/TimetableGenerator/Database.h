@@ -40,8 +40,6 @@ private:
 
 	void ChangeCatalogPointers(const Database& p_copyDB);
 
-	bool IsEmpty();
-
 private:
 	TeacherMap					m_teachers;
 	LocationMap					m_locations;

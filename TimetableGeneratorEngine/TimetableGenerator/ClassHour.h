@@ -21,6 +21,7 @@ public:
 		m_nNumber(p_classHour.m_nNumber), m_dWeight(p_classHour.m_dWeight), Entity(p_classHour.m_id) {};
 
 	std::shared_ptr<ClassHour> Clone(const TeacherMap& p_teachers, const ClassMap& p_classes, const SubjectMap& p_subjects) const;
+	void					   ChangePointers(const TeacherMap& p_teachers, const ClassMap& p_classes, const SubjectMap& p_subjects);
 
 	std::shared_ptr<Teacher>	GetTeacher() const	{ return m_teacher.lock(); }
 	std::shared_ptr<Class>		GetClass() const	{ return m_class.lock(); }
