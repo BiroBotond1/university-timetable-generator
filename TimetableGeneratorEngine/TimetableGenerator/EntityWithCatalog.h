@@ -14,9 +14,7 @@ public:
 
 	const bool	IsFreeDay(Time p_time) { return m_catalog.IsFreeDay(p_time); }
 
-	std::tuple<double, bool> EvaluateClass()	{ return m_catalog.EvaluateClassCatalog(); }
-	std::tuple<double, bool> EvaluateTeacher()	{ return m_catalog.EvaluateTeacherCatalog(this); }
-	std::tuple<double, bool> EvaluateLocation() { return m_catalog.EvaluateLocationCatalog(this); }
+	virtual std::tuple<double, bool> Evaluate() = 0;
 
 	Catalog& GetCatalog() { return m_catalog; }
 

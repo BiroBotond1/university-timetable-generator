@@ -9,6 +9,8 @@ public:
 
 	std::shared_ptr<Location> Clone() const;
 
+	std::tuple<double, bool> Evaluate() override;
+
 	std::vector<std::pair<int, int>>& GetReservedDates();
 	void							DeleteClassHour(Time p_time);
 

@@ -12,19 +12,28 @@ Subject::Subject(const nlohmann::json& jsonSubject, LocationMap& p_locations) : 
 	}
 }
 
-std::shared_ptr<Subject> Subject::Clone(const LocationMap& p_locations) const
+std::shared_ptr<Subject> Subject::Clone(const LocationMap& p_MapLocations) const
 {
-	Subject clonedSubject = *this;
+	auto clonedSubject = std::make_shared<Subject>(*this);
 
 	for (int i = 0; i < m_locations.size(); i++)
 	{
-		clonedSubject.m_locations[i] = p_locations.at(m_locations[i]->GetId()); //corresponds to a cloned pointer
+		if (auto location = m_locations[i].lock())
+		{
+			clonedSubject->m_locations[i] = p_MapLocations.at(location->GetId()); //corresponds to a cloned pointer
+		}
+		else
+		{
+			assert(false);
+		}
 	}
 
-	return std::make_shared<Subject>(clonedSubject);
+	return clonedSubject;
 }
 
 std::shared_ptr<Location> Subject::GetRandomLocation() const
 {
-	return m_locations[Random::GetInt(0, int(m_locations.size() - 1))];
+	auto location = m_locations[Random::GetInt(0, int(m_locations.size() - 1))].lock();
+
+	return location;
 }

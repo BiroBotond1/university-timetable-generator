@@ -19,10 +19,10 @@ class Database
 public:
 	void Fill(const std::string& p_fileName);
 
-	Database DeepCopy();
+	void DeepCopy(Database& p_copyDB);
 
 	json WriteCatalog();
-
+	
 	TeacherMap&		GetTeachers()	{ return m_teachers; }
 	LocationMap&	GetLocations()	{ return m_locations; }
 	ClassMap&		GetClasses()	{ return m_classes; }
@@ -31,14 +31,16 @@ public:
 
 	std::shared_ptr<Class> GetRandomClass();
 
-	
 private:
 	template <typename T>
 	std::unordered_map<std::string, std::shared_ptr<T>> DeepCopyMap(const std::unordered_map<std::string, std::shared_ptr<T>>& originalMap);
+
 	SubjectMap DeepCopySubjects(const Database& p_copyDB);
 	ClassHourMap DeepCopyClassHours(const Database& p_copyDB);
 
 	void ChangeCatalogPointers(const Database& p_copyDB);
+
+	bool IsEmpty();
 
 private:
 	TeacherMap					m_teachers;

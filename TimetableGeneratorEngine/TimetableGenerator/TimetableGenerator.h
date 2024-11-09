@@ -28,11 +28,11 @@ private:
 	std::tuple<Time, Time>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class, TeacherMap& p_teachers, LocationMap& p_locations);
 
 private:
-	bool			m_bActive;
-	double			m_fitnessClass;
-	double			m_fitnessTeacher;
-	double			m_fitnessLocation;
-	double			m_elapsedTime;
+	bool			m_bActive = false;
+	double			m_fitnessClass = 0;
+	double			m_fitnessTeacher = 0;
+	double			m_fitnessLocation = 0;
+	double			m_elapsedTime = 0;
 
 	Database	m_DB;
 

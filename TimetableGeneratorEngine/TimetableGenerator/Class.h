@@ -12,6 +12,8 @@ public:
 
 	std::shared_ptr<Class> Clone() const;
 
+	std::tuple<double, bool> Evaluate() override;
+
 	std::shared_ptr<Teacher>	GetTeacher(Time p_time);
 };
 

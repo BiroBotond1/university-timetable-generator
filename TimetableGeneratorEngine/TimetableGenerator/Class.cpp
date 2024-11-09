@@ -10,6 +10,11 @@ std::shared_ptr<Class> Class::Clone() const
 	return std::make_shared<Class>(*this);
 }
 
+std::tuple<double, bool> Class::Evaluate()
+{
+	return m_catalog.EvaluateClassCatalog();
+}
+
 std::shared_ptr<Teacher> Class::GetTeacher(Time p_time)
 {
 	if (m_catalog.IsFreeDay(p_time))

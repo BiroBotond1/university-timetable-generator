@@ -9,6 +9,8 @@ public:
 
 	std::shared_ptr<Teacher> Clone() const;
 
+	std::tuple<double, bool> Evaluate() override;
+
 	std::vector<std::pair<int, int>>& GetInappropriateDates();
 
 private:

@@ -15,18 +15,18 @@ ClassHour::ClassHour(const nlohmann::json& jsonHour, std::shared_ptr<Teacher> p_
 
 std::shared_ptr<ClassHour> ClassHour::Clone(const TeacherMap& p_teachers, const ClassMap& p_classes, const SubjectMap& p_subjects) const
 {
-	ClassHour copiedClassHour = *this;
+	auto copiedClassHour = std::make_shared<ClassHour>(*this);
 
-	copiedClassHour.m_teacher = p_teachers.at(m_teacher->GetId());
-	copiedClassHour.m_class = p_classes.at(m_class->GetId());
-	copiedClassHour.m_subject = p_subjects.at(m_subject->GetId());
+	copiedClassHour->m_teacher = p_teachers.at(m_teacher.lock()->GetId());
+	copiedClassHour->m_class = p_classes.at(m_class.lock()->GetId());
+	copiedClassHour->m_subject = p_subjects.at(m_subject.lock()->GetId());
 
-	return std::make_shared<ClassHour>(copiedClassHour);
+	return copiedClassHour;
 }
 
 bool ClassHour::HasLocation() const
 { 
-	return m_subject->HasLocations();
+	return m_subject.lock()->HasLocations();
 }
 
 void ClassHour::AddClassHoursToCatalog() 
@@ -38,19 +38,19 @@ void ClassHour::AddClassHoursToCatalog()
 		do {
 			time = Time{ Random::GetInt(0, DAY_COUNT - 1), Random::GetInt(0, HOUR_COUNT - 1)};
 			if (HasLocation())
-				location = m_subject->GetRandomLocation();
-		} while (!m_class->IsFreeDay(time) || !m_teacher->IsFreeDay(time)
+				location = m_subject.lock()->GetRandomLocation();
+		} while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time)
 			|| (HasLocation() && !location->IsFreeDay(time)));
 
 		if (HasLocation())
 		{
 			location->Add(time, shared_from_this());
-			m_class->SetClassHour(shared_from_this(), location, time);
-			m_teacher->SetClassHour(shared_from_this(), location, time);
+			m_class.lock()->SetClassHour(shared_from_this(), location, time);
+			m_teacher.lock()->SetClassHour(shared_from_this(), location, time);
 			continue;
 		} 
 
-		m_class->Add(time, shared_from_this());
-		m_teacher->Add(time, shared_from_this());
+		m_class.lock()->Add(time, shared_from_this());
+		m_teacher.lock()->Add(time, shared_from_this());
 	}
 } 

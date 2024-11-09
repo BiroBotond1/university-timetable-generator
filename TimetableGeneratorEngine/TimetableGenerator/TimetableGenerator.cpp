@@ -9,7 +9,7 @@
 
 void TimetableGenerator::Run()
 {
-    m_DB.Fill("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
+    m_DB.Fill("../TimetableGeneratorEngine/TimetableGenerator/in.json");
     InitCatalogs();
     SimulatedAnnealing();
     WriteCatalog();
@@ -26,7 +26,8 @@ void TimetableGenerator::InitCatalogs()
 
 void TimetableGenerator::SimulatedAnnealing() 
 {   
-    auto bestDB = m_DB.DeepCopy();
+    Database bestDB;
+    m_DB.DeepCopy(bestDB);
     std::ofstream testDatas("Plot_data.txt");
     auto t_start = std::chrono::high_resolution_clock::now();
     double initialT = MAX_TEMP, t;
@@ -34,7 +35,8 @@ void TimetableGenerator::SimulatedAnnealing()
     int i = 0, nStepsWithNoBetterSolution = 0;
     while (/*nStepsWithNoBetterSolution < 10000*/t > MIN_TEMP/*g_bActive == false*/)
     {
-        auto localDB = m_DB.DeepCopy();
+        Database localDB;
+        m_DB.DeepCopy(localDB);
 
         Changes(localDB);
 
@@ -43,7 +45,7 @@ void TimetableGenerator::SimulatedAnnealing()
 
         if (fitnessW > fitnessC || Random::Get() < exp((fitnessW - fitnessC) / t))
         {
-            m_DB = localDB.DeepCopy();
+            localDB.DeepCopy(m_DB);
         }
 
         i++;
@@ -53,7 +55,7 @@ void TimetableGenerator::SimulatedAnnealing()
         if (Fitness() > Fitness(bestDB))
         {
             nStepsWithNoBetterSolution = 0;
-            bestDB = m_DB.DeepCopy();
+            m_DB.DeepCopy(bestDB);
         }
 
         if (i % 1000 == 0)
@@ -73,7 +75,7 @@ void TimetableGenerator::SimulatedAnnealing()
     m_elapsedTime = std::chrono::duration<double>(t_act - t_start).count();
     testDatas.close();
 
-    m_DB = bestDB;
+    m_DB = std::move(bestDB);
 }
 
 void TimetableGenerator::Changes(Database& p_db)
@@ -186,21 +188,21 @@ std::tuple<double, double, double, bool> TimetableGenerator::Evaluate(Database& 
 
     for (auto& clas : p_db.GetClasses())
     {
-        auto [dActfitness, bActActive] = clas.second->EvaluateClass();
+        auto [dActfitness, bActActive] = clas.second->Evaluate();
         dFitnessValueClass += dActfitness;
         bActive = bActive && bActActive;
     }
     
     for (auto& teacher : p_db.GetTeachers())
     {
-        auto [dActfitness, bActActive] = teacher.second->EvaluateTeacher();
+        auto [dActfitness, bActActive] = teacher.second->Evaluate();
         dFitnessValueTeacher += dActfitness;
         bActive = bActive && bActActive;
     }
 
     for (auto& location : p_db.GetLocations())
     {
-        auto [dActfitness, bActActive] = location.second->EvaluateLocation();
+        auto [dActfitness, bActActive] = location.second->Evaluate();
         dFitnessValueLocation += dActfitness;
         bActive = bActive && bActActive;
     }

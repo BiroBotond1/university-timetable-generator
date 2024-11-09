@@ -22,6 +22,11 @@ std::shared_ptr<Teacher> Teacher::Clone() const
 	return std::make_shared<Teacher>(*this);
 }
 
+std::tuple<double, bool> Teacher::Evaluate()
+{
+	return m_catalog.EvaluateTeacherCatalog(this);
+}
+
 std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates()
 {
 	return m_vInappropriateDates;
