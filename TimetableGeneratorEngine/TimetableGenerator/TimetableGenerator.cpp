@@ -9,7 +9,13 @@
 
 void TimetableGenerator::Run()
 {
-    m_DB.Fill("D:/Egyetem/Allamvizsga/university-timetable-generator/TimetableGeneratorEngine/TimetableGenerator/in.json");
+#if _DEBUG
+    std::string fileName = "../../TimetableGeneratorEngine/TimetableGenerator/in.json";
+#else
+    std::string fileName = "../TimetableGeneratorEngine/TimetableGenerator/in.json"; //called only from the webserver
+#endif
+    
+    m_DB.Fill(fileName);
     InitCatalogs();
     SimulatedAnnealing();
     WriteCatalog();
