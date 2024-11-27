@@ -24,10 +24,10 @@ std::shared_ptr<Location> Location::Clone() const
 
 std::tuple<double, bool> Location::Evaluate()
 {
-	return m_catalog.EvaluateLocationCatalog(this);
+	return m_catalog.EvaluateLocationCatalog(*this);
 }
 
-std::vector<std::pair<int, int>>& Location::GetReservedDates()
+const std::vector<std::pair<int, int>>& Location::GetReservedDates() const
 {
 	return m_vReservedDates;
 }

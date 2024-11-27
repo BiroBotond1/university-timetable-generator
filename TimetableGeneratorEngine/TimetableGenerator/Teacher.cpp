@@ -24,10 +24,10 @@ std::shared_ptr<Teacher> Teacher::Clone() const
 
 std::tuple<double, bool> Teacher::Evaluate()
 {
-	return m_catalog.EvaluateTeacherCatalog(this);
+	return m_catalog.EvaluateTeacherCatalog(*this);
 }
 
-std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates()
+const std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates() const
 {
 	return m_vInappropriateDates;
 }

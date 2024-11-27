@@ -70,7 +70,7 @@ std::tuple<double, bool> Catalog::EvaluateClassCatalog()
 	return std::make_tuple(m_dFitness, m_bActive);
 };
 
-std::tuple<double, bool>	Catalog::EvaluateTeacherCatalog(Teacher* p_teacher)
+std::tuple<double, bool> Catalog::EvaluateTeacherCatalog(const Teacher& teacher)
 {
 	if (!m_bChanged)
 		return std::make_tuple(m_dFitness, m_bActive);
@@ -93,7 +93,7 @@ std::tuple<double, bool>	Catalog::EvaluateTeacherCatalog(Teacher* p_teacher)
 
 			coursesNumbers[nDay]++;
 
-			m_dFitness += GetInactiveDaysFitness(Time{ nDay, nHour }, p_teacher->GetInappropriateDates());
+			m_dFitness += GetInactiveDaysFitness(Time{ nDay, nHour }, teacher.GetInappropriateDates());
 
 			if (m_conf.teacherCatalogNoHoleHour)
 				m_dFitness += GetNoHoleHoursFitness(hasEmptyHours, false);
@@ -112,7 +112,7 @@ std::tuple<double, bool>	Catalog::EvaluateTeacherCatalog(Teacher* p_teacher)
 	return std::make_tuple(m_dFitness, m_bActive);
 };
 
-std::tuple<double, bool> Catalog::EvaluateLocationCatalog(Location* p_location)
+std::tuple<double, bool> Catalog::EvaluateLocationCatalog(const Location& location)
 {
 	if (!m_bChanged)
 		return std::make_tuple(m_dFitness, m_bActive);
@@ -129,7 +129,7 @@ std::tuple<double, bool> Catalog::EvaluateLocationCatalog(Location* p_location)
 				continue;
 			}
 
-			m_dFitness += GetInactiveDaysFitness(Time{ nDay, nHour }, p_location->GetReservedDates());
+			m_dFitness += GetInactiveDaysFitness(Time{ nDay, nHour }, location.GetReservedDates());
 		}
 	}
 

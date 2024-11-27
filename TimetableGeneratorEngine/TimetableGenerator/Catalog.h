@@ -18,8 +18,8 @@ public:
 	void				Swap(Time p_time1, Time p_time2);
 
 	std::tuple<double, bool>	EvaluateClassCatalog();
-	std::tuple<double, bool>	EvaluateTeacherCatalog(Teacher* p_teacher);
-	std::tuple<double, bool>	EvaluateLocationCatalog(Location* p_location);
+	std::tuple<double, bool>	EvaluateTeacherCatalog(const Teacher& teacher);
+	std::tuple<double, bool>	EvaluateLocationCatalog(const Location& location);
 
 	std::shared_ptr<ClassHour>	GetClassHour(const Time& p_time);
 	void						SetClassHour(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_Time);
