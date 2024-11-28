@@ -10,3 +10,7 @@
 #include <random>
 #include <chrono>
 #include "Time.h"
+
+#define DAY_COUNT 5
+#define HOUR_COUNT 8
+#define START_HOUR 8

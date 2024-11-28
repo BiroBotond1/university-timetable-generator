@@ -41,7 +41,7 @@ void ClassHour::AddClassHoursToCatalog()
 	for (int i = 0; i < m_nNumber; i++)
 	{
 		do {
-			time = Time{ Random::GetInt(0, DAY_COUNT - 1), Random::GetInt(0, HOUR_COUNT - 1)};
+			time = Random::GetTime();
 			if (HasLocation())
 				location = m_subject.lock()->GetRandomLocation();
 		} while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time)

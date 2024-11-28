@@ -139,7 +139,7 @@ void Catalog::AddCourseNumberOnADay(std::shared_ptr<ClassHour> p_classHour, std:
 void Catalog::CalcFitnessOneTypeOfCourseOnADay(bool p_bIsSet, std::unordered_map<std::string, int>& p_mCourseNumberOnADay)
 {
 	if (p_bIsSet)
-		m_dFitness += GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>&p_mCourseNumberOnADay);
+		m_dFitness += GetFitnessOneTypeOfCourseOnADay(p_mCourseNumberOnADay);
 }
 
 //just 1 type of course on each day

@@ -9,10 +9,6 @@ using TeacherMap = std::unordered_map<std::string, std::shared_ptr<Teacher>>;
 using ClassMap = std::unordered_map<std::string, std::shared_ptr<Class>>;
 using SubjectMap = std::unordered_map<std::string, std::shared_ptr<Subject>>;
 
-#define DAY_COUNT 5
-#define HOUR_COUNT 8
-#define START_HOUR 8
-
 class ClassHour : public Entity, public std::enable_shared_from_this<ClassHour>
 {
 public:
