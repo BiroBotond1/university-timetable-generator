@@ -36,26 +36,47 @@ bool ClassHour::HasLocation() const
 
 void ClassHour::AddClassHoursToCatalog() 
 {
-	Time time;
-	std::shared_ptr<Location> location;
 	for (int i = 0; i < m_nNumber; i++)
 	{
-		do {
-			time = Random::GetTime();
-			if (HasLocation())
-				location = m_subject.lock()->GetRandomLocation();
-		} while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time)
-			|| (HasLocation() && !location->IsFreeDay(time)));
-
-		if (HasLocation())
+		if (HasLocation()) 
 		{
+			auto [time, location] = GetFreeTimeWithLocation();
+			
 			location->Add(time, shared_from_this());
 			m_class.lock()->SetClassHour(shared_from_this(), location, time);
 			m_teacher.lock()->SetClassHour(shared_from_this(), location, time);
-			continue;
-		} 
+		}
+		else {
+			Time freeTime = GetFreeTime();
 
-		m_class.lock()->Add(time, shared_from_this());
-		m_teacher.lock()->Add(time, shared_from_this());
+			m_class.lock()->Add(freeTime, shared_from_this());
+			m_teacher.lock()->Add(freeTime, shared_from_this());
+		}
 	}
-} 
+}
+
+Time ClassHour::GetFreeTime()
+{
+	Time time = Random::GetTime();
+
+	while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time))
+	{
+		time = Random::GetTime();
+	}
+
+	return time;
+}
+
+std::pair<Time, std::shared_ptr<Location>> ClassHour::GetFreeTimeWithLocation()
+{
+	Time time = Random::GetTime();
+	std::shared_ptr<Location> location = m_subject.lock()->GetRandomLocation();
+
+	while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time) || !location->IsFreeDay(time))
+	{
+		time = Random::GetTime();
+		location = m_subject.lock()->GetRandomLocation();
+	}
+
+	return std::make_pair(time, location);
+}

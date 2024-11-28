@@ -4,6 +4,7 @@
 class Teacher;
 class Class;
 class Subject;
+class Location;
 
 using TeacherMap = std::unordered_map<std::string, std::shared_ptr<Teacher>>;
 using ClassMap = std::unordered_map<std::string, std::shared_ptr<Class>>;
@@ -24,9 +25,13 @@ public:
 	std::shared_ptr<Subject>	GetSubject() const	{ return m_subject.lock(); }
 
 	double		GetWeight() const { return m_dWeight; }
-
+	
 	void		AddClassHoursToCatalog();
 	bool		HasLocation() const;
+
+private:
+	Time GetFreeTime();
+	std::pair<Time, std::shared_ptr<Location>> GetFreeTimeWithLocation();
 
 private:
 	std::weak_ptr<Teacher>		m_teacher;
