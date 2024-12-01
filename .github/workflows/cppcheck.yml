@@ -1,0 +1,37 @@
+name: Cppcheck Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Install Cppcheck
+    - name: Install Cppcheck
+      run: sudo apt-get install cppcheck -y
+
+    # Step 3: Run Cppcheck
+    - name: Run Cppcheck
+      run: |
+        cppcheck --enable=all --inconclusive --quiet --xml . 2> cppcheck-report.xml
+        if [ $? -ne 0 ]; then
+          echo "Cppcheck found issues."
+        fi
+
+    # Step 4: Upload the Cppcheck report
+    - name: Upload Cppcheck Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: cppcheck-report
+        path: cppcheck-report.xml
