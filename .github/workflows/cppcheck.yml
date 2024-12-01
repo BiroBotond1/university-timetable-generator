@@ -22,7 +22,6 @@ jobs:
     # Step 3: Run Cppcheck
     - name: Run Cppcheck
       run: |
-        cd TimetableGeneratorEngine/TimetableGenerator
         cppcheck --enable=all --inconclusive --quiet --xml . 2> cppcheck-report.xml
         if [ $? -ne 0 ]; then
           echo "Cppcheck found issues."
