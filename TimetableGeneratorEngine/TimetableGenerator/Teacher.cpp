@@ -6,7 +6,7 @@ Teacher::Teacher(const nlohmann::json& jsonTeacher, const TimetableConfig& p_con
 	int nDay = 0, nHour;
 	for (const auto& hours : jsonTeacher["inappropriateDates"])
 	{
-		nHour = 0;
+		/*int*/ nHour = 0;
 		for (const auto& valid : hours)
 		{
 			if (valid == -1)

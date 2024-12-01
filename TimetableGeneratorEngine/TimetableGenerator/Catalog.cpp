@@ -6,7 +6,7 @@
 #include "Location.h"
 #include "ClassHour.h"
 
-Catalog::Catalog(const TimetableConfig& p_conf) : m_bChanged(true), m_dFitness(0), m_conf(p_conf)
+Catalog::Catalog(const TimetableConfig& p_conf) : /*m_bActive(false),*/ m_bChanged(true), m_dFitness(0), m_conf(p_conf)
 {
 	m_catalog = std::vector<std::vector<std::shared_ptr<ClassHour>>>(DAY_COUNT, std::vector<std::shared_ptr<ClassHour>>(HOUR_COUNT, nullptr));
 	m_locations = std::vector<std::vector<std::shared_ptr<Location>>>(DAY_COUNT, std::vector<std::shared_ptr<Location>>(HOUR_COUNT, nullptr));
@@ -88,9 +88,10 @@ std::tuple<double, bool> Catalog::EvaluateTeacherCatalog(const Teacher& teacher)
 			coursesNumbers[nDay]++;
 
 			CalcInactiveDaysFitness(Time{ nDay, nHour }, teacher.GetInappropriateDates());
-
+		
 			CalcNoHoleHoursFitness(m_conf.teacherCatalogNoHoleHour, hasEmptyHours, false);
 		}
+		/*CalcNoHoleHoursFitness(m_conf.teacherCatalogNoHoleHour, hasEmptyHours, false);*/
 	}
 
 	CalcEvenDaysFitness(m_conf.teacherCatalogEvenHours, coursesNumbers);
@@ -262,6 +263,7 @@ double Catalog::GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstra
 	if (!p_bHasEmptyHours)
 		return 0;
 
+	//p_bHasEmptyHours = false;
 	p_bHasEmptyHours = false;
 	if(bStrongConstraint)
 		m_bActive = false;
