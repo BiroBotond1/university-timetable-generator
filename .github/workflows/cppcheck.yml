@@ -20,10 +20,12 @@ jobs:
       # Step 3: Run Cppcheck and Collect Errors
       - name: Run Cppcheck
         run: |
-          cppcheck --enable=all --inconclusive . 2> cppcheck-errors.xml
-          if [ -s cppcheck-errors.txt ]; then
-            cat cppcheck-errors.txt
+          cppcheck --enable=all --inconclusive --xml . 2> cppcheck-errors.xml
+          if [ -s cppcheck-errors.xml ]; then
+            echo "Cppcheck detected issues. Failing the workflow."
             exit 1
+          else
+            echo "No issues detected."
           fi
       # Explanation:
       # - Collects all errors into `cppcheck-errors.txt`.
