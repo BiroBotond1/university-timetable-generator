@@ -39,6 +39,7 @@ jobs:
 
        # Step 5: Upload the XML Report
       - name: Upload XML Report
+        if: failure() # Run only if the Cppcheck step fails
         uses: actions/upload-artifact@v3
         with:
           name: cppcheck-xml-report
@@ -46,6 +47,7 @@ jobs:
 
       # Step 6: Upload the HTML Report Directory
       - name: Upload HTML Report
+        if: failure() # Run only if the Cppcheck step fails
         uses: actions/upload-artifact@v3
         with:
           name: cppcheck-html-report
