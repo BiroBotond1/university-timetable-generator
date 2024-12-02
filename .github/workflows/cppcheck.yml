@@ -20,7 +20,7 @@ jobs:
       # Step 3: Run Cppcheck and Collect Errors
       - name: Run Cppcheck
         run: |
-          cppcheck --enable=all --inconclusive . 2> cppcheck-errors.txt
+          cppcheck --enable=all --inconclusive --xml . 2> cppcheck-errors.xml
           if [ -s cppcheck-errors.txt ]; then
             cat cppcheck-errors.txt
             exit 1
@@ -30,10 +30,21 @@ jobs:
       # - Displays errors using `cat`.
       # - Fails the job if the file is not empty (`-s` checks if the file has content).
 
-      # Step 4: Upload the Errors Report (Optional)
-      - name: Upload Cppcheck Errors Report
-        if: failure() # Run only if the Cppcheck step fails
+      # Step 4: Generate HTML Report Using Cppcheck's Built-in Tool
+      - name: Generate HTML Report
+        run: |
+          cppcheck-htmlreport --file=cppcheck-errors.xml --report-dir=cppcheck-html --source-dir=.
+
+       # Step 5: Upload the XML Report
+      - name: Upload XML Report
         uses: actions/upload-artifact@v3
         with:
-          name: cppcheck-errors
-          path: cppcheck-errors.txt
+          name: cppcheck-xml-report
+          path: cppcheck-errors.xml
+
+      # Step 6: Upload the HTML Report Directory
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: cppcheck-html-report
+          path: cppcheck-html
