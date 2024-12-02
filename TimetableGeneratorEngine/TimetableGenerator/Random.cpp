@@ -18,3 +18,8 @@ double Random::Get()
     std::uniform_real_distribution<double> unif(0, 1);
     return unif(rng);
 }
+
+Time Random::GetTime()
+{
+    return Time{ GetInt(0, DAY_COUNT - 1), GetInt(0, HOUR_COUNT - 1) };
+}

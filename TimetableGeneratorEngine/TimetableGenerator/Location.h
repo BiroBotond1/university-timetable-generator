@@ -11,7 +11,7 @@ public:
 
 	std::tuple<double, bool> Evaluate() override;
 
-	std::vector<std::pair<int, int>>& GetReservedDates();
+	const std::vector<std::pair<int, int>>& GetReservedDates() const;
 	void							DeleteClassHour(Time p_time);
 
 private:

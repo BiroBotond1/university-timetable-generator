@@ -6,7 +6,7 @@ Teacher::Teacher(const nlohmann::json& jsonTeacher, const TimetableConfig& p_con
 	int nDay = 0, nHour;
 	for (const auto& hours : jsonTeacher["inappropriateDates"])
 	{
-		nHour = 0;
+		/*int*/ nHour = 0;
 		for (const auto& valid : hours)
 		{
 			if (valid == -1)
@@ -24,10 +24,10 @@ std::shared_ptr<Teacher> Teacher::Clone() const
 
 std::tuple<double, bool> Teacher::Evaluate()
 {
-	return m_catalog.EvaluateTeacherCatalog(this);
+	return m_catalog.EvaluateTeacherCatalog(*this);
 }
 
-std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates()
+const std::vector<std::pair<int, int>>& Teacher::GetInappropriateDates() const
 {
 	return m_vInappropriateDates;
 }

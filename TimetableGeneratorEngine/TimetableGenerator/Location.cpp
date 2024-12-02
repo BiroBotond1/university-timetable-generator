@@ -6,7 +6,7 @@ Location::Location(const nlohmann::json &jsonLocation, const TimetableConfig& p_
 	int nDay = 0, nHour;
 	for (auto hours : jsonLocation["reservedDates"])
 	{
-		nHour = 0;
+		/*int */nHour = 0;
 		for (auto valid : hours)
 		{
 			if (valid == -1)
@@ -24,10 +24,10 @@ std::shared_ptr<Location> Location::Clone() const
 
 std::tuple<double, bool> Location::Evaluate()
 {
-	return m_catalog.EvaluateLocationCatalog(this);
+	return m_catalog.EvaluateLocationCatalog(*this);
 }
 
-std::vector<std::pair<int, int>>& Location::GetReservedDates()
+const std::vector<std::pair<int, int>>& Location::GetReservedDates() const
 {
 	return m_vReservedDates;
 }

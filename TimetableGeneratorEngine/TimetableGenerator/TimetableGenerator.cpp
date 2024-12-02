@@ -96,7 +96,7 @@ void TimetableGenerator::Change(Database& p_db)
 {
     auto clas = p_db.GetRandomClass();
 
-    auto [time1, time2] = GetRandomFreeHourTime(clas, p_db.GetTeachers(), p_db.GetLocations());
+    auto [time1, time2] = GetRandomFreeHourTime(clas);
 
     auto classHour1 = clas->GetCatalog().GetClassHour(time1);
     auto classHour2 = clas->GetCatalog().GetClassHour(time2);
@@ -126,7 +126,7 @@ void TimetableGenerator::Change(Database& p_db)
 
     SwapLocations(clas, time1, time2);
 
-    SwapTeachers(p_db.GetTeachers(), clas, time1, time2);
+    SwapTeachers(clas, time1, time2);
 
     clas->Change(time1, time2);
 }
@@ -164,7 +164,7 @@ void TimetableGenerator::SwapLocations(std::shared_ptr<Class> p_class, Time p_ti
         location2->Change(p_time1, p_time2);
 }
 
-void TimetableGenerator::SwapTeachers(TeacherMap& p_teachers, std::shared_ptr<Class> p_class, Time p_time1, Time p_time2)
+void TimetableGenerator::SwapTeachers(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2)
 {
     auto teacher1 = p_class->GetTeacher(p_time1);
     auto teacher2 = p_class->GetTeacher(p_time2);
@@ -216,7 +216,7 @@ std::tuple<double, double, double, bool> TimetableGenerator::Evaluate(Database& 
     return std::make_tuple(dFitnessValueClass, dFitnessValueTeacher, dFitnessValueLocation, bActive);
 }
 
-std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr<Class> p_class, TeacherMap& p_teachers, LocationMap& p_locations) 
+std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr<Class> p_class)
 {
     Time time1, time2;
     std::shared_ptr<Teacher> teacher1;
@@ -224,8 +224,8 @@ std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr
     std::shared_ptr<Location> location1;
     std::shared_ptr<Location> location2;
     do {
-        time1 = Time{ Random::GetInt(0, 4), Random::GetInt(0, 7) };
-        time2 = Time{ Random::GetInt(0, 4), Random::GetInt(0, 7) };
+        time1 = Random::GetTime();
+        time2 = Random::GetTime();
         teacher1 = p_class->GetTeacher(time1);
         teacher2 = p_class->GetTeacher(time2);
         location1 = p_class->GetCatalog().GetLocation(time1);
@@ -249,4 +249,17 @@ void TimetableGenerator::WriteCatalog()
     res["fitnesLocation"] = m_fitnessLocation;
     res["elapsedTime"] = m_elapsedTime;
     std::cout << res;
+}
+
+void TimetableGenerator::ResourceLeakExample()
+{
+        int* array = new int[10];
+        // Forgot to delete[] array, causing a memory leak
+}
+
+void PortabilityError()
+{
+    long int platformDependentVar = 100;  // 'long int' size varies across platforms
+    std::cout << platformDependentVar << std::endl;
+    std::ofstream file("C:\\path\\to\\file.txt");
 }

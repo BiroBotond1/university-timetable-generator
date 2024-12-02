@@ -11,7 +11,7 @@ public:
 
 	std::tuple<double, bool> Evaluate() override;
 
-	std::vector<std::pair<int, int>>& GetInappropriateDates();
+	const std::vector<std::pair<int, int>>& GetInappropriateDates() const;
 
 private:
 	std::vector<std::pair<int, int>> m_vInappropriateDates;

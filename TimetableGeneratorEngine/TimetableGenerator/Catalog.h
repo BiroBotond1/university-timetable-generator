@@ -18,8 +18,8 @@ public:
 	void				Swap(Time p_time1, Time p_time2);
 
 	std::tuple<double, bool>	EvaluateClassCatalog();
-	std::tuple<double, bool>	EvaluateTeacherCatalog(Teacher* p_teacher);
-	std::tuple<double, bool>	EvaluateLocationCatalog(Location* p_location);
+	std::tuple<double, bool>	EvaluateTeacherCatalog(const Teacher& teacher);
+	std::tuple<double, bool>	EvaluateLocationCatalog(const Location& location);
 
 	std::shared_ptr<ClassHour>	GetClassHour(const Time& p_time);
 	void						SetClassHour(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_Time);
@@ -35,12 +35,21 @@ public:
 	void				ChangePointers(const ClassHourMap& p_classHours, const LocationMap& p_locations);
 
 protected:
+	void		CalcEvenDaysFitness(bool p_IsSet, const std::vector<int>& coursesNumber);
 	double		GetEvenDaysFitness(const std::vector<int>& coursesNumber);
-	double		GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
-	double		GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+
+	void		CalcNoHoleHoursFitness(bool p_IsSet, bool p_bHasEmptyHours, bool bStrongConstraint);
 	double		GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstraint);
 
+	void		CalcInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
+	double		GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
+
+	void		CalcFitnessOneTypeOfCourseOnADay(bool p_IsSet, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+	double		GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+
 	void		AddCourseNumberOnADay(std::shared_ptr<ClassHour> p_classHour, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
+
+	void		EnsureCorrectCatalog();
 
 protected:
 	bool	m_bChanged;
