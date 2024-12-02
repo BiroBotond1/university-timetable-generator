@@ -34,6 +34,7 @@ jobs:
 
       # Step 4: Generate HTML Report Using Cppcheck's Built-in Tool
       - name: Generate HTML Report
+        if: failure() # Run only if the Cppcheck step fails
         run: |
           cppcheck-htmlreport --file=cppcheck-errors.xml --report-dir=cppcheck-html --source-dir=.
 
