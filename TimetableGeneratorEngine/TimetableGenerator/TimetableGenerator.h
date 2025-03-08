@@ -13,11 +13,14 @@ public:
 	void WriteCatalog();
 
 private:
+	void ResourceLeakExample();
+	void PortabilityError();
+
 	void Changes(Database& p_db);
 	void Change(Database& p_db);
 	bool ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time);
 	void SwapLocations(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
-	void SwapTeachers(TeacherMap& p_teachers, std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
+	void SwapTeachers(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
 
 	double LinearAnnealing(double t, int i);
 
@@ -25,7 +28,7 @@ private:
 	double										Fitness(Database& p_db);
 	std::tuple<double, double, double, bool>	Evaluate(Database& p_db);
 
-	std::tuple<Time, Time>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class, TeacherMap& p_teachers, LocationMap& p_locations);
+	std::tuple<Time, Time>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class);
 
 private:
 	bool			m_bActive = false;

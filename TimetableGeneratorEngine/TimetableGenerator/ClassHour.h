@@ -4,14 +4,11 @@
 class Teacher;
 class Class;
 class Subject;
+class Location;
 
 using TeacherMap = std::unordered_map<std::string, std::shared_ptr<Teacher>>;
 using ClassMap = std::unordered_map<std::string, std::shared_ptr<Class>>;
 using SubjectMap = std::unordered_map<std::string, std::shared_ptr<Subject>>;
-
-#define DAY_COUNT 5
-#define HOUR_COUNT 8
-#define START_HOUR 8
 
 class ClassHour : public Entity, public std::enable_shared_from_this<ClassHour>
 {
@@ -28,9 +25,13 @@ public:
 	std::shared_ptr<Subject>	GetSubject() const	{ return m_subject.lock(); }
 
 	double		GetWeight() const { return m_dWeight; }
-
+	
 	void		AddClassHoursToCatalog();
 	bool		HasLocation() const;
+
+private:
+	Time GetFreeTime();
+	std::pair<Time, std::shared_ptr<Location>> GetFreeTimeWithLocation();
 
 private:
 	std::weak_ptr<Teacher>		m_teacher;
