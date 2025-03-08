@@ -3,10 +3,10 @@
 
 Teacher::Teacher(const nlohmann::json& jsonTeacher, const TimetableConfig& p_config) : EntityWithCatalog(jsonTeacher, p_config)
 {
-	int nDay = 0, nHour;
+	int nDay = 0;
 	for (const auto& hours : jsonTeacher["inappropriateDates"])
 	{
-		/*int*/ nHour = 0;
+		int nHour = 0;
 		for (const auto& valid : hours)
 		{
 			if (valid == -1)

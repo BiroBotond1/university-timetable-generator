@@ -13,9 +13,6 @@ public:
 	void WriteCatalog();
 
 private:
-	void ResourceLeakExample();
-	void PortabilityError();
-
 	void Changes(Database& p_db);
 	void Change(Database& p_db);
 	bool ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time);

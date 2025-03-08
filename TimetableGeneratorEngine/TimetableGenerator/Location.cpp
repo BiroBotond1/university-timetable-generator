@@ -3,10 +3,10 @@
 
 Location::Location(const nlohmann::json &jsonLocation, const TimetableConfig& p_config) : EntityWithCatalog(jsonLocation, p_config)
 {
-	int nDay = 0, nHour;
+	int nDay = 0;
 	for (auto hours : jsonLocation["reservedDates"])
 	{
-		/*int */nHour = 0;
+		int nHour = 0;
 		for (auto valid : hours)
 		{
 			if (valid == -1)
