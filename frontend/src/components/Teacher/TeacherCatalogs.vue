@@ -27,6 +27,8 @@
 
 <script>
 import teacherCatalog from './TeacherCatalog.vue'
+import fetchService from '../../../services/fetch.service.js';
+
 export default {
   data() {
     return {
@@ -48,7 +50,7 @@ export default {
   methods: {
     async fetchTeachers() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/teachers')
+        const response = await fetchService.fetchWithAuth('teachers')
         const teachers = await response.json()
         this.teachers = teachers.data
       }

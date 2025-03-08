@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const initializeSocket = require('./socket/socket.js');
 const errorMiddleware = require('./middleware/errorMiddleware.js');
+const authMiddleware = require('./middleware/authorizationMiddleware.js');
+const mongoMiddleware = require('./middleware/mongoMiddleware.js');
 const timetableApiRouter = require('./routes/timetable.js');
 const cors = require('cors');
 const subjectApi = require('./api/SubjectApi.js');
@@ -12,6 +14,8 @@ const locationApi = require('./api/LocationApi.js');
 const classApi = require('./api/ClassApi.js');
 const classHourApi = require('./api/ClassHourApi.js');
 const constraintApi = require('./api/ConstraintApi.js');
+const userApi = require('./api/UserApi.js');
+const authorizationApi = require('./api/AutorizationApi.js')
 
 // Create express app
 const app = express();
@@ -33,18 +37,24 @@ mongoose
 app.use(cors());            // allow cross origin requests
 app.use(bodyParser.json()); // to convert the request into JSON
 
-// api
-app.use('/api/constraints', constraintApi);
-app.use('/api/subjects', subjectApi);
-app.use('/api/teachers', teacherApi);
-app.use('/api/locations', locationApi);
-app.use('/api/classes', classApi);
-app.use('/api/classHours', classHourApi);
+//app.use(mongoMiddleware);
 
+// api
+app.use('/api/constraints', authMiddleware, constraintApi);
+app.use('/api/subjects', authMiddleware, subjectApi);
+app.use('/api/teachers', authMiddleware, teacherApi);
+app.use('/api/locations', authMiddleware, locationApi);
+app.use('/api/classes', authMiddleware, classApi);
+app.use('/api/classHours', authMiddleware, classHourApi);
+
+app.use('/api/users', authMiddleware, userApi);
+
+app.use('/api', authorizationApi);
 // Routes
 app.use('/timetable', timetableApiRouter);
 
 app.use(errorMiddleware); 
+//app.use(mongoMiddleware);
 
 // Starting server
 server.listen(3000, () => { console.log(`Server listening on http://localhost:${PORT}/ ...`); });

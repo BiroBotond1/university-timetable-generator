@@ -26,6 +26,8 @@
 
 <script>
 import locationCatalog from './LocationCatalog.vue'
+import fetchService from '../../../services/fetch.service';
+
 export default {
   data() {
     return {
@@ -47,7 +49,7 @@ export default {
   methods: {
     async fetchLocations() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/locations');
+        const response = await fetchService.fetchWithAuth('locations');
         const locations = await response.json()
         this.locations = locations.data
       }

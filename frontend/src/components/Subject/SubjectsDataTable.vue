@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import fetchService from '../../../services/fetch.service.js';
 
 export default {
   data() {
@@ -111,7 +112,7 @@ export default {
   methods: {
     async fetchLocations() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/locations')
+        const response = await fetchService.fetchWithAuth('locations')
         const locations = await response.json();
         this.allLocations = locations.data;
       }
@@ -121,7 +122,7 @@ export default {
     },
     async fetchSubjects() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/subjects')
+        const response = await fetchService.fetchWithAuth('subjects')
         const subjects = await response.json();
         this.subjects = subjects.data
       }

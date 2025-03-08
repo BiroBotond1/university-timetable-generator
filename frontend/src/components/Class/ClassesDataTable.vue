@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import fetchService from '../../../services/fetch.service';
 
 export default {
   data() {
@@ -103,7 +104,7 @@ export default {
   methods: {
     async fetchClasses() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/classes')
+        const response = await fetchService.fetchWithAuth('classes')
         const classes = await response.json()
         this.classes = classes.data
       }

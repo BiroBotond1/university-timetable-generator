@@ -21,6 +21,7 @@
 
 <script>
 import store from '../store/index.js';
+import fetchService from '../../services/fetch.service';
 
 export default {
   name: 'TimetableInitializer',
@@ -64,7 +65,7 @@ export default {
     },
     async fetchConstraints() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/constraints');
+        const response =  await fetchService.fetchWithAuth('constraints');
         const constraints = await response.json();
         this.hardConstraints = []
         this.softConstraints = []

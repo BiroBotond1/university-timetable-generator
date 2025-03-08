@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import fetchService from '../../../services/fetch.service';
 
 export default {
   data() {
@@ -132,7 +133,7 @@ export default {
   methods: {
     async fetchClassHours() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/classHours')
+        const response = await fetchService.fetchWithAuth('classHours')
         const classHours = await response.json()
         this.classHours = classHours.data
       }
@@ -145,7 +146,7 @@ export default {
     },
     async fetchClasses() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/classes')
+        const response = await fetchService.fetchWithAuth('classes')
         const classes = await response.json()
         this.allClasses = classes.data
       }
@@ -155,7 +156,7 @@ export default {
     },
     async fetchTeachers() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/teachers')
+        const response = await fetchService.fetchWithAuth('teachers')
         const teachers = await response.json()
         this.allTeachers = teachers.data
       }
@@ -165,7 +166,7 @@ export default {
     },
     async fetchSubjects() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/subjects')
+        const response = await fetchService.fetchWithAuth('subjects')
         const subjects = await response.json()
         this.allSubjects = subjects.data
       }

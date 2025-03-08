@@ -5,6 +5,7 @@
         TimetableGenerator
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn @click="logout">Logout</v-btn>
       <v-progress-circular v-if="generating" :width="8" indeterminate color="white"></v-progress-circular>
       <v-alert v-if="notification" color="success" icon="$success" density="compact">
         Generating is done!"</v-alert>
@@ -65,6 +66,13 @@ export default {
       return store.getters.getNotification
     },
   },
+  methods: {
+    logout () {
+        localStorage.clear('token');
+
+        this.$router.push('/login');
+      },
+  }
 };
 </script>
 

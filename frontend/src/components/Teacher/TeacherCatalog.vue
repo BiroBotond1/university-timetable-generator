@@ -21,6 +21,7 @@
 <script>
 import Vue from 'vue'
 import ClassHourComponent from '../ClassHour.vue'
+import fetchService from '../../../services/fetch.service';
 
 export default {
   data() {
@@ -74,7 +75,7 @@ export default {
   methods: {
     async fetchSubjects() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/subjects')
+        const response = await fetchService.fetchWithAuth('subjects')
         const subjects = await response.json()
         this.subjects = subjects.data
       }
@@ -84,7 +85,7 @@ export default {
     },
     async fetchLocations() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/locations')
+        const response = await fetchService.fetchWithAuth('locations')
         const locations = await response.json()
         this.locations = locations.data
       } catch (error) {
@@ -93,7 +94,7 @@ export default {
     },
     async fetchClasses() {
       try {
-        const response = await fetch('http://127.0.0.1:3000/api/classes');
+        const response = await fetchService.fetchWithAuth('classes');
         const classes = await response.json()
         this.classes = classes.data
       }
@@ -105,7 +106,7 @@ export default {
       await this.fetchLocations();
       await this.fetchSubjects();
       await this.fetchClasses();
-      const response = await fetch('http://127.0.0.1:3000/api/teachers/' + this.teacherID)
+      const response = await fetchService.fetchWithAuth('teachers/' + this.teacherID)
         .catch(error => console.log(error))
       const catalog = await response.json()
       let catalogClassHours = catalog.data.catalog
