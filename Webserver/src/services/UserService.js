@@ -6,7 +6,6 @@ exports.getAllUsers = async () => {
 };
 
 exports.createUser = async (user) => {
-  console.log(user)
   return await UserModel.create(user);
 };
 
@@ -24,11 +23,7 @@ exports.deleteUser = async (id) => {
 
 exports.login = async (username, password) => {
   try {
-    let user = await UserModel.findOne({ username: username, password: password }).exec();
-    if(user !== null)
-      return user;
-
-    user = await UserModel.findOne({ username: username }).exec();
+    const user = await UserModel.findOne({ username: username }).exec();
     const isMatch = await encryptService.compare(password, user.password)
     console.log(isMatch)
 

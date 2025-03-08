@@ -9,13 +9,7 @@ exports.createTeacher = async (teacher) => {
 };
 
 exports.getTeacherById = async (id) => {
-  console.log("Service: getTeacherById " + id)
-  //here the id will be {"$ne":null}
-  // return await TeacherModel.findById(id);
-  const teacher = await TeacherModel.findOne({ _id: id });
-  console.log('Teacher: ' + teacher)
-
-  return await TeacherModel.findOne({ _id: id }); // Vulnerable to NoSQL injection
+  return await TeacherModel.findById(id);
 };
 
 exports.updateTeacher = async (id, teacher) => {

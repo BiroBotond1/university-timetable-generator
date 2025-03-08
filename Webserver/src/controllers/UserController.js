@@ -59,9 +59,6 @@ exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    console.log(username)
-    console.log(password)
-
     const user = await userService.login(username, password);
     if (!user) {
       return res.status(404).json({ error: 'Login credentials not valid' });

@@ -250,16 +250,3 @@ void TimetableGenerator::WriteCatalog()
     res["elapsedTime"] = m_elapsedTime;
     std::cout << res;
 }
-
-void TimetableGenerator::ResourceLeakExample()
-{
-        int* array = new int[10];
-        // Forgot to delete[] array, causing a memory leak
-}
-
-void PortabilityError()
-{
-    long int platformDependentVar = 100;  // 'long int' size varies across platforms
-    std::cout << platformDependentVar << std::endl;
-    std::ofstream file("C:\\path\\to\\file.txt");
-}

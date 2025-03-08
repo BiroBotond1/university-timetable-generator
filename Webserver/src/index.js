@@ -37,7 +37,7 @@ mongoose
 app.use(cors());            // allow cross origin requests
 app.use(bodyParser.json()); // to convert the request into JSON
 
-//app.use(mongoMiddleware);
+app.use(mongoMiddleware);
 
 // api
 app.use('/api/constraints', authMiddleware, constraintApi);
@@ -54,7 +54,6 @@ app.use('/api', authorizationApi);
 app.use('/timetable', timetableApiRouter);
 
 app.use(errorMiddleware); 
-//app.use(mongoMiddleware);
 
 // Starting server
 server.listen(3000, () => { console.log(`Server listening on http://localhost:${PORT}/ ...`); });

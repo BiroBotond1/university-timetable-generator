@@ -115,16 +115,7 @@
         if (this.$v.$invalid) {
           return;
         }
-        
-      //   if (typeof this.password === 'string' && this.password.trim().startsWith('{')) {
-      //   try {
-      //     this.password = JSON.parse(this.password);
-      //   } catch (e) {
-      //     console.error('Invalid JSON format in password field');
-      //     return;
-      //   }
-      // }
-      console.log(this.compPassword)
+      
         const response = await fetchService.fetch('login', {
           method: "POST",
           headers: {
@@ -138,8 +129,6 @@
         }
 
         const json = await response.json();
-        console.log(json);
-        console.log(json.token)
 
         localStorage.setItem('token', json.token);
 
