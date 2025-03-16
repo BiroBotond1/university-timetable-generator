@@ -1,10 +1,10 @@
 <template>
   <div app>
-    <v-navigation-drawer color="#1D0C59" app permanent clipped dark right>
+    <v-navigation-drawer color="#1D0C59" permanent dark location="right">
       <v-list dense nav>
         <v-list-item v-for="item in locations" :key="item._id"
-          :class="{ active: item._id === locationId }" @click="selectLocation(item._id)">
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
+          :class="{ active: item._id === locationId }" @click="selectLocation(item._id)"
+          :title="item.name">
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

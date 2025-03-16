@@ -1,13 +1,13 @@
 <template>
   <v-data-table :headers="headers" :items="classes" class="elevation-1">
     <template v-slot:top>
-      <v-toolbar flat>
+      <v-toolbar flat color="light-blue">
         <v-toolbar-title>Classes</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="800px">
           <template v-slot:activator="{ props }">
-            <v-btn color="primary" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
+            <v-btn color="white" class="mb-2" v-bind="props" @click="editItem(undefined)">
               New Class
             </v-btn>
           </template>
@@ -66,9 +66,9 @@ import { setupClassSocketListeners, emitCreateClass, emitUpdateClass, emitDelete
 const dialog = ref(false)
 const dialogDelete = ref(false)
 const headers = ref([
-  { text: 'Name', value: 'name', },
-  { text: 'Classroom', value: 'location', },
-  { text: 'Actions', value: 'actions', sortable: false }
+  { title: 'Name', key: 'name', },
+  { title: 'Classroom', key: 'location', },
+  { title: 'Actions', key: 'actions', sortable: false }
 ]) 
 const classes = ref<ClassData[]>([])
 const editedIndex = ref(-1)

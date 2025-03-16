@@ -1,13 +1,13 @@
 <template>
-  <v-form v-model="valid" ref="form" @submit.prevent="submit" method="Post">
+  <v-form style="background: white;" v-model="valid" ref="form" @submit.prevent="submit" method="Post">
     <v-container>
-      <h1 align="center">Generate Timetable</h1>
-      <h3>Hard constraints:</h3>
+      <h1 class="py-2 font-bold text-xl" align="center">Generate Timetable</h1>
+      <h3 class="my-2 font-semibold">Hard constraints:</h3>
       <v-row v-for="hardConstraint in hardConstraints" :key="hardConstraint._id">
         <v-switch color="#0D47A1" v-model="hardConstraint.active" :label="hardConstraint.description"
           @change="handleSwitchChange(hardConstraint)"></v-switch>
       </v-row>
-      <h3>Soft constraints:</h3>
+      <h3 class="my-2 font-semibold">Soft constraints:</h3>
       <v-row v-for="softConstraint in softConstraints" :key="softConstraint._id">
         <v-switch color="#90CAF9" v-model="softConstraint.active" :label="softConstraint.description"
           @change="handleSwitchChange(softConstraint)"></v-switch>
@@ -54,13 +54,6 @@ const handleSwitchChange = async (constraint: ConstraintData) => {
   }
 }
 
-// const updateConstraints = async (constraints: ConstraintData[], updatedConstraint: ConstraintData) => {
-//   const index = constraints.findIndex(constraint => constraint._id === updatedConstraint._id);
-//   if (index !== -1) {
-//     constraints[index] = updatedConstraint;
-//   }
-// }
-
 const submit = () => {
   emitGenerationStarted()
 }
@@ -68,19 +61,5 @@ const submit = () => {
 onMounted(async () => {
   await fetchConstraintss()
   setupConstraintSocketListeners(hardConstraints, softConstraints)
-  // socket.on('GenerationStarted', async () => {
-  //   appStore.generating = true
-  // })
-
-  // socket.on('GenerationFinished', async () => {
-  //   appStore.generating = false
-  //   appStore.notification = true
-  //   setTimeout(() => appStore.notification = false, 5000);
-  // })
-
-  // socket.on('updateConstraints', async (updatedConstraint: ConstraintData) => {
-  //   updateConstraints(hardConstraints.value, updatedConstraint)
-  //   updateConstraints(softConstraints.value, updatedConstraint)
-  // })
 })
 </script>

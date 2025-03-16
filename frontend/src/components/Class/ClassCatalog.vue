@@ -38,12 +38,12 @@ const props = defineProps<{
 }>()
 
 const headers = ref([
-  { text: "Hours", value: "hours" },
-  { text: "Monday", value: "monday" },
-  { text: "Tuesday", value: "tuesday" },
-  { text: "Wednesday", value: "wednesday" },
-  { text: "Thursday", value: "thursday" },
-  { text: "Friday", value: "friday" },
+  { title: "Hours", key: "hours" },
+  { title: "Monday", key: "monday" },
+  { title: "Tuesday", key: "tuesday" },
+  { title: "Wednesday", key: "wednesday" },
+  { title: "Thursday", key: "thursday" },
+  { title: "Friday", key: "friday" },
 ])
 const items = ref([
   { hours: "8-9" },

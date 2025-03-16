@@ -1,13 +1,13 @@
 <template>
   <v-data-table :headers="headers" :items="teachers" class="elevation-1">
     <template v-slot:top>
-      <v-toolbar flat>
+      <v-toolbar flat color="light-blue">
         <v-toolbar-title>Teachers</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="800px">
           <template v-slot:activator="{ props }">
-            <v-btn color="primary" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
+            <v-btn color="white" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
               New Teacher
             </v-btn>
           </template>
@@ -71,9 +71,9 @@ import { setupTeacherSocketListeners, emitCreateTeacher, emitDeleteTeacher, emit
 const dialog = ref(false)
 const dialogDelete = ref(false)
 const headers = ref([
-  { text: 'Name', value: 'name', },
-  { text: 'Inappropriate Dates', value: 'inappropriateDates' },
-  { text: 'Actions', value: 'actions', sortable: false }
+  { title: 'Name', key: 'name', },
+  { title: 'Inappropriate Dates', key: 'inappropriateDates' },
+  { title: 'Actions', key: 'actions', sortable: false }
 ])
 const teachers = ref<TeacherData[]>([])
 const editedIndex = ref(-1)
