@@ -1,30 +1,38 @@
 <template>
   <div app>
-    <div class="timetable-hour-title">
-      <span class="subject">{{ hour.subject }}</span>
-    </div>
-    <div class="timetable-hour-info">
-      <span v-if="hour.teacher" class="teacher">{{ hour.teacher }}</span>
-      <span v-if="hour.class" class="class">{{ hour.class }}</span>
-      <span v-if="hour.location" class="location">{{ hour.location }}</span>
+    <div v-if="props.hour">
+      <div class="timetable-hour-title">
+        <span class="subject">{{ props.hour.subject?.name }}</span>
+      </div>
+      <div class="timetable-hour-info">
+        <span v-if="props.hour.teacher" class="teacher">{{ props.hour.teacher.name }}</span>
+        <span v-if="props.hour.class" class="class">{{ props.hour.class.name }}</span>
+        <span v-if="location" class="location">{{ location }}</span>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 
-export default {
-  props: {
-    hour: {
-      type: Object,
-      required: true
-    }
-  },
-  data() {
-    return {
-    }
-  },
-}
+import type { ClassHourShowData } from '@/modules/classhour/classhour.type';
+
+const props = defineProps<{
+  hour : ClassHourShowData | undefined
+}>()
+
+const location = computed(() => {
+  if (props.hour === undefined)
+    return undefined
+  
+  if(props.hour.location)
+    return props.hour.location.name
+
+  if(props.hour.class) 
+    return props.hour.class.location
+
+  return undefined
+})
 
 </script>
 

@@ -1,158 +1,125 @@
 <template>
   <v-data-table app :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border">
     <template v-slot:[`item.monday`]="{ item }">
-      <ClassHourComponent :hour="catalog[0][convertHourToInt(item.hours)]" />
+      <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" />
     </template>
     <template v-slot:[`item.tuesday`]="{ item }">
-      <ClassHourComponent :hour="catalog[1][convertHourToInt(item.hours)]" />
+      <ClassHour :hour="catalog[1][convertHourToInt(item.hours)]" />
     </template>
     <template v-slot:[`item.wednesday`]="{ item }">
-      <ClassHourComponent :hour="catalog[2][convertHourToInt(item.hours)]" />
+      <ClassHour :hour="catalog[2][convertHourToInt(item.hours)]" />
     </template>
     <template v-slot:[`item.thursday`]="{ item }">
-      <ClassHourComponent :hour="catalog[3][convertHourToInt(item.hours)]" />
+      <ClassHour :hour="catalog[3][convertHourToInt(item.hours)]" />
     </template>
     <template v-slot:[`item.friday`]="{ item }">
-      <ClassHourComponent :hour="catalog[4][convertHourToInt(item.hours)]" />
+      <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" />
     </template>
   </v-data-table>
 </template>
 
-<script>
-import Vue from 'vue'
-import ClassHourComponent from '../ClassHour.vue'
-import fetchService from '../../../services/fetch.service';
+<script setup lang="ts">
+import type { ClassHourShowData } from '@/modules/classhour/classhour.type';
+import type { ClassData } from '@/modules/class/class.type';
+import type { TeacherData } from '@/modules/teacher/teacher.type';
+import type { SubjectData } from '@/modules/subject/subject.type';
 
-export default {
-  data() {
-    return {
-      headers: [
-        { text: "Hours", value: "hours" },
-        { text: "Monday", value: "monday" },
-        { text: "Tuesday", value: "tuesday" },
-        { text: "Wednesday", value: "wednesday" },
-        { text: "Thursday", value: "thursday" },
-        { text: "Friday", value: "friday" },
-      ],
-      items: [
-        { hours: "8-9" },
-        { hours: "9-10" },
-        { hours: "10-11" },
-        { hours: "11-12" },
-        { hours: "12-13" },
-        { hours: "13-14" },
-        { hours: "14-15" },
-        { hours: "15-16" },
-      ],
-      locationID: '',
-      teachers: [],
-      locations: [],
-      classes: [],
-      catalog:
-        [["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""]],
-      active: true,
-    }
-  },
+import { fetchClasses } from '@/modules/class/class.api';
+import { fetchSubjects } from '@/modules/subject/subject.api';
+import { fetchTeachers } from '@/modules/teacher/teacher.api';
+import { fetchLocation } from '@/modules/location/location.api';
 
-  async created() {
-    await this.fetchCatalog()
-  },
+const props = defineProps<{
+  id: string | undefined
+}>()
 
-  components: {
-    ClassHourComponent
-  },
+const headers = ref([
+  { text: "Hours", value: "hours" },
+  { text: "Monday", value: "monday" },
+  { text: "Tuesday", value: "tuesday" },
+  { text: "Wednesday", value: "wednesday" },
+  { text: "Thursday", value: "thursday" },
+  { text: "Friday", value: "friday" },
+])
+const items = ref([
+  { hours: "8-9" },
+  { hours: "9-10" },
+  { hours: "10-11" },
+  { hours: "11-12" },
+  { hours: "12-13" },
+  { hours: "13-14" },
+  { hours: "14-15" },
+  { hours: "15-16" },
+])
 
-  watch: {
-    async locationID() {
-      await this.fetchCatalog()
-    }
-  },
+const teachers = ref<TeacherData[]>([])
+const subjects = ref<SubjectData[]>([])
+const classes = ref<ClassData[]>([])
+const catalog = ref<Array<Array<ClassHourShowData | undefined>>>(Array(5).fill(null).map(() => Array(8).fill(undefined)));
 
-  methods: {
-    async fetchSubjects() {
-      try {
-        const response = await fetchService.fetchWithAuth('subjects');
-        const subjects = await response.json()
-        this.subjects = subjects.data
-      }
-      catch (error) {
-        console.log(error)
-      }
-    },
-    async fetchTeachers() {
-      try {
-        const response = await fetchService.fetchWithAuth('teachers');
-        const teachers = await response.json()
-        this.teachers = teachers.data
-      }
-      catch (error) {
-        console.log(error)
-      }
-    },
-    async fetchClasses() {
-      try {
-        const response = await fetchService.fetchWithAuth('classes');
-        const classes = await response.json()
-        this.classes = classes.data
-      }
-      catch (error) {
-        console.log(error)
-      }
-    },
-    async fetchCatalog() {
-      await this.fetchClasses()
-      await this.fetchSubjects()
-      await this.fetchTeachers()
+onMounted(async () => {
+  await fetchCatalog()
+})
 
-      const response = await fetchService.fetchWithAuth('locations/' + this.locationID)
-        .catch(error => console.log(error))
-      const catalog = await response.json()
-      const catalogClassHours = catalog.data.catalog
-      for (var day = 0; day < this.catalog.length; day++) {
-        for (var hour = 0; hour < this.catalog[day].length; hour++) {
-          let classHour = {}
-          if (!catalogClassHours) {
-            classHour.subject = ''
-            classHour.class = ''
-            classHour.teacher = ''
-            Vue.set(this.catalog[day], hour, classHour)
-            continue
-          }
-          if (catalogClassHours[day][hour] === '') {
-            classHour.subject = ''
-            classHour.class = ''
-            classHour.teacher = ''
-          } else {
-            for (const subject of this.subjects) {
-              if (subject._id === catalogClassHours[day][hour].subjectID) {
-                classHour.subject = subject.name
-              }
-            }
-            for (const clas of this.classes) {
-              if (clas._id === catalogClassHours[day][hour].classID) {
-                classHour.class = clas.name
-              }
-            }
-            for (const teacher of this.teachers) {
-              if (teacher._id === catalogClassHours[day][hour].teacherID) {
-                classHour.teacher = teacher.name
-              }
-            }
-          }
-          Vue.set(this.catalog[day], hour, classHour)
+watch(() => props.id, async () => {
+  await fetchCatalog()
+})
+
+const fetchCatalog = async() => {
+  if (!props.id)
+    return 
+
+  classes.value = await fetchClasses()
+  subjects.value = await fetchSubjects()
+  teachers.value = await fetchTeachers()
+
+  const location = await fetchLocation(props.id)
+  const catalogClassHours = location.catalog
+
+  for (var day = 0; day < catalog.value.length; day++) {
+    for (var hour = 0; hour < catalog.value[day].length; hour++) {
+      let classHour = undefined as ClassHourShowData | undefined
+
+      if (!catalogClassHours) {
+        catalog.value[day][hour] = classHour
+        continue
+      }
+     
+      if (catalogClassHours[day][hour] === undefined) {
+        catalog.value[day][hour] = classHour
+        continue
+      } 
+
+      classHour = {
+        class: undefined,
+        subject: undefined,
+        teacher: undefined,
+        location: undefined
+      }
+
+      for (const subject of subjects.value) {
+        if (subject._id === catalogClassHours[day][hour].subjectID) {
+          classHour.subject = subject
         }
       }
-    },
-    convertHourToInt(hour) {
-      return parseInt(hour.substring(0, hour.indexOf('-'))) - 8;
-    },
-  },
+      for (const clas of classes.value) {
+        if (clas._id === catalogClassHours[day][hour].classID) {
+          classHour.class = clas
+        }
+      }
+      for (const teacher of teachers.value) {
+        if (teacher._id === catalogClassHours[day][hour].teacherID) {
+          classHour.teacher = teacher
+        }
+      }
+      catalog.value[day][hour] = classHour
+    }
+  }
 }
 
+const convertHourToInt = (hour: string) => {
+  return parseInt(hour.substring(0, hour.indexOf('-'))) - 8;
+}
 </script>
 
 <style>

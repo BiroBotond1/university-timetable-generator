@@ -10,9 +10,11 @@ const { handleGenerationEvents } = require('./GenerationSocket')
 const initializeSocket = (server) => {
   const io = socketIO(server, {
     cors: {
-      origins: ['https://localhost:8081']
+      origins: ['https://localhost:8081', 'https://localhost:8082']
     }
   });
+
+  console.log('initialize socket')
 
   io.on('connection', (socket) => {
 

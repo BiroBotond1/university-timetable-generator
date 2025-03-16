@@ -1,9 +1,9 @@
 <template>
-  <v-app>
+  <SideBar />
+  <v-main>
     <router-view />
-  </v-app>
+  </v-main>
 </template>
 
 <script lang="ts" setup>
-  //
 </script>
