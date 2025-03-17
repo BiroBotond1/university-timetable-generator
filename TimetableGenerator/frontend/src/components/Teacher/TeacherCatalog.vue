@@ -1,4 +1,5 @@
 <template>
+  <div>
   <v-data-table app :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border">
     <template v-slot:[`item.monday`]="{ item }">
       <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" />
@@ -16,6 +17,7 @@
       <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" />
     </template>
   </v-data-table>
+  </div>
 </template>
 
 <script setup lang="ts">

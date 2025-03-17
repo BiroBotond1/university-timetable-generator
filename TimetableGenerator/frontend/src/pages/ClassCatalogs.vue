@@ -8,7 +8,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <ClassCatalog v-model:id="classId"/>
+    <ClassCatalog ref="classCatalogRef" v-model:id="classId"/>
     <div class="color-container">
       <div class="color-box subjectColor"></div>
       <div class="color-label">Subject</div>
@@ -18,18 +18,19 @@
       <div class="color-label">Location</div>
     </div>
     <br>
-    <v-btn class="white--text" color="#1E88E5" block @click="print"> Print</v-btn>
+    <v-btn class="white--text" color="#1E88E5" block @click="printComponent(classCatalogRef)"> Print</v-btn>
   </div>
 </template>
 
 
 <script setup lang="ts">
 import type { ClassData } from '@/modules/class/class.type';
-
 import { fetchClasses } from '@/modules/class/class.api';
+import { printComponent } from '@/modules/app/app.print';
 
 const classes = ref<ClassData[]>([])
 const classId = ref<string | undefined>()
+const classCatalogRef = ref<ComponentPublicInstance | null>(null);
 
 onMounted(async () => {
   classes.value = await fetchClasses()
@@ -40,29 +41,6 @@ onMounted(async () => {
 
 const selectClass = (id: string) => {
   classId.value = id
-}
-
-const print = () => {
-  // const prtHtml = document.getElementById('classCatalog').innerHTML;
-  // let stylesHtml = '';
-  // for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
-  //   stylesHtml += node.outerHTML;
-  // }
-  // const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-  // WinPrint.document.write(`<!DOCTYPE html>
-  //     <html>
-  //       <head>
-  //         ${stylesHtml}
-  //       </head>
-  //       <body>
-  //         ${prtHtml}
-  //       </body>
-  //     </html>`);
-
-  // WinPrint.document.close();
-  // WinPrint.focus();
-  // WinPrint.print();
-  // WinPrint.close();
 }
 </script>
 

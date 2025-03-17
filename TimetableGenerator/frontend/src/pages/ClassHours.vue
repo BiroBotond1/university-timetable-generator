@@ -61,19 +61,13 @@
       </v-icon>
     </template>
     <template v-slot:[`item.class`]="{ item }">
-      <v-label>
         {{ item.class.name }}
-      </v-label>
     </template>
     <template v-slot:[`item.teacher`]="{ item }">
-      <v-label>
         {{ item.teacher.name }}
-      </v-label>
     </template>
     <template v-slot:[`item.subject`]="{ item }">
-      <v-label>
         {{ item.subject.name }}
-      </v-label>
     </template>
   </v-data-table>
 </template>

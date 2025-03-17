@@ -1,21 +1,23 @@
 <template>
-  <v-data-table app :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border">
-    <template v-slot:[`item.monday`]="{ item }">
-      <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" />
-    </template>
-    <template v-slot:[`item.tuesday`]="{ item }">
-      <ClassHour :hour="catalog[1][convertHourToInt(item.hours)]" />
-    </template>
-    <template v-slot:[`item.wednesday`]="{ item }">
-      <ClassHour :hour="catalog[2][convertHourToInt(item.hours)]" />
-    </template>
-    <template v-slot:[`item.thursday`]="{ item }">
-      <ClassHour :hour="catalog[3][convertHourToInt(item.hours)]" />
-    </template>
-    <template v-slot:[`item.friday`]="{ item }">
-      <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" />
-    </template>
-  </v-data-table>
+  <div>
+    <v-data-table app :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border">
+      <template v-slot:[`item.monday`]="{ item }">
+        <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.tuesday`]="{ item }">
+        <ClassHour :hour="catalog[1][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.wednesday`]="{ item }">
+        <ClassHour :hour="catalog[2][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.thursday`]="{ item }">
+        <ClassHour :hour="catalog[3][convertHourToInt(item.hours)]" />
+      </template>
+      <template v-slot:[`item.friday`]="{ item }">
+        <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" />
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script setup lang="ts">
