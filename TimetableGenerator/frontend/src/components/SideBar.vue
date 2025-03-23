@@ -27,6 +27,10 @@
         <v-list-item v-for="item in catalogItems" :key="item.title" 
         link :to="item.route" :disabled="generating" :prepend-icon="item.icon" :title="item.title">
         </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item link to="/summary" :disabled="generating"
+        prepend-icon="mdi-chart-line" title="Summary">
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
   </div>

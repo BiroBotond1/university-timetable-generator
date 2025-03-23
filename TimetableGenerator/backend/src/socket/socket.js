@@ -7,6 +7,7 @@ const { handleClassEvents } = require('./ClassSocket');
 const { handleClassHourEvents } = require('./ClassHourSocket');
 const { handleGenerationEvents } = require('./GenerationSocket')
 const { handleImportExportEvents } = require('./ImportExportSocket')
+const { handleSummaryEvents } = require('./SummarySocket')
 
 const initializeSocket = (server) => {
   const io = socketIO(server, {
@@ -28,6 +29,7 @@ const initializeSocket = (server) => {
       handleClassHourEvents(socket, io);
       handleGenerationEvents(socket, io);
       handleImportExportEvents(socket, io);
+      handleSummaryEvents(socket, io);
     } catch (error) {
       console.error('Error handling socket events:', error);
     }
