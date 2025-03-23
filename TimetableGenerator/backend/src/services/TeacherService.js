@@ -25,3 +25,11 @@ exports.addCatalog = async (id, catalog) => {
   teacher.catalog = catalog;
   return await TeacherModel.findByIdAndUpdate(id, teacher);
 };
+
+exports.import = async (teachers) => {
+  await TeacherModel.deleteMany();
+
+  teachers.forEach(async teacher => {
+    await this.createTeacher(teacher)
+  });
+}

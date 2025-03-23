@@ -1,10 +1,10 @@
 const constraintService = require('../services/ConstraintService.js');
 
-const handleConstraintEvents = (socket, io) => {
-  socket.on('sendUpdateConstraint', (constraint) => {
+const handleConstraintEvents = async (socket, io) => {
+  socket.on('sendUpdateConstraint', async (data) => {
     try {
-      constraintService.updateConstraint(constraint._id, constraint);
-      io.emit('updateConstraint', constraint);
+      await constraintService.updateConstraint(data.constraint._id, data.constraint);
+      io.emit('updateConstraint', data);
     } catch (error) {
       console.error('Error updating constraint:', error);
     }

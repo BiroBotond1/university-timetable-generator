@@ -25,3 +25,11 @@ exports.addCatalog = async (id, catalog) => {
   location.catalog = catalog;
   return await LocationModel.findByIdAndUpdate(id, location);
 };
+
+exports.import = async (locations) => {
+  await LocationModel.deleteMany();
+
+  locations.forEach(async location => {
+    await this.createLocation(location)
+  });
+}

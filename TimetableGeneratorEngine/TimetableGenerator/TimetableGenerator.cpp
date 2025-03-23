@@ -12,7 +12,7 @@ void TimetableGenerator::Run()
 #if _DEBUG
     std::string fileName = "../../TimetableGeneratorEngine/TimetableGenerator/in.json";
 #else
-    std::string fileName = "../TimetableGeneratorEngine/TimetableGenerator/in.json"; //called only from the webserver
+    std::string fileName = "../../TimetableGeneratorEngine/TimetableGenerator/in.json"; //called only from the webserver
 #endif
     
     m_DB.Fill(fileName);

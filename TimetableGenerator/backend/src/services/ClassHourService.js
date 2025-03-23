@@ -43,3 +43,11 @@ exports.isSubjectUsed = async (subjectId) => {
 
   return classHourWithSubject !== null;
 };
+
+exports.import = async (classHours) => {
+  await ClassHourModel.deleteMany();
+
+  classHours.forEach(async classHour => {
+    await this.createClassHour(classHour)
+  });
+}

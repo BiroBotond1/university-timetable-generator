@@ -25,3 +25,11 @@ exports.addCatalog = async (id, catalog) => {
   clas.catalog = catalog;
   return await ClassModel.findByIdAndUpdate(id, clas);
 };
+
+exports.import = async (classes) => {
+  await ClassModel.deleteMany();
+
+  classes.forEach(async clas => {
+    await this.createClass(clas)
+  });
+}

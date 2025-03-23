@@ -29,3 +29,11 @@ exports.isLocationUsed = async (locationId) => {
 
   return subjectWithLocation !== null; 
 };
+
+exports.import = async (subjects) => {
+  await SubjectModel.deleteMany();
+
+  subjects.forEach(async subject => {
+    await this.createSubject(subject)
+  });
+}

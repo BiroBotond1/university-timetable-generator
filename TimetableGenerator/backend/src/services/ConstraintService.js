@@ -19,3 +19,9 @@ exports.updateConstraint = async (id, constraint) => {
 exports.deleteConstraint = async (id) => {
   return await ConstraintModel.findByIdAndRemove(id);
 };
+
+exports.updateConstraintByName = async (name, active) => {
+  const constraint = await ConstraintModel.findOne({name})
+  constraint.active = active
+  return await ConstraintModel.findByIdAndUpdate(constraint._id, constraint);
+}

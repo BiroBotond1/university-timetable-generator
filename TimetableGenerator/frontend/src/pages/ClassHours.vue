@@ -107,7 +107,7 @@ const editedItem = ref<EditClassHourData>({
   number: undefined,
   subject: undefined,
   teacher: undefined,
-  weight: undefined
+  weight: 1
 })
 
 const formTitle = computed(() => editedIndex.value === -1 ? 'New Class Hour' : 'Edit Class Hour')
@@ -142,7 +142,7 @@ const editItem = async (item: ClassHourData | undefined) => {
       number: undefined,
       subject: undefined,
       teacher: undefined,
-      weight: undefined
+      weight: 1
     }
   } else {
     editedIndex.value = classHours.value.indexOf(item)

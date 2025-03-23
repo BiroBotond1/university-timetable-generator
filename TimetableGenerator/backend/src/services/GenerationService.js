@@ -1,11 +1,9 @@
-const { exec } = require('child_process');
-const fs = require('fs');
-const classService = require('./ClassService.js');
-const classHourService = require('./ClassHourService.js');
-const locationService = require('./LocationService.js');
-const subjectService = require('./SubjectService.js');
-const teacherService = require('./TeacherService.js');
-const constraintService = require('./ConstraintService.js');
+import { exec } from 'child_process'
+import { writeFileSync } from 'fs';
+import classService from './ClassService.js'
+import locationService from './LocationService.js'
+import teacherService from './TeacherService.js'
+import { getTimetableData } from './ImportExportService.js';
 
 function OsFunction () {
   this.execCommand = function (cmd) {
@@ -22,11 +20,10 @@ function OsFunction () {
 
 const osFunc = new OsFunction();
 
-exports.generate = async () => {
+export const generate = async () => {
   try {
-    
-    const inputString = await createInputString();
-    await fs.writeFileSync('../TimetableGeneratorEngine/TimetableGenerator/in.json', inputString);
+    const inputString = await getTimetableData();
+    await writeFileSync('../../TimetableGeneratorEngine/TimetableGenerator/in.json', inputString);
     await osFunc.execCommand('TimetableGenerator.exe').then(async result => {
       const catalogs = JSON.parse(result);
       console.log(`Active: ${  catalogs.active}`);
@@ -42,26 +39,6 @@ exports.generate = async () => {
   } catch (e) {
     console.log(e);
   }
-}
-
-async function createInputString()
-{
-  const object = {};
-
-  // Fetch constraints and add to object
-  const constraints = await constraintService.getAllConstraints();
-  constraints.forEach((constraint) => {
-    object[constraint.name] = constraint.active;
-  });
-
-  // Fetch other data and add to object
-  object.classes = await classService.getAllClasses();
-  object.classHours = await classHourService.getAllClassHours();
-  object.locations = await locationService.getAllLocations();
-  object.subjects = await subjectService.getAllSubjects();
-  object.teachers = await teacherService.getAllTeachers();
-
-  return JSON.stringify(object);
 }
 
 async function updateCatalogs(catalogs) {

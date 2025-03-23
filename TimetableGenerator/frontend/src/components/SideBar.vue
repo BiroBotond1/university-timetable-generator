@@ -3,6 +3,8 @@
     <v-app-bar color="#1D0C59" app clipped-left clipped-right flat dark>
       <v-toolbar-title>TimetableGenerator</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn @click="importData()" class="py-2">Import</v-btn>
+      <v-btn @click="exportData()">Export</v-btn>
       <v-btn @click="logout">Logout</v-btn>
       <v-progress-circular v-if="generating" :width="8" indeterminate color="white"></v-progress-circular>
       <v-alert v-if="notification" color="success" icon="$success" density="compact">
@@ -34,8 +36,11 @@
 import { computed, ref } from "vue";
 import { useAppStore } from "@/modules/app/app.store";
 import { useRouter } from "vue-router";
-
-const miniVariant = ref(true);
+import { emitDoImport, emitGetTimetableData, setupImportExportSocketListeners } from "@/modules/import-export/import-export.socket"
+import { doImport } from "@/modules/import-export/import-export.service"; 
+onMounted(async () => {
+  setupImportExportSocketListeners(router)
+})
 
 const items = ref([
   { title: "Generate timetable", icon: "mdi-pencil", route: "/" },
@@ -60,6 +65,15 @@ const notification = computed(() => useAppStore().notification);
 function logout(): void {
   localStorage.removeItem("token");
   router.push("/login");
+}
+
+function exportData(): void {
+  emitGetTimetableData()
+}
+
+async function importData(): Promise<void> {
+  const fileContent = await doImport()
+  emitDoImport(fileContent)
 }
 </script>
 
