@@ -57,7 +57,7 @@ protected:
 	double	m_dFitness;
 
 	std::vector<std::vector<std::shared_ptr<ClassHour>>>	m_catalog;
-	std::vector<std::vector<std::shared_ptr<Location>>>		m_locations;
+	std::vector<std::vector<std::optional<std::weak_ptr<Location>>>> m_locations;
 
 	TimetableConfig m_conf;
 };

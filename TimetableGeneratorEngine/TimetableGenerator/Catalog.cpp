@@ -9,7 +9,7 @@
 Catalog::Catalog(const TimetableConfig& p_conf) : m_bActive(false), m_bChanged(true), m_dFitness(0), m_conf(p_conf)
 {
 	m_catalog = std::vector<std::vector<std::shared_ptr<ClassHour>>>(DAY_COUNT, std::vector<std::shared_ptr<ClassHour>>(HOUR_COUNT, nullptr));
-	m_locations = std::vector<std::vector<std::shared_ptr<Location>>>(DAY_COUNT, std::vector<std::shared_ptr<Location>>(HOUR_COUNT, nullptr));
+	m_locations = std::vector<std::vector<std::optional<std::weak_ptr<Location>>>>(DAY_COUNT, std::vector<std::optional<std::weak_ptr<Location>>>(HOUR_COUNT));
 }
 
 std::tuple<double, bool> Catalog::EvaluateClassCatalog() 
@@ -196,12 +196,18 @@ void Catalog::SetClassHour(std::shared_ptr<ClassHour> p_classHour, std::shared_p
 void Catalog::DeleteClassHour(Time p_time) 
 {
 	m_catalog[p_time.GetDay()][p_time.GetHour()] = nullptr;
-	m_locations[p_time.GetDay()][p_time.GetHour()] = nullptr;
+	m_locations[p_time.GetDay()][p_time.GetHour()] = std::nullopt;
 }
 
 std::shared_ptr<Location> Catalog::GetLocation(Time p_time)
 {
-	return m_locations[p_time.GetDay()][p_time.GetHour()];
+	const auto& optionalLocation = m_locations[p_time.GetDay()][p_time.GetHour()];
+
+	if (optionalLocation) {
+		return optionalLocation->lock();
+	}
+
+	return nullptr;
 }
 
 void Catalog::SetLocation(std::shared_ptr<Location> p_Location, Time p_time)
@@ -300,9 +306,25 @@ void Catalog::ChangePointers(const ClassHourMap& p_classHours, const LocationMap
 
 	for (auto& locationsOnADay : m_locations)
 	{
-		for (auto& location : locationsOnADay)
+		for (auto& optionalLocation : locationsOnADay)
 		{
-			location = location ? p_locations.at(location->GetId()) : nullptr;
+			if (optionalLocation)
+			{
+				if (auto sharedLoc = optionalLocation->lock())
+				{
+					optionalLocation = p_locations.at(sharedLoc->GetId());
+				}
+				else 
+				{
+					optionalLocation = std::nullopt;
+				}
+			}
+			else
+			{
+				optionalLocation = std::nullopt;
+			}
+
+			//optinalLocation = optinalLocation ? p_locations.at(optinalLocation->lock()->GetId()) : std::nullopt;
 		}
 	}
 }
