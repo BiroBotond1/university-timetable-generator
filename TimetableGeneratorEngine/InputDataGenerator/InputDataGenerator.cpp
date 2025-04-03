@@ -111,40 +111,6 @@ void InputDataGenerator::Run()
         classHour.ChangeSubjectLocations(subjectLocations[classHour.GetSubject().GetName()]);
     }
 
-    /*std::cout << "Subjects: " << std::endl;
-    for (auto subject : subjects) {
-        std::cout << subject.GetName() << " Locations: ";
-        for (auto location : subject.GetLocations()) {
-            std::cout << location.GetName() << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Classes: " << std::endl;
-    for (auto classs : classes) {
-        std::cout << classs.GetName() << " " << classs.location << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Locations: " << std::endl;
-    for (auto location : locations) {
-        std::cout << location.GetName() << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Teachers: " << std::endl;
-    for (auto teacher : teachers) {
-        std::cout << teacher.GetName() << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Class Hours: " << std::endl;
-    for (auto classHour : classHours) {
-        std::cout << classHour.number << " " << classHour.classs.name << " " << classHour.subject.name << " " << classHour.teacher.name << std::endl;
-    }
-    std::cout << std::endl;*/
-
     WriteCatalog(classes, subjects, locations, teachers, classHours);
 }
 
