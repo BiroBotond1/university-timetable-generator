@@ -437,3 +437,7 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudio
 
 kepek/
+
+TimetableGenerator/backend/Plot_data.txt
+TimetableGeneratorEndine/InputDataGenerator/generated_input.json
+TimetableGeneratorEndine/TimetableGenerator/in.json
