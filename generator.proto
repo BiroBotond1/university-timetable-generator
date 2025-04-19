@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package generator;
+
+service Generator {
+  rpc Generate (GenerateRequest) returns (GenerateReply);
+}
+
+message GenerateRequest {
+  string input = 1;
+}
+
+message GenerateReply {
+  string output = 1;
+}

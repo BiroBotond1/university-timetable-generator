@@ -439,5 +439,7 @@ FodyWeavers.xsd
 kepek/
 
 TimetableGenerator/backend/Plot_data.txt
-TimetableGeneratorEndine/InputDataGenerator/generated_input.json
-TimetableGeneratorEndine/TimetableGenerator/in.json
+TimetableGeneratorEngine/InputDataGenerator/generated_input.json
+TimetableGeneratorEngine/TimetableGenerator/in.json
+
+TimetableGeneratorEngine/cmake/*
