@@ -61,8 +61,6 @@ add_library(TimetableGenerator STATIC ${SOURCES} ${HEADERS})
 #     )
 # endif()
 
-file(COPY in.json DESTINATION ../)
-
 # Set the platform-specific library options
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # x64
     target_compile_options(TimetableGenerator PRIVATE "/D_WINDOWS_64BIT")
