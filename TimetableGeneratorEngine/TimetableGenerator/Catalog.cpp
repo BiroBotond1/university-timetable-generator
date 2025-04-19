@@ -18,9 +18,18 @@ std::tuple<double, bool> Catalog::EvaluateClassCatalog()
 		return std::make_tuple(m_dFitness, m_bActive);
 
 	m_dFitness = 0;
-	std::vector<int> vCourseNumbers(m_catalog.size(), 0);
 	m_bActive = true;
 
+	m_dFitness += CalcClassCatalogFitness();
+
+	m_bChanged = false;
+	return std::make_tuple(m_dFitness, m_bActive);
+};
+
+double Catalog::CalcClassCatalogFitness()
+{
+	double fitness = 0.0;
+	std::vector<int> vCourseNumbers(m_catalog.size(), 0);
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++)
 	{
 		std::unordered_map<std::string, int> mCourseNumberOnADay;
@@ -41,7 +50,8 @@ std::tuple<double, bool> Catalog::EvaluateClassCatalog()
 			if (m_conf.classCatalogOneTypeOfCourseOnADay)
 				AddCourseNumberOnADay(classHour, mCourseNumberOnADay);
 
-			CalcNoHoleHoursFitness(m_conf.classCatalogNoHoleHour, hasEmptyHours, true);
+			if (m_conf.classCatalogNoHoleHour)
+				fitness += GetNoHoleHoursFitness(hasEmptyHours, true);
 
 			//the courses starts at 8
 			if (m_conf.classCatalogCoursesStartsAtEight)
@@ -53,16 +63,17 @@ std::tuple<double, bool> Catalog::EvaluateClassCatalog()
 			}
 		}
 
-		CalcFitnessOneTypeOfCourseOnADay(m_conf.classCatalogOneTypeOfCourseOnADay, mCourseNumberOnADay);
+		if (m_conf.classCatalogOneTypeOfCourseOnADay)
+			fitness = GetFitnessOneTypeOfCourseOnADay(mCourseNumberOnADay);
 	}
 
-	CalcEvenDaysFitness(m_conf.classCatalogEvenHours,vCourseNumbers);
+	if (m_conf.classCatalogEvenHours)
+		fitness += GetEvenDaysFitness(vCourseNumbers);
 
-	EnsureCorrectCatalog();
+	fitness += EnsureCorrectCatalog();
 
-	m_bChanged = false;
-	return std::make_tuple(m_dFitness, m_bActive);
-};
+	return fitness;
+}
 
 std::tuple<double, bool> Catalog::EvaluateTeacherCatalog(const Teacher& teacher)
 {
@@ -71,15 +82,26 @@ std::tuple<double, bool> Catalog::EvaluateTeacherCatalog(const Teacher& teacher)
 
 	m_dFitness = 0;
 	m_bActive = true;
+
+	m_dFitness += CalcTeacherCatalogFitness(teacher);
+
+	m_bChanged = false;
+	return std::make_tuple(m_dFitness, m_bActive);
+};
+
+double Catalog::CalcTeacherCatalogFitness(const Teacher& teacher)
+{
+	double fitness = 0.0;
+
 	std::vector<int> coursesNumbers(m_catalog.size(), 0);
 
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++)
 	{
 		bool hasEmptyHours = false;
 
-		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++) 
+		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++)
 		{
-			if (IsFreeDay(Time{ nDay, nHour })) 
+			if (IsFreeDay(Time{ nDay, nHour }))
 			{
 				hasEmptyHours = true;
 				continue;
@@ -87,20 +109,20 @@ std::tuple<double, bool> Catalog::EvaluateTeacherCatalog(const Teacher& teacher)
 
 			coursesNumbers[nDay]++;
 
-			CalcInactiveDaysFitness(Time{ nDay, nHour }, teacher.GetInappropriateDates());
-		
-			CalcNoHoleHoursFitness(m_conf.teacherCatalogNoHoleHour, hasEmptyHours, false);
+			fitness += GetInactiveDaysFitness(Time{ nDay, nHour }, teacher.GetInappropriateDates());
+
+			if (m_conf.teacherCatalogNoHoleHour)
+				fitness += GetNoHoleHoursFitness(hasEmptyHours, false);
 		}
-		/*CalcNoHoleHoursFitness(m_conf.teacherCatalogNoHoleHour, hasEmptyHours, false);*/
 	}
 
-	CalcEvenDaysFitness(m_conf.teacherCatalogEvenHours, coursesNumbers);
+	if (m_conf.teacherCatalogEvenHours)
+		fitness += GetEvenDaysFitness(coursesNumbers);
 
-	EnsureCorrectCatalog();
+	fitness += EnsureCorrectCatalog();
 
-	m_bChanged = false;
-	return std::make_tuple(m_dFitness, m_bActive);
-};
+	return fitness;
+}
 
 std::tuple<double, bool> Catalog::EvaluateLocationCatalog(const Location& location)
 {
@@ -110,24 +132,20 @@ std::tuple<double, bool> Catalog::EvaluateLocationCatalog(const Location& locati
 	m_dFitness = 0;
 	m_bActive = true;
 
-	for (int nDay = 0; nDay < m_catalog.size(); nDay++)
-	{
-		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++) 
-		{
-			if (IsFreeDay(Time{ nDay, nHour }))
-			{
-				continue;
-			}
-
-			CalcInactiveDaysFitness(Time{ nDay, nHour }, location.GetReservedDates());
-		}
-	}
-
-	EnsureCorrectCatalog();
+	m_dFitness += CalcLocationCatalogFitness(location);
 
 	m_bChanged = false;
 	return std::make_tuple(m_dFitness, m_bActive);
 };
+
+double Catalog::CalcLocationCatalogFitness(const Location& location)
+{
+	double fitness = 0.0;
+	fitness += GetInactiveDaysFitness(location.GetReservedDates());
+	fitness += EnsureCorrectCatalog();
+
+	return fitness;
+}
 
 void Catalog::AddCourseNumberOnADay(std::shared_ptr<ClassHour> p_classHour, std::unordered_map<std::string, int>& p_mCourseNumberOnADay)
 {
@@ -135,12 +153,6 @@ void Catalog::AddCourseNumberOnADay(std::shared_ptr<ClassHour> p_classHour, std:
 		p_mCourseNumberOnADay[p_classHour->GetId()]++;
 	else
 		p_mCourseNumberOnADay[p_classHour->GetId()] = 1;
-}
-
-void Catalog::CalcFitnessOneTypeOfCourseOnADay(bool p_bIsSet, std::unordered_map<std::string, int>& p_mCourseNumberOnADay)
-{
-	if (p_bIsSet)
-		m_dFitness += GetFitnessOneTypeOfCourseOnADay(p_mCourseNumberOnADay);
 }
 
 //just 1 type of course on each day
@@ -237,12 +249,6 @@ const nlohmann::json Catalog::GetJSONObj()
 	return json;
 }
 
-void Catalog::CalcEvenDaysFitness(bool p_IsSet, const std::vector<int>& p_coursesNumber)
-{
-	if(p_IsSet)
-		m_dFitness += GetEvenDaysFitness(p_coursesNumber);
-}
-
 //even hours
 double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber)
 {
@@ -257,12 +263,6 @@ double Catalog::GetEvenDaysFitness(const std::vector<int>& p_coursesNumber)
 	return dFitness;
 }
 
-void Catalog::CalcNoHoleHoursFitness(bool p_IsSet, bool p_bHasEmptyHours, bool bStrongConstraint)
-{
-	if (p_IsSet)
-		m_dFitness += GetNoHoleHoursFitness(p_bHasEmptyHours, bStrongConstraint);
-}
-
 //no empty hours between courses
 double Catalog::GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstraint)
 {
@@ -274,12 +274,26 @@ double Catalog::GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstra
 	if(bStrongConstraint)
 		m_bActive = false;
 
-	return -4;
+	return m_conf.noHoleHoursPenalty;
 }
 
-void Catalog::CalcInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays)
+double Catalog::GetInactiveDaysFitness(const std::vector<std::pair<int, int>>& p_inactiveDays)
 {
-	m_dFitness += GetInactiveDaysFitness(p_time, p_inactiveDays);
+	double fitness = 0.0;
+	for (int nDay = 0; nDay < m_catalog.size(); nDay++)
+	{
+		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++)
+		{
+			if (IsFreeDay(Time{ nDay, nHour }))
+			{
+				continue;
+			}
+
+			fitness += GetInactiveDaysFitness(Time{ nDay, nHour }, p_inactiveDays);
+		}
+	}
+
+	return fitness;
 }
 
 //can t put days on ineligible days
@@ -289,7 +303,7 @@ double Catalog::GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<
 	if (std::find(p_inactiveDays.begin(), p_inactiveDays.end(), date) != p_inactiveDays.end())
 	{
 		m_bActive = false;
-		return -10;
+		return m_conf.inactiveDaysPenalty;
 	}
 	return 0;
 }
@@ -329,10 +343,7 @@ void Catalog::ChangePointers(const ClassHourMap& p_classHours, const LocationMap
 	}
 }
 
-void Catalog::EnsureCorrectCatalog()
+double Catalog::EnsureCorrectCatalog()
 {
-	if (m_bActive)
-	{
-		m_dFitness += 1000;
-	}
+    return m_bActive ? m_conf.ensureCorrectCatalogValue : 0.0;
 }

@@ -35,21 +35,19 @@ public:
 	void				ChangePointers(const ClassHourMap& p_classHours, const LocationMap& p_locations);
 
 protected:
-	void		CalcEvenDaysFitness(bool p_IsSet, const std::vector<int>& coursesNumber);
+	double		CalcClassCatalogFitness();
+	double		CalcTeacherCatalogFitness(const Teacher& teacher);
+	double		CalcLocationCatalogFitness(const Location& location);
+
 	double		GetEvenDaysFitness(const std::vector<int>& coursesNumber);
-
-	void		CalcNoHoleHoursFitness(bool p_IsSet, bool p_bHasEmptyHours, bool bStrongConstraint);
 	double		GetNoHoleHoursFitness(bool p_bHasEmptyHours, bool bStrongConstraint);
-
-	void		CalcInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
+	double		GetInactiveDaysFitness(const std::vector<std::pair<int, int>>& p_inactiveDays);
 	double		GetInactiveDaysFitness(Time p_time, const std::vector<std::pair<int, int>>& p_inactiveDays);
-
-	void		CalcFitnessOneTypeOfCourseOnADay(bool p_IsSet, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
 	double		GetFitnessOneTypeOfCourseOnADay(std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
 
 	void		AddCourseNumberOnADay(std::shared_ptr<ClassHour> p_classHour, std::unordered_map<std::string, int>& p_mCourseNumberOnADay);
 
-	void		EnsureCorrectCatalog();
+	double		EnsureCorrectCatalog();
 
 protected:
 	bool	m_bChanged;
