@@ -7,18 +7,18 @@
 #include "ClassHour.h"
 #include "Random.h"
 
-void TimetableGenerator::Run()
+std::string TimetableGenerator::Run()
 {
 #if _DEBUG
-    std::string fileName = "../../TimetableGeneratorEngine/TimetableGenerator/in.json";
+    std::string fileName = "../in.json";
 #else
-    std::string fileName = "../../TimetableGeneratorEngine/TimetableGenerator/in.json"; //called only from the webserver
+    std::string fileName = "../in.json";
 #endif
     
     m_DB.Fill(fileName);
     InitCatalogs();
     SimulatedAnnealing();
-    WriteCatalog();
+    return WriteCatalog();
 }
 
 void TimetableGenerator::InitCatalogs() 
@@ -239,7 +239,7 @@ std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr
     return std::make_tuple(time1, time2);
 }
 
-void TimetableGenerator::WriteCatalog()
+std::string TimetableGenerator::WriteCatalog()
 {
     json res = m_DB.WriteCatalog();
 
@@ -248,5 +248,8 @@ void TimetableGenerator::WriteCatalog()
     res["fitnesTeacher"] = m_fitnessTeacher;
     res["fitnesLocation"] = m_fitnessLocation;
     res["elapsedTime"] = m_elapsedTime;
-    std::cout << res;
+
+    std::string output = res.dump();
+
+    return output;
 }

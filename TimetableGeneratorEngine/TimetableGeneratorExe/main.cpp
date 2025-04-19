@@ -4,5 +4,6 @@
 int main()
 {
     TimetableGenerator generator;
-    generator.Run();
+    auto output = generator.Run();
+    std::cout << output << std::endl;
 }

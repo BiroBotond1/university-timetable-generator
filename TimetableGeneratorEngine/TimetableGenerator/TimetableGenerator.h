@@ -6,11 +6,11 @@ class Entity;
 class TimetableGenerator
 {
 public:
-	void Run();
+	std::string Run();
 
 	void InitCatalogs();
 	void SimulatedAnnealing();
-	void WriteCatalog();
+	std::string WriteCatalog();
 
 private:
 	void Changes(Database& p_db);

@@ -46,7 +46,6 @@
     <ClCompile Include="Random.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TimetableConfig.cpp">
       <Filter>Generator</Filter>
@@ -91,7 +90,7 @@
     <ClInclude Include="Random.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="MyTime.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h" />
