@@ -19,6 +19,8 @@ var generatorProto = grpc.loadPackageDefinition(packageDefinition).generator;
 
 var target = 'localhost:50051';
 
+let call = null
+
 export const generate = async () => {
   try {
     var client = new generatorProto.Generator(target,
@@ -26,10 +28,8 @@ export const generate = async () => {
 
     const inputString = await getTimetableData();
 
-    console.log('start generation')
-
     const response = await new Promise((resolve, reject) => {
-      client.Generate({ input: inputString }, (err, response) => {
+        call = client.Generate({ input: inputString }, (err, response) => {
         if (err) {
           reject(err);
         } else {
@@ -48,7 +48,18 @@ export const generate = async () => {
     await updateCatalogs(catalogs);
 
   } catch (e) {
-    console.log(e);
+    if (e.code === grpc.status.CANCELLED) {
+      console.log('Generation was cancelled by the user.');
+    } else {
+      console.error('An error occurred:', e);
+    }
+  }
+}
+
+export const cancel = () => {
+  if (call != null) {
+    console.log('Cancelling generation...');
+    call.cancel()
   }
 }
 

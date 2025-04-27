@@ -20,6 +20,16 @@ const handleGenerationEvents = (socket, io) => {
       console.error('Error finishing generation:', error);
     }
   });
+
+  socket.on('sendGenerationCancelled', async () => {
+    try {
+      console.log('GenerationCancelled')
+      generationService.cancel()
+      io.emit('GenerationCancelled')
+    } catch (error) {
+      console.error('Error cancelling generation:', error);
+    }
+  })
 };
 
 module.exports = {

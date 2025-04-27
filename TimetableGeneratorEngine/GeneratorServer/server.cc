@@ -44,6 +44,8 @@
 #include <algorithm>
 #include <random>
 #include <chrono>
+#include <thread>
+#include <future>
 #include "MyTime.h"
 #include "TimetableGenerator.h"
 
@@ -63,10 +65,28 @@
        GenerateReply* reply) override {
 
      TimetableGenerator generator;
-     auto output = generator.Run();
 
-     reply->set_output(output);
-     return Status::OK;
+     auto future = std::async(std::launch::async, [&generator]() {
+         return generator.Run(); // Note: Run() is still blocking inside
+     });
+
+     while (true) {
+         // Wait for a small time slice
+         auto status = future.wait_for(std::chrono::milliseconds(100));
+
+         if (status == std::future_status::ready) {
+             // Finished normally
+             auto output = future.get();
+             reply->set_output(output);
+             return Status::OK;
+         }
+
+         if (context->IsCancelled()) {
+             // Client cancelled the request
+             std::cout << "Client cancelled request" << std::endl;
+             return Status(grpc::StatusCode::CANCELLED, "Request cancelled");
+         }
+     }
    }
  };
  

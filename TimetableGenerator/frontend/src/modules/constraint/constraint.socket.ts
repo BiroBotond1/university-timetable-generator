@@ -12,6 +12,10 @@ export const setupConstraintSocketListeners = (
     appStore.generating = true
   })
 
+  socket.on('GenerationCancelled', async () => {
+    appStore.generating = false
+  })
+
   socket.on('GenerationFinished', async () => {
     appStore.generating = false
     appStore.notification = true
@@ -33,6 +37,10 @@ const updateConstraints = async (constraints: Ref<ConstraintData[]>, updatedCons
 
 export const emitGenerationStarted = () => {
   socket.emit('sendGenerationStarted');
+}
+
+export const emitGenerationCancelled = () => {
+  socket.emit('sendGenerationCancelled');
 }
  
 export const emitUpdateConstraint = (constraintData: Partial<ConstraintData>) => {

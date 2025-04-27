@@ -12,8 +12,11 @@
         <v-switch color="#90CAF9" v-model="softConstraint.active" :label="softConstraint.description"
           @change="handleSwitchChange(softConstraint)"></v-switch>
       </v-row>
-      <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" :disabled="generating">
+      <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" v-if="!generating">
         Generate
+      </v-btn>
+      <v-btn color="#990F02" @click="emitGenerationCancelled" block class="mt-2 white--text" v-else>
+        Cancel
       </v-btn>
     </v-container>
   </v-form>
@@ -23,7 +26,7 @@
 
 import type { ConstraintData } from '@/modules/constraint/constraint.type';
 import { fetchConstraints } from '@/modules/constraint/constraint.api';
-import { setupConstraintSocketListeners, emitGenerationStarted, emitUpdateConstraint } from '@/modules/constraint/constraint.socket';
+import { setupConstraintSocketListeners, emitGenerationStarted, emitUpdateConstraint, emitGenerationCancelled } from '@/modules/constraint/constraint.socket';
 import { useAppStore } from '@/modules/app/app.store';
 
 const hardConstraints = ref<ConstraintData[]>([])
