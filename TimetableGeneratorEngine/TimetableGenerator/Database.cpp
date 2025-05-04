@@ -8,10 +8,10 @@
 #include "ClassHour.h"
 #include "Random.h"
 
-void Database::Fill(const std::string& p_fileName)
+void Database::Fill(const std::string& input)
 {
-    std::ifstream fin(p_fileName);
-    json data = json::parse(fin);
+    //std::ifstream fin(p_fileName);
+    json data = json::parse(input);
     TimetableConfig	config;
     config.ReadFromJson(data);
 

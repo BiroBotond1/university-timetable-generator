@@ -20,7 +20,7 @@ Teacher::Teacher(const nlohmann::json& jsonTeacher, const TimetableConfig& p_con
 std::shared_ptr<Teacher> Teacher::Clone() const
 {
 	return std::make_shared<Teacher>(*this);
-}
+} 
 
 std::tuple<double, bool> Teacher::Evaluate()
 {

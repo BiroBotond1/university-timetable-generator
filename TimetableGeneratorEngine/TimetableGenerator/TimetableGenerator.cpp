@@ -7,15 +7,15 @@
 #include "ClassHour.h"
 #include "Random.h"
 
-std::string TimetableGenerator::Run()
+std::string TimetableGenerator::Run(const std::string& input)
 {
-#if _DEBUG
-    std::string fileName = "../in.json";
-#else
-    std::string fileName = "../in.json";
-#endif
+//#if _DEBUG
+//    std::string fileName = "../in.json";
+//#else
+//    std::string fileName = "../in.json";
+//#endif
     
-    m_DB.Fill(fileName);
+    m_DB.Fill(input);
     InitCatalogs();
     SimulatedAnnealing();
     return WriteCatalog();
@@ -34,7 +34,7 @@ void TimetableGenerator::SimulatedAnnealing()
 {   
     Database bestDB;
     m_DB.DeepCopy(bestDB);
-    std::ofstream testDatas("Plot_data.txt");
+    std::ofstream testDatas("../../../../Plot_data.txt");
     auto t_start = std::chrono::high_resolution_clock::now();
     double initialT = MAX_TEMP, t;
     t = initialT;

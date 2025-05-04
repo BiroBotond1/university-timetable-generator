@@ -6,7 +6,7 @@ const fs = require('fs');
 const handleSummaryEvents = (socket, io) => {
   socket.on('getGenerationData', async () => {
     try {
-      fs.readFile('Plot_data.txt', 'utf8', (err, data) => {
+      fs.readFile('../../Plot_data.txt', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
             return;

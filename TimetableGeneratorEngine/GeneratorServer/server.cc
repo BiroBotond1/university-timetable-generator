@@ -65,9 +65,10 @@
        GenerateReply* reply) override {
 
      TimetableGenerator generator;
+     std::string input = request->input();
 
-     auto future = std::async(std::launch::async, [&generator]() {
-         return generator.Run(); // Note: Run() is still blocking inside
+     auto future = std::async(std::launch::async, [&generator, input]() {
+         return generator.Run(input);
      });
 
      while (true) {

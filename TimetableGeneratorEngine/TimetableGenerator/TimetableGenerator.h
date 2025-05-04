@@ -6,7 +6,7 @@ class Entity;
 class TimetableGenerator
 {
 public:
-	std::string Run();
+	std::string Run(const std::string& input);
 
 	void InitCatalogs();
 	void SimulatedAnnealing();
