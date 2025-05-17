@@ -40,7 +40,14 @@ const options = computed(() => {
     id: 'vuechart-example'
   },
   xaxis: {
-    categories: generationData.value.times
+    categories: generationData.value.times,
+    tickAmount: 10,
+    labels: {
+        formatter: (val: string) => {
+          const num = parseFloat(val)
+          return isNaN(num) ? val : num.toFixed(2)
+        }
+      }
   }
 }
 })
