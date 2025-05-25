@@ -19,6 +19,7 @@ set(SOURCES
     Random.cpp
     Subject.cpp
     Teacher.cpp
+    Config.cpp
     stdafx.cpp
 )
 
@@ -31,6 +32,7 @@ set(HEADERS
   Random.h
   Subject.h
   Teacher.h
+  Config.h
   stdafx.h
 )
 

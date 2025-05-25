@@ -5,94 +5,39 @@
 void InputDataGenerator::Run() 
 {
     std::vector<Class> classes;
-
     std::vector<Location> locations;
-    std::unordered_map<std::string, int> subjectLocationUsed;
-    std::unordered_map<std::string, int> subjectLocationClassHours;
-    auto subjectLocationNumbers = SetInitialSubjectLocationNumbers();
-    std::unordered_map<std::string, std::vector<Location>> subjectLocations;
-
     std::vector<Teacher> teachers;
-    std::unordered_map<std::string, int> subjectTeacherUsed;
-    std::unordered_map<std::string, int> subjectTeacherClassHours;
-    std::unordered_map<std::string, std::vector<Teacher>> subjectTeachers;
-
     std::vector<ClassHour> classHours;
 
-    auto subjectTeacherNumbers = SetInitialSubjectTeacherNumbers();
+    std::unordered_map<SubjectType, SubjectLocationData> subjectLocationDataMap;
+    std::unordered_map<SubjectType, SubjectTeacherData> subjectTeacherDataMap;
 
-    //Create the subject objects
-    std::vector<Subject> subjects;
-    for (auto subject : m_allSubjects)
-    {
-        subjects.emplace_back(subject/*, subjectLocations[subject]*/);
-    }
+    auto subjects = InitializeSubjects();
 
     for (int i = 0; i < CLASS_NUMBER; i++)
     {
-        //Class
-        std::string className = std::to_string(i + 1) + ". osztaly";
-        std::string classLocation = std::to_string(i + 50) + "A";
-        classes.emplace_back(className, classLocation);
+        CreateClass(classes, i);
 
         int classHourNumber = 0;
         int classHourTotal = CLASSHOUR_NUMBER_PER_WEEK + Random::GetInt(0, 4) - 2;
-        std::unordered_set<std::string> usedSubjects;
+        std::unordered_set<SubjectType> usedSubjects;
 
         while (classHourNumber < classHourTotal)
         {
             int subjectClassHourNumber = classHourTotal - classHourNumber < 4 ? classHourTotal - classHourNumber : Random::GetInt(1, 4);
 
-            //Get subject
+            //Get unused subject
             Subject subject = GetUnusedSubject(usedSubjects, subjects);
-
-            usedSubjects.insert(subject.GetName());
+            usedSubjects.insert(subject.GetType());
 
             //Location
-            if (SubjectHasLocation(subject.GetName())) {
-
-                //First location, we have to add 1 Location to Locations
-                if (subjectLocationUsed[subject.GetName()] == 0)
-                {
-                    locations.emplace_back(subject.GetName() + " terem");
-                    subjectLocationUsed[subject.GetName()] = 1;
-                    subjectLocations[subject.GetName()].push_back(locations[locations.size() - 1]);
-                }
-
-                //The previous Location is full we have to add a new
-                if (subjectLocationClassHours[subject.GetName()] + subjectClassHourNumber > LOCATION_CLASSHOUR_NUMBER_PER_WEEK)
-                {
-                    subjectLocationClassHours[subject.GetName()] = 0;
-                    subjectLocationNumbers[subject.GetName()]++;
-                    locations.emplace_back(subject.GetName() + " terem " + std::to_string(subjectLocationNumbers[subject.GetName()]));
-                    subjectLocations[subject.GetName()].push_back(locations[locations.size() - 1]);
-                }
-
-                subjectLocationClassHours[subject.GetName()] += subjectClassHourNumber;
-            }
+            AddLocationsFromSubject(subject, locations, subjectLocationDataMap[subject.GetType()], subjectClassHourNumber);
 
             //Teacher
-            //First teacher, we have to add 1 Teacher to Teachers
-            if (subjectTeacherUsed[subject.GetName()] == 0)
-            {
-                teachers.emplace_back(subject.GetName() + " tanar");
-                subjectTeacherUsed[subject.GetName()] = 1;
-                subjectTeachers[subject.GetName()].push_back(teachers[teachers.size() - 1]);
-            }
-
-            //The previous Teacher is full we have to add a new
-            if (subjectTeacherClassHours[subject.GetName()] + subjectClassHourNumber > TEACHER_CLASSHOUR_NUMBER_PER_WEEK)
-            {
-                subjectTeacherClassHours[subject.GetName()] = 0;
-                subjectTeacherNumbers[subject.GetName()]++;
-                teachers.emplace_back(subject.GetName() + " tanar" + std::to_string(subjectTeacherNumbers[subject.GetName()]));
-                subjectTeachers[subject.GetName()].push_back(teachers[teachers.size() - 1]);
-            }
+            AddTeachersFromSubject(subject, teachers, subjectTeacherDataMap[subject.GetType()], subjectClassHourNumber);
 
             //Get the actual teacher
-            auto teacher = subjectTeachers[subject.GetName()][subjectTeachers[subject.GetName()].size() - 1];
-
-            subjectTeacherClassHours[subject.GetName()] += subjectClassHourNumber;
+            auto teacher = subjectTeacherDataMap[subject.GetType()].Teachers.back();
 
             classHours.emplace_back(subjectClassHourNumber, classes[classes.size() - 1], teacher, subject, 1.0f);
 
@@ -103,54 +48,111 @@ void InputDataGenerator::Run()
     //Fill the subjects locations
     for (auto& subject : subjects)
     {
-        subject.SetLocations(subjectLocations[subject.GetName()]);
+        subject.SetLocations(subjectLocationDataMap[subject.GetType()].Locations);
     }
 
     //Change fake subjects in the classHours
-    for (auto& classHour : classHours) {
-        classHour.ChangeSubjectLocations(subjectLocations[classHour.GetSubject().GetName()]);
+    for (auto& classHour : classHours) 
+    {
+        classHour.ChangeSubjectLocations(subjectLocationDataMap[classHour.GetSubject().GetType()].Locations);
     }
 
     WriteCatalog(classes, subjects, locations, teachers, classHours);
 }
 
-std::unordered_map<std::string, int> InputDataGenerator::SetInitialSubjectLocationNumbers()
+std::vector<Subject> InputDataGenerator::InitializeSubjects()
 {
-    std::unordered_map<std::string, int> subjectLocationNumbers;
+    std::vector<Subject> subjects;
 
-    for (auto& subject : m_allSubjects)
+    for (const auto& subjectType : g_subjectTypes)
     {
-        if (SubjectHasLocation(subject))
+        subjects.emplace_back(subjectType, GetSubjectName(subjectType));
+    }
+
+    return subjects;
+}
+
+void InputDataGenerator::CreateClass(std::vector<Class>& classes, int i)
+{
+    std::string className = std::to_string(i + 1) + ". osztaly";
+    std::string classLocation = std::to_string(i + CLASSROOM_START_INDEX) + "A";
+    classes.emplace_back(className, classLocation);
+}
+
+void InputDataGenerator::AddLocationsFromSubject(const Subject& p_subject, std::vector<Location>& p_locations, SubjectLocationData& p_subjectLocationData, int p_subjectClassHourNumber)
+{
+    auto subjectType = p_subject.GetType();
+    auto subjectName = p_subject.GetName();
+
+    if (!IsSubjectContainsLocation(subjectType))
+        return;
+
+    //First location, we have to add 1 Location to Locations
+    if (!p_subjectLocationData.IsUsed)
+    {
+        p_locations.emplace_back(subjectName + " terem");
+        p_subjectLocationData.IsUsed = true;
+        p_subjectLocationData.Locations.push_back(p_locations.back());
+    }
+
+    //The previous Location is full we have to add a new
+    if (p_subjectLocationData.ClassHoursCount + p_subjectClassHourNumber > LOCATION_CLASSHOUR_NUMBER_PER_WEEK)
+    {
+        p_subjectLocationData.ClassHoursCount = 0;
+        p_subjectLocationData.LocationCount++;
+        p_locations.emplace_back(subjectName + " terem " + std::to_string(p_subjectLocationData.LocationCount));
+        p_subjectLocationData.Locations.push_back(p_locations.back());
+    }
+
+    p_subjectLocationData.ClassHoursCount += p_subjectClassHourNumber;
+}
+
+void InputDataGenerator::AddTeachersFromSubject(const Subject& p_subject, std::vector<Teacher>& p_teachers, SubjectTeacherData& p_subjectTeacherData, int p_subjectClassHourNumber)
+{
+    auto subjectType = p_subject.GetType();
+    auto subjectName = p_subject.GetName();
+
+    //First teacher, we have to add 1 Teacher to Teachers
+    if (!p_subjectTeacherData.IsUsed)
+    {
+        p_teachers.emplace_back(subjectName + " tanar");
+        p_subjectTeacherData.IsUsed = true;
+        p_subjectTeacherData.Teachers.push_back(p_teachers.back());
+    }
+
+    //The previous Teacher is full we have to add a new
+    if (p_subjectTeacherData.ClassHoursCount + p_subjectClassHourNumber > TEACHER_CLASSHOUR_NUMBER_PER_WEEK)
+    {
+        p_subjectTeacherData.ClassHoursCount = 0;
+        p_subjectTeacherData.TeacherCount++;
+        p_teachers.emplace_back(subjectName + " tanar" + std::to_string(p_subjectTeacherData.TeacherCount));
+        p_subjectTeacherData.Teachers.push_back(p_teachers.back());
+    }
+
+    p_subjectTeacherData.ClassHoursCount += p_subjectClassHourNumber;
+}
+
+void InputDataGenerator::SetInitialSubjectLocationNumbers(std::unordered_map<SubjectType, SubjectTeacherData>& p_subjectTeacherDataMap)
+{
+    for (auto& subjectType : g_subjectTypes)
+    {
+        if (IsSubjectContainsLocation(subjectType))
         {
-            subjectLocationNumbers[subject] = 1;
+            p_subjectTeacherDataMap[subjectType].TeacherCount = 1;
         }
     }
-
-    return subjectLocationNumbers;
 }
 
-std::unordered_map<std::string, int> InputDataGenerator::SetInitialSubjectTeacherNumbers()
+Subject InputDataGenerator::GetUnusedSubject(const std::unordered_set<SubjectType>& usedSubjects, const std::vector<Subject>& p_subjects)
 {
-    std::unordered_map<std::string, int> subjectTeacherNumbers;
-
-    for (auto& subject : m_allSubjects)
-    {
-        subjectTeacherNumbers[subject] = 1;
+    auto subjectType = g_subjectTypes[Random::GetInt(0, g_subjectTypes.size() - 1)];
+    while (usedSubjects.count(subjectType)) {
+        subjectType = g_subjectTypes[Random::GetInt(0, g_subjectTypes.size() - 1)];
     }
 
-    return subjectTeacherNumbers;
-}
-
-Subject InputDataGenerator::GetUnusedSubject(const std::unordered_set<std::string>& usedSubjects, const std::vector<Subject>& p_subjects)
-{
-    std::string subjectName = m_allSubjects[Random::GetInt(0, m_allSubjects.size() - 1)];
-    while (usedSubjects.count(subjectName)) {
-        subjectName = m_allSubjects[Random::GetInt(0, m_allSubjects.size() - 1)];
-    }
-
-    Subject foundSubject("");
+    Subject foundSubject;
     for (auto subject : p_subjects) {
-        if (subject.GetName() == subjectName)
+        if (subject.GetType() == subjectType)
         {
             foundSubject = subject;
         }
@@ -159,12 +161,7 @@ Subject InputDataGenerator::GetUnusedSubject(const std::unordered_set<std::strin
     return foundSubject;
 }
 
-bool InputDataGenerator::SubjectHasLocation(std::string subject)
-{
-    return m_subjectsHasLocation[subject];
-}
-
-void InputDataGenerator::WriteCatalog(std::vector<Class> p_classes, std::vector<Subject> p_subjects, std::vector<Location> p_locations, std::vector<Teacher> p_teachers, std::vector<ClassHour> p_classHours)
+void InputDataGenerator::WriteCatalog(const std::vector<Class>& p_classes, const std::vector<Subject>& p_subjects, const std::vector<Location>& p_locations, const std::vector<Teacher>& p_teachers, const std::vector<ClassHour>& p_classHours)
 {
     json res;
     res["OneTypeOfCourseOnADayClass"] = true;
@@ -175,43 +172,26 @@ void InputDataGenerator::WriteCatalog(std::vector<Class> p_classes, std::vector<
     res["EvenHoursInTeacher"] = true;
     res["CoursesWeightInClass"] = true;
 
-    std::vector<json> jsonClasses;
-    for (auto classs : p_classes)
-    {
-        jsonClasses.push_back(classs.GetJson());
-    }
-
-    std::vector<json> jsonSubjects;
-    for (auto subject : p_subjects)
-    {
-        jsonSubjects.push_back(subject.GetJson());
-    }
-
-    std::vector<json> jsonLocations;
-    for (auto location : p_locations)
-    {
-        jsonLocations.push_back(location.GetJson());
-    }
-
-    std::vector<json> jsonTeachers;
-    for (auto teacher : p_teachers)
-    {
-        jsonTeachers.push_back(teacher.GetJson());
-    }
-
-    std::vector<json> jsonClassHours;
-    for (auto classHour : p_classHours)
-    {
-        jsonClassHours.push_back(classHour.GetJson());
-    }
-
-    res["classes"] = jsonClasses;
-    res["locations"] = jsonLocations;
-    res["subjects"] = jsonSubjects;
-    res["teachers"] = jsonTeachers;
-    res["classHours"] = jsonClassHours;
+    res["classes"] = GetEntitiesAsJson(p_classes);
+    res["subjects"] = GetEntitiesAsJson(p_subjects);
+    res["locations"] = GetEntitiesAsJson(p_locations);
+    res["teachers"] = GetEntitiesAsJson(p_teachers);
+    res["classHours"] = GetEntitiesAsJson(p_classHours);
 
     std::ofstream file("generated_input.json");
     file << res;
     file.close();
+}
+
+template<typename T>
+std::vector<json> InputDataGenerator::GetEntitiesAsJson(const std::vector<T>& entities)
+{
+    std::vector<json> jsonEntities;
+    jsonEntities.reserve(entities.size());
+
+    for (const auto& entity : entities)
+    {
+        jsonEntities.push_back(entity.GetJson());
+    }
+    return jsonEntities;
 }

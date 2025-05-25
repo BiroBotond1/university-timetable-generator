@@ -38,4 +38,5 @@ private:
 
 	const double MAX_TEMP = 200000.0;
 	const double MIN_TEMP = 2.0;
+	const double LINEAR_ANNEALING = 0.1;
 };

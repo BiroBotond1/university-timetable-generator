@@ -7,9 +7,9 @@ public:
 
     Class(const std::string& p_name, const std::string& p_location) : Entity(), m_name(p_name), m_location(p_location) {}
 
-    json GetJson();
+    json GetJson() const override;
 
-    std::string GetName() { return m_name; }
+    std::string GetName() const { return m_name; }
 
 private:
     std::string m_name;

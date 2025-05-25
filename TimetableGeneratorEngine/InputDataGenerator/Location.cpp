@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Location.h"
 
-json Location::GetJson()
+json Location::GetJson() const
 {
     json res;
     res["_id"] = m_id;

@@ -7,9 +7,9 @@ public:
   
     Teacher(const std::string& p_name) : Entity(), m_name(p_name), m_inappropriateDates(DAYS, std::vector<int>(HOURS, 0)) {}
 
-    json GetJson();
+    json GetJson() const override;
 
-    std::string GetName() { return m_name; }
+    std::string GetName() const { return m_name; }
 
 private:
     std::string m_name;

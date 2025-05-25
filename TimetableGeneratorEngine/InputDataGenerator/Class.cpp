@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Class.h"
 
-json Class::GetJson()
+json Class::GetJson() const
 {
     json res;
     res["_id"] = m_id;

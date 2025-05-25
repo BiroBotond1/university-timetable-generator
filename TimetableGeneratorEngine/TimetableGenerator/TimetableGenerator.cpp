@@ -133,7 +133,7 @@ void TimetableGenerator::Change(Database& p_db)
 
 double TimetableGenerator::LinearAnnealing(double t, int i)
 {
-    return t / (1 + 0.1/*0.01*/ * i);
+    return t / (1 + LINEAR_ANNEALING * i);
 }
 
 bool TimetableGenerator::ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time)

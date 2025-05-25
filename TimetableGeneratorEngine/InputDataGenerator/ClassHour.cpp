@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ClassHour.h"
 
-json ClassHour::GetJson()
+json ClassHour::GetJson() const
 {
     json res;
     res["_id"] = m_id;
