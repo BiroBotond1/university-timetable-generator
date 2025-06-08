@@ -15,8 +15,4 @@ public:
     bool classCatalogOneTypeOfCourseOnADay = false;
     bool classCatalogCoursesStartsAtEight = false;
     bool classCatalogCoursesWeight = false;
-
-    double ensureCorrectCatalogValue = 1000.0;
-    double inactiveDaysPenalty = -10.0;
-    double noHoleHoursPenalty = -4;
 };

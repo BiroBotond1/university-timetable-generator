@@ -38,8 +38,8 @@ void TimetableGenerator::SimulatedAnnealing()
     auto t_start = std::chrono::high_resolution_clock::now();
     double initialT = MAX_TEMP, t;
     t = initialT;
-    int i = 0, nStepsWithNoBetterSolution = 0;
-    while (/*nStepsWithNoBetterSolution < 10000*/t > MIN_TEMP/*g_bActive == false*/)
+    int i = 0, nStepsWithNoBetterSolution = 0; 
+    while (t > MIN_TEMP)
     {
         Database localDB;
         m_DB.DeepCopy(localDB);
@@ -64,7 +64,7 @@ void TimetableGenerator::SimulatedAnnealing()
             m_DB.DeepCopy(bestDB);
         }
 
-        if (i % 1000 == 0)
+        if (i % 10000 == 0)
         {
             auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(bestDB);
             testDatas << dFitnessClass << " " << dFitnessTeacher << " " << dFitnessLocation << " " << t << " \n";
