@@ -1,17 +1,16 @@
 <template>
-   This is the summary page
    <div class="flex">
     <div>
       Class
-      <apexchart width="400" type="line" :options="options" :series="classFitnesses"></apexchart>
+      <apexchart width="440" type="line" :options="options" :series="classFitnesses"></apexchart>
     </div>
     <div>
       Teacher
-      <apexchart width="400" type="line" :options="options" :series="teacherFitnesses"></apexchart>
+      <apexchart width="440" type="line" :options="options" :series="teacherFitnesses"></apexchart>
     </div>
     <div>
       Location
-      <apexchart width="400" type="line" :options="options" :series="locationFitnesses"></apexchart>
+      <apexchart width="440" type="line" :options="options" :series="locationFitnesses"></apexchart>
     </div>
   </div>
 </template>

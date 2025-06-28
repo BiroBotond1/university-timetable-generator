@@ -1,15 +1,15 @@
 <template>
-  <v-form style="background: white;" v-model="valid" ref="form" @submit.prevent="submit" method="Post">
+  <v-form v-model="valid" ref="form" @submit.prevent="submit" method="Post">
     <v-container>
-      <h1 class="py-2 font-bold text-xl" align="center">Generate Timetable</h1>
+      <h1 class="pb-1 font-bold text-xl" align="center">Generate Timetable</h1>
       <h3 class="my-2 font-semibold">Hard constraints:</h3>
       <v-row v-for="hardConstraint in hardConstraints" :key="hardConstraint._id">
-        <v-switch color="#0D47A1" v-model="hardConstraint.active" :label="hardConstraint.description"
+        <v-switch hide-details color="#0D47A1" class="my-1" v-model="hardConstraint.active" :label="hardConstraint.description"
           @change="handleSwitchChange(hardConstraint)"></v-switch>
       </v-row>
       <h3 class="my-2 font-semibold">Soft constraints:</h3>
       <v-row v-for="softConstraint in softConstraints" :key="softConstraint._id">
-        <v-switch color="#90CAF9" v-model="softConstraint.active" :label="softConstraint.description"
+        <v-switch hide-details color="#90CAF9" class="my-1" v-model="softConstraint.active" :label="softConstraint.description"
           @change="handleSwitchChange(softConstraint)"></v-switch>
       </v-row>
       <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" v-if="!generating">
