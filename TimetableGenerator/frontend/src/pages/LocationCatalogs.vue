@@ -12,7 +12,7 @@
         <LocationCatalog ref="locationCatalogRef" v-model:id="locationId" />
       </div>
 
-      <div class="color-container flex flex-column" style="flex: 0 0 auto; margin-left: 16px">
+      <div class="color-container flex flex-column gap-y-4" style="flex: 0 0 auto; margin-left: 16px">
         <div class="flex">
           <div class="color-box subjectColor"></div>
           <div class="color-label">Subject</div>

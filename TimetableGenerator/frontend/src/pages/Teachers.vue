@@ -5,7 +5,7 @@
         <v-toolbar-title>Teachers</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="800px">
+        <v-dialog v-model="dialog" max-width="900px">
           <template v-slot:activator="{ props }">
             <v-btn color="white" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
               New Teacher
