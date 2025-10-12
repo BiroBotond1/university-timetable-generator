@@ -31,7 +31,8 @@ This web application enables schools to automatically generate optimized timetab
 
 ```bash
 cd TimetableGenerator
-yarn           
+yarn      
+yarn deps:up     
 yarn start
 ```
 

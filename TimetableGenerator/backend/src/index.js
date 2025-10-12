@@ -16,6 +16,7 @@ const classHourApi = require('./api/ClassHourApi.js');
 const constraintApi = require('./api/ConstraintApi.js');
 const userApi = require('./api/UserApi.js');
 const authorizationApi = require('./api/AutorizationApi.js')
+const constraintService = require('./services/ConstraintService.js')
 
 // Create express app
 const app = express();
@@ -30,7 +31,10 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => console.log('MongoDB database Connected...'))
+  .then(() => {
+    console.log('MongoDB database Connected...')
+    constraintService.initializeConstraints() 
+  })
   .catch((err) => console.log(err));
 
 // Middleware

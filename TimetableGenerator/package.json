@@ -10,7 +10,9 @@
   "scripts": {
     "start:backend": "yarn workspace backend start",
     "start:frontend": "yarn workspace frontend dev",
-    "start": "concurrently \"yarn start:backend\" \"yarn start:frontend\""
+    "start": "concurrently \"yarn start:backend\" \"yarn start:frontend\"",
+    "deps:up": "docker compose -f docker-compose-deps.yml up -d",
+    "deps:down": "docker compose -f docker-compose-deps.yml down"
   },
   "dependencies": {
     "concurrently": "^9.1.2"

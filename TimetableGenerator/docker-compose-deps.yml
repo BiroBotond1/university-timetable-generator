@@ -1,0 +1,20 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: timetable-mongodb
+    restart: always
+    ports:
+      - "27017:27017"   # Expose MongoDB on the default port
+    environment:
+      MONGO_INITDB_DATABASE: timetabledb 
+    volumes:
+      - mongo_data:/data/db   # Persist MongoDB data
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  mongo_data:
