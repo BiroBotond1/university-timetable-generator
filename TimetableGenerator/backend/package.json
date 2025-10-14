@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "nodemon src/index.js",
-    "lint": "eslint ./src --fix"
+    "start": "tsx watch src/index.ts",
+    "lint": "eslint ./src --ext .ts --fix"
   },
   "author": "Biro Botond",
   "license": "ISC",
@@ -14,12 +15,10 @@
     "@grpc/proto-loader": "^0.7.13",
     "auto-bind": "^5.0.1",
     "bcryptjs": "^2.4.3",
-    "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-mongo-sanitize": "^2.2.0",
-    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "minimist": "^1.2.8",
     "mongoose": "^7.0.3",
@@ -34,6 +33,9 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "globals": "^15.2.0",
-    "nodemon": "^2.0.21"
+    "nodemon": "^2.0.21",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }
