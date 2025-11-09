@@ -1,3 +1,5 @@
+import './styles/index.css'
+
 // Plugins
 import { registerPlugins } from '@/plugins'
 
@@ -6,8 +8,6 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
-
-import './index.css'
 
 const app = createApp(App)
 

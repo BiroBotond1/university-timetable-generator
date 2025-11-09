@@ -1,6 +1,6 @@
 <template>
   <div app>
-    <v-navigation-drawer color="#1D0C59" permanent dark location="right">
+    <v-navigation-drawer color="highlight" permanent location="right">
       <v-list dense nav>
         <v-list-item v-for="item in classes" :key="item._id"
           :class="{ active: item._id === classId }" @click="selectClass(item._id)"
@@ -10,15 +10,15 @@
     </v-navigation-drawer>
     <ClassCatalog ref="classCatalogRef" v-model:id="classId"/>
     <div class="color-container">
-      <div class="color-box subjectColor"></div>
+      <div class="color-box bg-subject"></div>
       <div class="color-label">Subject</div>
-      <div class="color-box teacherColor"></div>
+      <div class="color-box bg-teacher"></div>
       <div class="color-label">Teacher</div>
-      <div class="color-box locationColor"></div>
+      <div class="color-box bg-location"></div>
       <div class="color-label">Location</div>
     </div>
     <br>
-    <v-btn class="white--text" color="#1E88E5" block @click="printComponent(classCatalogRef)"> Print</v-btn>
+    <v-btn color="primary" block @click="printComponent(classCatalogRef)"> Print</v-btn>
   </div>
 </template>
 
@@ -46,17 +46,6 @@ const selectClass = (id: string) => {
 
 
 <style>
-.subjectColor {
-  background-color: #000000;
-}
-
-.teacherColor {
-  background-color: #443dafb5;
-}
-
-.locationColor {
-  background-color: #2b762e;
-}
 
 .active {
   background: rgb(105, 105, 105);

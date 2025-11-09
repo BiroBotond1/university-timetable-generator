@@ -1,19 +1,19 @@
 <template>
   <div>
-    <v-app-bar color="#1D0C59" app clipped-left clipped-right flat dark>
+    <v-app-bar color="highlight" app clipped-left clipped-right flat dark>
       <v-toolbar-title>TimetableGenerator</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn @click="importData()" class="py-2">Import</v-btn>
       <v-btn @click="exportData()">Export</v-btn>
       <v-btn @click="logout">Logout</v-btn>
       <v-progress-circular v-if="generating" :width="8" indeterminate color="white"></v-progress-circular>
-      <v-alert v-if="notification" color="success" icon="$success" density="compact">
+      <v-alert v-if="notification" color="primary" icon="$success" density="compact">
         Generating is done!
       </v-alert>
     </v-app-bar>
 
     <v-navigation-drawer
-      color="#1D0C59"
+      color="highlight"
       expand-on-hover
       rail
       permanent

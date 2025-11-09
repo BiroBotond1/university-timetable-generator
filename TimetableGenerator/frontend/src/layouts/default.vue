@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background-color: #F2F2F2;">
+  <v-app color="F2F2F2">
     <SideBar />
     <v-main class="ma-4" fluid>
       <router-view />

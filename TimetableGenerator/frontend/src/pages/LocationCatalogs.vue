@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer color="#1D0C59" permanent dark location="right">
+    <v-navigation-drawer color="highlight" permanent location="right">
       <v-list dense nav>
         <v-list-item v-for="item in locations" :key="item._id" :class="{ active: item._id === locationId }"
           @click="selectLocation(item._id)" :title="item.name">
@@ -14,18 +14,18 @@
 
       <div class="color-container flex flex-column gap-y-4" style="flex: 0 0 auto; margin-left: 16px">
         <div class="flex">
-          <div class="color-box subjectColor"></div>
+          <div class="color-box bg-subject"></div>
           <div class="color-label">Subject</div>
         </div>
         <div class="flex">
-          <div class="color-box classColor"></div>
+          <div class="color-box bg-class"></div>
           <div class="color-label">Class</div>
         </div>
         <div class="flex">
-          <div class="color-box teacherColor"></div>
+          <div class="color-box bg-teacher"></div>
           <div class="color-label">Teacher</div>
         </div>
-        <v-btn class="white--text mt-1" color="#1E88E5" @click="printComponent(locationCatalogRef)">
+        <v-btn class="mt-1" color="primary" @click="printComponent(locationCatalogRef)">
           Print
         </v-btn>
       </div>
@@ -56,17 +56,6 @@ const selectLocation = (id: string) => {
 </script>
 
 <style>
-.subjectColor {
-  background-color: #000000;
-}
-
-.classColor {
-  background-color: #ff2b2bba;
-}
-
-.teacherColor {
-  background-color: #443dafb5;
-}
 
 .active {
   background: rgb(105, 105, 105);

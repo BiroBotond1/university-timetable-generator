@@ -2,12 +2,12 @@
   <div app>
     <div v-if="props.hour">
       <div class="timetable-hour-title">
-        <span class="subject">{{ props.hour.subject?.name }}</span>
+        <span class="text-subject">{{ props.hour.subject?.name }}</span>
       </div>
       <div class="timetable-hour-info">
-        <span v-if="props.hour.teacher" class="teacher">{{ props.hour.teacher.name }}</span>
-        <span v-if="props.hour.class" class="class">{{ props.hour.class.name }}</span>
-        <span v-if="location" class="location">{{ location }}</span>
+        <span v-if="props.hour.teacher" class="text-teacher">{{ props.hour.teacher.name }}</span>
+        <span v-if="props.hour.class" class="text-class">{{ props.hour.class.name }}</span>
+        <span v-if="location" class="text-location">{{ location }}</span>
       </div>
     </div>
   </div>
@@ -49,21 +49,5 @@ const location = computed(() => {
   margin-top: 2px;
   font-size: 0.8em;
   font-weight: bold;
-}
-
-.subject {
-  color: #000000;
-}
-
-.teacher {
-  color: #443dafb5;
-}
-
-.class {
-  color: #ff2b2bba;
-}
-
-.location {
-  color: #2b762e;
 }
 </style>

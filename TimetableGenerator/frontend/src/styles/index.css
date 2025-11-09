@@ -1,0 +1,8 @@
+@import "tailwindcss" important;
+
+@theme {
+  --color-subject: #000000;
+  --color-teacher: #443dafb5;
+  --color-class: #ff2b2bba;
+  --color-location: #2b762e;
+}

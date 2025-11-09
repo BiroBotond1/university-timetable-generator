@@ -1,6 +1,6 @@
 <template>
   <div app>
-    <div class="classRoomLabel"> Class Room: <span class="locationLabelColor">{{ classRoom }} </span>
+    <div class="classRoomLabel"> Class Room: <span class="text-location">{{ classRoom }} </span>
     </div>
     <v-data-table :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border" density="comfortable">
       <template v-slot:[`item.monday`]="{ item }">
@@ -130,10 +130,6 @@ const convertHourToInt = (hour: string) => {
 </script>
 
 <style>
-.locationLabelColor {
-  color: #2b762e;
-}
-
 .classRoomLabel {
   margin-bottom: 25px;
   font-weight: bold;

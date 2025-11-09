@@ -4,18 +4,18 @@
       <h1 class="pb-1 font-bold text-xl" align="center">Generate Timetable</h1>
       <h3 class="my-2 font-semibold">Hard constraints:</h3>
       <v-row v-for="hardConstraint in hardConstraints" :key="hardConstraint._id">
-        <v-switch hide-details color="#0D47A1" class="my-1" v-model="hardConstraint.active" :label="hardConstraint.description"
+        <v-switch hide-details color="hard-constraint" class="my-1" v-model="hardConstraint.active" :label="hardConstraint.description"
           @change="handleSwitchChange(hardConstraint)"></v-switch>
       </v-row>
       <h3 class="my-2 font-semibold">Soft constraints:</h3>
       <v-row v-for="softConstraint in softConstraints" :key="softConstraint._id">
-        <v-switch hide-details color="#90CAF9" class="my-1" v-model="softConstraint.active" :label="softConstraint.description"
+        <v-switch hide-details color="soft-constraint" class="my-1" v-model="softConstraint.active" :label="softConstraint.description"
           @change="handleSwitchChange(softConstraint)"></v-switch>
       </v-row>
-      <v-btn color="#1E88E5" type="submit" block class="mt-2 white--text" v-if="!generating">
+      <v-btn color="primary" type="submit" block class="mt-2" v-if="!generating">
         Generate
       </v-btn>
-      <v-btn color="#990F02" @click="emitGenerationCancelled" block class="mt-2 white--text" v-else>
+      <v-btn color="error" @click="emitGenerationCancelled" block class="mt-2" v-else>
         Cancel
       </v-btn>
     </v-container>
