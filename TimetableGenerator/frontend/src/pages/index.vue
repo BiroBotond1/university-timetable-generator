@@ -1,6 +1,6 @@
 <template>
   <v-form v-model="valid" ref="form" @submit.prevent="submit" method="Post">
-    <v-container>
+     <v-container>
       <h1 class="pb-1 font-bold text-xl" align="center">Generate Timetable</h1>
       <h3 class="my-2 font-semibold">Hard constraints:</h3>
       <v-row v-for="hardConstraint in hardConstraints" :key="hardConstraint._id">
@@ -18,7 +18,7 @@
       <v-btn color="error" @click="emitGenerationCancelled" block class="mt-2" v-else>
         Cancel
       </v-btn>
-    </v-container>
+     </v-container>
   </v-form>
 </template>
 

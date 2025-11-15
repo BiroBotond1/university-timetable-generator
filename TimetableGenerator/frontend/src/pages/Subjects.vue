@@ -17,16 +17,14 @@
             </v-card-title>
 
             <v-card-text>
-              <v-container>
-                <v-text-field v-model="editedItem.name" label="Subject name"></v-text-field>
-                <v-combobox 
-                  v-model="editedItem.locations"
-                  label="Locations"
-                  :items="allLocations"
-                  item-title="name"
-                  multiple>
-                </v-combobox>
-              </v-container>
+              <v-text-field v-model="editedItem.name" label="Subject name"></v-text-field>
+              <v-combobox 
+                v-model="editedItem.locations"
+                label="Locations"
+                :items="allLocations"
+                item-title="name"
+                multiple>
+              </v-combobox>
             </v-card-text>
 
             <v-card-actions>
@@ -54,12 +52,11 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon size="medium" class="me-2" @click="editItem(item)">
-        mdi-pencil
-      </v-icon>
-      <v-icon size="medium" @click="deleteItem(item)">
-        mdi-delete
-      </v-icon>
+      <action-buttons
+        :item="item"
+        :onEdit="editItem"
+        :onDelete="deleteItem"
+      />
     </template>
     <template v-slot:[`item.locations`]="{ item }">
       <v-label v-for="location in item.locations" :key="location._id">
@@ -120,7 +117,7 @@ const editItem = async (item: SubjectData | undefined) => {
   } else {
     editedIndex.value = subjects.value.indexOf(item)
     if (editedIndex.value !== -1) {
-      await setEditedItem()
+      editedItem.value = { ...subjects.value[editedIndex.value] };
   }
   }
   

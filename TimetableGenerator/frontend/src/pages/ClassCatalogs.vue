@@ -26,6 +26,8 @@ const classCatalogRef = ref<ComponentPublicInstance | null>(null);
 
 onMounted(async () => {
   classes.value = await fetchClasses()
+  classes.value = classes.value.sort((a, b) => a.name.localeCompare(b.name))
+  
   if (classes.value.length > 0) {
     selectClass(classes.value[0]._id)
   }

@@ -26,6 +26,7 @@ const teacherCatalogRef = ref<ComponentPublicInstance | null>(null);
 
 onMounted(async () => {
   teachers.value = await fetchTeachers()
+  teachers.value = teachers.value.sort((a, b) => a.name.localeCompare(b.name))
   if (teachers.value.length > 0) {
     selectTeacher(teachers.value[0]._id)
   }

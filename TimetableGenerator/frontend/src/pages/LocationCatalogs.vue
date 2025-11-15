@@ -31,6 +31,7 @@ const locationId = ref<string | undefined>();
 
 onMounted(async () => {
   locations.value = await fetchLocations();
+  locations.value = locations.value.sort((a, b) => a.name.localeCompare(b.name))
   if (locations.value.length > 0) {
     selectLocation(locations.value[0]._id);
   }
