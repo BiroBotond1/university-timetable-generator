@@ -3,22 +3,14 @@
     <v-navigation-drawer color="highlight" permanent location="right">
       <v-list dense nav>
         <v-list-item v-for="item in classes" :key="item._id"
-          :class="{ active: item._id === classId }" @click="selectClass(item._id)"
+          :class="{ 'bg-selected-sidebar': item._id === classId }" @click="selectClass(item._id)"
           :title="item.name">
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <ClassCatalog ref="classCatalogRef" v-model:id="classId"/>
-    <div class="color-container">
-      <div class="color-box bg-subject"></div>
-      <div class="color-label">Subject</div>
-      <div class="color-box bg-teacher"></div>
-      <div class="color-label">Teacher</div>
-      <div class="color-box bg-location"></div>
-      <div class="color-label">Location</div>
-    </div>
-    <br>
-    <v-btn color="primary" block @click="printComponent(classCatalogRef)"> Print</v-btn>
+    <ColorsLabel :show-class="false"/>
+    <v-btn class="mt-2" color="primary" block @click="printComponent(classCatalogRef)"> Print</v-btn>
   </div>
 </template>
 
@@ -43,30 +35,3 @@ const selectClass = (id: string) => {
   classId.value = id
 }
 </script>
-
-
-<style>
-
-.active {
-  background: rgb(105, 105, 105);
-}
-
-.color-container {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.color-box {
-  width: 18px;
-  height: 18px;
-  margin: 2px;
-}
-
-.color-label {
-  margin-top: 2px;
-  text-align: center;
-  margin-right: 15px;
-}
-</style>

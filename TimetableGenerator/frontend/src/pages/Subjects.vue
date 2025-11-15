@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="subjects" class="elevation-1" density="comfortable">
+  <v-data-table :headers="headers" :items="subjects" density="comfortable">
     <template v-slot:top>
       <v-toolbar flat color="light-blue">
         <v-toolbar-title>Subjects</v-toolbar-title>

@@ -17,14 +17,18 @@
 
 import type { ClassHourShowData } from '@/modules/classhour/classhour.type';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   hour : ClassHourShowData | undefined
-}>()
+  showLocation?: boolean
+}>(),
+{
+  showLocation: true
+})
 
 const location = computed(() => {
-  if (props.hour === undefined)
+  if (props.hour === undefined || !props.showLocation)
     return undefined
-  
+
   if(props.hour.location)
     return props.hour.location.name
 

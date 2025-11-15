@@ -2,19 +2,19 @@
   <div>
     <v-data-table app :items-per-page="-1" hide-default-footer :headers="headers" :items="items" class="border" density="comfortable">
       <template v-slot:[`item.monday`]="{ item }">
-        <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" />
+        <ClassHour :hour="catalog[0][convertHourToInt(item.hours)]" :show-location="false"/>
       </template>
       <template v-slot:[`item.tuesday`]="{ item }">
-        <ClassHour :hour="catalog[1][convertHourToInt(item.hours)]" />
+        <ClassHour :hour="catalog[1][convertHourToInt(item.hours)]" :show-location="false"/>
       </template>
       <template v-slot:[`item.wednesday`]="{ item }">
-        <ClassHour :hour="catalog[2][convertHourToInt(item.hours)]" />
+        <ClassHour :hour="catalog[2][convertHourToInt(item.hours)]" :show-location="false"/>
       </template>
       <template v-slot:[`item.thursday`]="{ item }">
-        <ClassHour :hour="catalog[3][convertHourToInt(item.hours)]" />
+        <ClassHour :hour="catalog[3][convertHourToInt(item.hours)]" :show-location="false"/>
       </template>
       <template v-slot:[`item.friday`]="{ item }">
-        <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" />
+        <ClassHour :hour="catalog[4][convertHourToInt(item.hours)]" :show-location="false"/>
       </template>
     </v-data-table>
   </div>

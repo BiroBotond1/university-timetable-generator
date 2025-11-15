@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ClassCatalog: typeof import('./components/Class/ClassCatalog.vue')['default']
     ClassHour: typeof import('./components/ClassHour.vue')['default']
+    ColorsLabel: typeof import('./components/Common/ColorsLabel.vue')['default']
     DatePicker: typeof import('./components/DatePicker.vue')['default']
     LocationCatalog: typeof import('./components/Location/LocationCatalog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
