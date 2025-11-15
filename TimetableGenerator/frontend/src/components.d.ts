@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CatalogDataTable: typeof import('./components/Common/CatalogDataTable.vue')['default']
     ClassCatalog: typeof import('./components/Class/ClassCatalog.vue')['default']
     ClassHour: typeof import('./components/ClassHour.vue')['default']
     ColorsLabel: typeof import('./components/Common/ColorsLabel.vue')['default']

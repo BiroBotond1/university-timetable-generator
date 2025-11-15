@@ -1,30 +1,27 @@
 <template>
   <v-data-table
+    class="border border-collapse"
     :items-per-page="-1"
     hide-default-footer
     :headers="headers"
     :items="items"
-    class="border border-collapse"
+    density="comfortable"
   >
     <template
       v-for="(day, index) in days"
       :key="day.key"
       v-slot:[`item.${day.key}`]="{ item }"
     >
-     <v-btn
-        class="w-24"
-        @click="toggleSlot(index, convertHourToInt(item.hours))"
-        :color="getColor(index, convertHourToInt(item.hours))"
-      >
-        {{ getButtonText(index, item.hours) }}
-      </v-btn>
+      <ClassHour :hour="props.catalog[index][convertHourToInt(item.hours)]" />
     </template>
   </v-data-table>
 </template>
 
 <script setup lang="ts">
+import type { ClassHourShowData } from "@/modules/classhour/classhour.type";
+
 const props = defineProps<{
-  modelValue: number[][];
+  catalog: Array<Array<ClassHourShowData | undefined>>;
 }>();
 
 const days = [
@@ -35,10 +32,7 @@ const days = [
   { title: "Friday", key: "friday" },
 ];
 
-const headers = ref([
-  { title: "Hours", key: "hours" },
-  ...days,
-]);
+const headers = ref([{ title: "Hours", key: "hours" }, ...days]);
 
 const items = ref([
   { hours: "8-9" },
@@ -53,22 +47,5 @@ const items = ref([
 
 const convertHourToInt = (hour: string) => {
   return parseInt(hour.substring(0, hour.indexOf("-"))) - 8;
-};
-
-const toggleSlot = (day: number, hour: number) => {
-  if (props.modelValue[day][hour] === 0) {
-    props.modelValue[day][hour] = -1;
-  } else {
-    props.modelValue[day][hour] = 0;
-  }
-};
-
-const getColor = (day: number, hour: number) =>
-  props.modelValue[day][hour] === 0 ? "green" : "red";
-
-const getButtonText = (index: number, hours: string) => {
-  return props.modelValue[index][convertHourToInt(hours)] === 0
-    ? "Free"
-    : "Occupied";
 };
 </script>

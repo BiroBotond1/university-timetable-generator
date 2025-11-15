@@ -192,5 +192,3 @@ const save = () => {
   close()
 }
 </script>
-
-<style></style>

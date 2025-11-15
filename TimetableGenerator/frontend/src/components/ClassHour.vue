@@ -1,10 +1,10 @@
 <template>
   <div app>
     <div v-if="props.hour">
-      <div class="timetable-hour-title">
+      <div class="text-[0.9em] font-bold">
         <span class="text-subject">{{ props.hour.subject?.name }}</span>
       </div>
-      <div class="timetable-hour-info">
+      <div class="flex flex-col items-start mt-0.5 text-[0.8em] font-bold">
         <span v-if="props.hour.teacher" class="text-teacher">{{ props.hour.teacher.name }}</span>
         <span v-if="props.hour.class" class="text-class">{{ props.hour.class.name }}</span>
         <span v-if="location" class="text-location">{{ location }}</span>
@@ -37,21 +37,4 @@ const location = computed(() => {
 
   return undefined
 })
-
 </script>
-
-<style scoped>
-.timetable-hour-title {
-  font-size: 0.9em;
-  font-weight: bold;
-}
-
-.timetable-hour-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: 2px;
-  font-size: 0.8em;
-  font-weight: bold;
-}
-</style>
