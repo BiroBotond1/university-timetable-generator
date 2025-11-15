@@ -8,6 +8,14 @@
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      document.documentElement.classList.toggle(
+        'dark',
+        localStorage.theme === 'dark' ||
+          (!('theme' in localStorage) &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

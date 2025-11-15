@@ -22,38 +22,43 @@
       </v-alert>
     </v-app-bar>
 
-    <v-navigation-drawer color="highlight" expand-on-hover rail permanent dark>
-      <v-list density="compact" nav>
-        <v-list-item
-          v-for="item in items"
-          :key="item.title"
-          link
-          :to="item.route"
-          :prepend-icon="item.icon"
-          :title="item.title"
-        >
-        </v-list-item>
-        <v-divider></v-divider>
-        <v-list-item
-          v-for="item in catalogItems"
-          :key="item.title"
-          link
-          :to="item.route"
-          :disabled="generating"
-          :prepend-icon="item.icon"
-          :title="item.title"
-        >
-        </v-list-item>
-        <v-divider></v-divider>
-        <v-list-item
-          link
-          to="/summary"
-          :disabled="generating"
-          prepend-icon="mdi-chart-line"
-          title="Summary"
-        >
-        </v-list-item>
-      </v-list>
+    <v-navigation-drawer v-model:rail="isRail" color="highlight" expand-on-hover rail permanent dark>
+      <div class="d-flex flex-column h-[100%]">
+        <v-list density="compact" nav>
+          <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            link
+            :to="item.route"
+            :prepend-icon="item.icon"
+            :title="item.title"
+          >
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item
+            v-for="item in catalogItems"
+            :key="item.title"
+            link
+            :to="item.route"
+            :disabled="generating"
+            :prepend-icon="item.icon"
+            :title="item.title"
+          >
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item
+            link
+            to="/summary"
+            :disabled="generating"
+            prepend-icon="mdi-chart-line"
+            title="Summary"
+          >
+          </v-list-item>
+        </v-list>
+        <div class="mt-auto pa-2">
+           <theme-toggle :showLabel="!isRail" />
+        </div>
+      </div>
     </v-navigation-drawer>
   </div>
 </template>
@@ -98,6 +103,8 @@ const catalogItems = ref([
     route: "/locationCatalogs",
   },
 ]);
+
+const isRail = ref(true) 
 
 const router = useRouter();
 

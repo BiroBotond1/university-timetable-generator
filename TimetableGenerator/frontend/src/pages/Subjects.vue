@@ -1,7 +1,7 @@
 <template>
   <v-data-table :headers="headers" :items="subjects" density="comfortable">
     <template v-slot:top>
-      <v-toolbar flat color="light-blue">
+      <v-toolbar flat color="primary">
         <v-toolbar-title>Subjects</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
@@ -11,7 +11,7 @@
               New Subject
             </v-btn>
           </template>
-          <v-card>
+          <v-card color="background">
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
@@ -39,7 +39,7 @@
           </v-card>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
+          <v-card color="background">
             <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>

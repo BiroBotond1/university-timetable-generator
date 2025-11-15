@@ -1,9 +1,21 @@
 @import "tailwindcss" important;
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-subject: #000000;
   --color-teacher: #443dafb5;
   --color-class: #ff2b2bba;
   --color-location: #2b762e;
   --color-selected-sidebar: rgb(105, 105, 105);
+}
+
+@layer theme {
+  .dark {
+    --color-subject: #FFFFFF;
+    --color-teacher: #7d74ffb5;
+    --color-class: #ff6b6bba;
+    --color-location: #6adf6e;
+    --color-selected-sidebar: rgb(160, 160, 160);
+  }
 }

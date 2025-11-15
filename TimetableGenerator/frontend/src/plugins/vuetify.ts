@@ -26,7 +26,17 @@ export default createVuetify({
       customDark: {
         dark: true,
         colors: {
-          highlight: 'rgb(var(--color-highlight))',
+          'highlight': '#4A37A0', 
+          'on-highlight': '#F0F0F5',
+          'primary': '#0268ba', 
+          'on-primary': '#0A0A0A',
+          'error': '#EF5350',  
+          'on-error': '#1E1E1E',
+          'hard-constraint': '#1565C0', 
+          'soft-constraint': '#BBDEFB',
+          'on-soft-constraint': '#0D0D0D',
+          'background': '#121212',
+          'surface': '#1E1E1E',
         },
       },
     }
