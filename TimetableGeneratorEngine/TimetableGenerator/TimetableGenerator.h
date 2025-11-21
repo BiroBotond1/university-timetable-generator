@@ -8,17 +8,18 @@ class TimetableGenerator
 public:
 	std::string Run(const std::string& input);
 
+private:
 	void InitCatalogs();
 	void SimulatedAnnealing();
 	std::string WriteCatalog();
 
-private:
 	void Changes(Database& p_db);
 	void Change(Database& p_db);
 	bool ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time);
 	void SwapLocations(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
 	void SwapTeachers(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
 
+	void InitLinearAnnealingParameter();
 	double LinearAnnealing(double t, int i);
 
 	double										Fitness();
@@ -34,9 +35,10 @@ private:
 	double			m_fitnessLocation = 0;
 	double			m_elapsedTime = 0;
 
+	double			m_linearAnnealing = 0.1;
+
 	Database	m_DB;
 
 	const double MAX_TEMP = 200000.0;
 	const double MIN_TEMP = 2.0;
-	const double LINEAR_ANNEALING = 0.1;
 };

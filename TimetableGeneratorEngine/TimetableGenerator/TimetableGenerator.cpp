@@ -16,9 +16,15 @@ std::string TimetableGenerator::Run(const std::string& input)
 //#endif
     
     m_DB.Fill(input);
+    InitLinearAnnealingParameter();
     InitCatalogs();
     SimulatedAnnealing();
     return WriteCatalog();
+}
+
+void TimetableGenerator::InitLinearAnnealingParameter() 
+{
+    m_linearAnnealing = m_DB.GetClasses().size() <= 14 ? 0.1 : 0.01; //set the linear anneling parameter smaller for bigger schools to be able to get a correct solution
 }
 
 void TimetableGenerator::InitCatalogs() 
@@ -133,7 +139,7 @@ void TimetableGenerator::Change(Database& p_db)
 
 double TimetableGenerator::LinearAnnealing(double t, int i)
 {
-    return t / (1 + LINEAR_ANNEALING * i);
+    return t / (1 + m_linearAnnealing * i);
 }
 
 bool TimetableGenerator::ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time)
