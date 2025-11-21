@@ -45,15 +45,6 @@
             :title="item.title"
           >
           </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item
-            link
-            to="/summary"
-            :disabled="generating"
-            prepend-icon="mdi-chart-line"
-            title="Summary"
-          >
-          </v-list-item>
         </v-list>
         <div class="mt-auto pa-2">
            <theme-toggle :showLabel="!isRail" />

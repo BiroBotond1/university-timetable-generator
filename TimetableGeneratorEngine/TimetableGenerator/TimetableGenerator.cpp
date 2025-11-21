@@ -8,13 +8,7 @@
 #include "Random.h"
 
 std::string TimetableGenerator::Run(const std::string& input)
-{
-//#if _DEBUG
-//    std::string fileName = "../in.json";
-//#else
-//    std::string fileName = "../in.json";
-//#endif
-    
+{    
     m_DB.Fill(input);
     InitLinearAnnealingParameter();
     InitCatalogs();
@@ -40,7 +34,7 @@ void TimetableGenerator::SimulatedAnnealing()
 {   
     Database bestDB;
     m_DB.DeepCopy(bestDB);
-    std::ofstream testDatas("../../../../Plot_data.txt");
+
     auto t_start = std::chrono::high_resolution_clock::now();
     double initialT = MAX_TEMP, t;
     t = initialT;
@@ -69,13 +63,6 @@ void TimetableGenerator::SimulatedAnnealing()
             nStepsWithNoBetterSolution = 0;
             m_DB.DeepCopy(bestDB);
         }
-
-        if (i % 10000 == 0)
-        {
-            auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(bestDB);
-            testDatas << dFitnessClass << " " << dFitnessTeacher << " " << dFitnessLocation << " " << t << " \n";
-        }
-
     }
     auto [dFitnessClass, dFitnessTeacher, dFitnessLocation, bActive] = Evaluate(bestDB);
 
@@ -85,7 +72,6 @@ void TimetableGenerator::SimulatedAnnealing()
 
     auto t_act = std::chrono::high_resolution_clock::now();
     m_elapsedTime = std::chrono::duration<double>(t_act - t_start).count();
-    testDatas.close();
 
     m_DB.DeepCopy(bestDB);
 }
