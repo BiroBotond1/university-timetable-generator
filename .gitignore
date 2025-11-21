@@ -443,3 +443,5 @@ TimetableGeneratorEngine/InputDataGenerator/generated_input.json
 TimetableGeneratorEngine/TimetableGenerator/in.json
 
 TimetableGeneratorEngine/cmake/*
+
+.vite/
