@@ -12,6 +12,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.4.0",
     "@mdi/font": "7.4.47",
     "@tailwindcss/vite": "^4.0.14",
     "core-js": "^3.37.1",

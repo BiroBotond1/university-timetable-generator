@@ -14,10 +14,14 @@ declare module 'vue' {
     ColorsLabel: typeof import('./components/Common/ColorsLabel.vue')['default']
     DatePicker: typeof import('./components/DatePicker.vue')['default']
     LocationCatalog: typeof import('./components/Location/LocationCatalog.vue')['default']
+    LoginButton: typeof import('./components/Auth/LoginButton.vue')['default']
+    LogoutButton: typeof import('./components/Auth/LogoutButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./components/SideBar.vue')['default']
     TeacherCatalog: typeof import('./components/Teacher/TeacherCatalog.vue')['default']
     ThemeToggle: typeof import('./components/ThemeToggle.vue')['default']
+    User: typeof import('./components/Auth/User.vue')['default']
+    UserProfile: typeof import('./components/Auth/UserProfile.vue')['default']
   }
 }

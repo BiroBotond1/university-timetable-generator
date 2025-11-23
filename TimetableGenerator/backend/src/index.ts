@@ -6,8 +6,8 @@ import cors from 'cors';
 
 import initializeSocket from './socket/socket.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
-import authMiddleware from './middleware/authorizationMiddleware.js';
 import mongoMiddleware from './middleware/mongoMiddleware.js';
+import {auth} from 'express-oauth2-jwt-bearer'
 
 import timetableApiRouter from './routes/timetable.js';
 
@@ -18,9 +18,9 @@ import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
 import userApi from './api/UserApi.js';
-import authorizationApi from './api/AutorizationApi.js';
 import * as constraintService from './services/ConstraintService.js';
 
+import 'dotenv/config'
 
 // Create express app
 const app = express();
@@ -44,20 +44,23 @@ mongoose
 // Middleware
 app.use(cors());            // allow cross origin requests
 app.use(bodyParser.json()); // to convert the request into JSON
+app.use(auth({
+  issuerBaseURL: process.env.ISSUER_BASE_URL,
+  audience: process.env.AUDIENCE
+}));
 
 app.use(mongoMiddleware);
 
 // api
-app.use('/api/constraints', authMiddleware, constraintApi);
-app.use('/api/subjects', authMiddleware, subjectApi);
-app.use('/api/teachers', authMiddleware, teacherApi);
-app.use('/api/locations', authMiddleware, locationApi);
-app.use('/api/classes', authMiddleware, classApi);
-app.use('/api/classHours', authMiddleware, classHourApi);
+app.use('/api/constraints', constraintApi);
+app.use('/api/subjects', subjectApi);
+app.use('/api/teachers', teacherApi);
+app.use('/api/locations', locationApi);
+app.use('/api/classes', classApi);
+app.use('/api/classHours', classHourApi);
 
-app.use('/api/users', authMiddleware, userApi);
+app.use('/api/users', userApi);
 
-app.use('/api', authorizationApi);
 // Routes
 app.use('/timetable', timetableApiRouter);
 

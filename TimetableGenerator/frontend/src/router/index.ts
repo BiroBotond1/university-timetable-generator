@@ -2,10 +2,38 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
+import { useAuth0 } from '@auth0/auth0-vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
+})
+
+router.beforeEach(async (to, from, next) => {
+  if (to.name == "/Login") {
+    return next()
+  }
+
+  const { isAuthenticated, isLoading } = useAuth0()
+
+  // Wait for Auth0 to finish loading
+  if (isLoading.value) {
+    await new Promise(resolve => {
+      const stop = watch(isLoading, (v) => {
+        if (!v) {
+          stop()
+          resolve(true)
+        }
+      })
+    })
+  }
+
+  //Redirect every other route to /login if not authenticated
+  if (!isAuthenticated.value) {
+    return next('/Login')
+  }
+
+  next()
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804

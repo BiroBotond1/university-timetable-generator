@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-btn @click="importData()" class="py-2">Import</v-btn>
       <v-btn @click="exportData()">Export</v-btn>
-      <v-btn @click="logout">Logout</v-btn>
+      <user/>
       <v-progress-circular
         v-if="generating"
         :width="8"
@@ -92,7 +92,7 @@ const catalogItems = ref([
     title: "Location Catalogs",
     icon: "mdi-file-marker",
     route: "/locationCatalogs",
-  },
+  }
 ]);
 
 const isRail = ref(true) 
@@ -101,11 +101,6 @@ const router = useRouter();
 
 const generating = computed(() => useAppStore().generating);
 const notification = computed(() => useAppStore().notification);
-
-function logout(): void {
-  localStorage.removeItem("token");
-  router.push("/login");
-}
 
 function exportData(): void {
   emitGetTimetableData();

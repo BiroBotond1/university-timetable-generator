@@ -1,5 +1,4 @@
 import * as service from '../services/UserService.js'
-import jwt from 'jsonwebtoken'
 
 export const getAll = async (req, res) => {
   try {
@@ -54,20 +53,3 @@ export const deleteById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-export const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    const user = await service.login(username, password);
-    if (!user) {
-      return res.status(404).json({ error: 'Login credentials not valid' });
-    }
-
-    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret', { expiresIn: '7d' });
-    
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
