@@ -5,6 +5,15 @@ import type { LocationData } from "../location/location.type"
 
 export interface ClassHourData {
   _id: string,
+  class: string,
+  subject: string,
+  teacher: string,
+  number: number, 
+  weight: number
+}
+
+export interface PopulatedClassHourData {
+  _id: string,
   class: ClassData,
   subject: SubjectData,
   teacher: TeacherData,

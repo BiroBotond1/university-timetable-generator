@@ -39,6 +39,6 @@ private:
 
 	Database	m_DB;
 
-	const double MAX_TEMP = 200000.0;
+	const double MAX_TEMP = 100000.0;
 	const double MIN_TEMP = 2.0;
 };

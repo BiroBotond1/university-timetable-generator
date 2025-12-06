@@ -15,6 +15,7 @@ const handleEvents = (socket, io) => {
   socket.on('sendCreateSubject', async (obj) => {
     try {
       obj.subject = await service.create(obj.subject);
+      obj.subject = await service.getById(obj.subject._id);
       io.emit('createSubject', obj);
     } catch (error) {
       console.error('Error creating subject:', error);

@@ -8,7 +8,9 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <TeacherCatalog ref="teacherCatalogRef" v-model:id="teacherId"/>
+    <div ref="teacherCatalogRef">
+      <CatalogDataTable v-if="catalog" :catalog="catalog" />
+    </div>
     <ColorsLabel :show-teacher="false"/>
     <v-btn class="mt-2" color="primary" block @click="printComponent(teacherCatalogRef)">
       Print</v-btn>
@@ -35,4 +37,12 @@ onMounted(async () => {
 const selectTeacher = (id: string) => {
   teacherId.value = id
 }
+
+const selectedTeacher = computed(() => {
+  return teachers.value.find(teacher => teacher._id === teacherId.value)
+})
+
+const catalog = computed(() => {
+  return selectedTeacher.value?.catalog
+})
 </script>

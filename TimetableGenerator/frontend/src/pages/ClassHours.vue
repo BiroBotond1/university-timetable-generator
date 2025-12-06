@@ -107,6 +107,7 @@
 import type { ClassData } from "@/modules/class/class.type";
 import type {
   ClassHourData,
+  PopulatedClassHourData,
   EditClassHourData,
 } from "@/modules/classhour/classhour.type";
 import type { SubjectData } from "@/modules/subject/subject.type";
@@ -137,7 +138,7 @@ const headers = ref([
 const allClasses = ref<ClassData[]>([]);
 const allTeachers = ref<TeacherData[]>([]);
 const allSubjects = ref<SubjectData[]>([]);
-const classHours = ref<ClassHourData[]>([]);
+const classHours = ref<PopulatedClassHourData[]>([]);
 const editedIndex = ref(-1);
 const editedItem = ref<EditClassHourData>({
   _id: undefined,
@@ -218,9 +219,9 @@ const save = () => {
 
   let classHour = {
     number: editedItem.value.number,
-    class: editedItem.value.class,
-    teacher: editedItem.value.teacher,
-    subject: editedItem.value.subject,
+    class: editedItem.value.class?._id,
+    teacher: editedItem.value.teacher?._id,
+    subject: editedItem.value.subject?._id,
     weight: editedItem.value.weight,
   };
   if (editedIndex.value > -1) {

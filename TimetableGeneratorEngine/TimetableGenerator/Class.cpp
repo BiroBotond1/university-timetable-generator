@@ -3,7 +3,7 @@
 #include "Teacher.h"
 #include "Location.h"
 
-Class::Class(const nlohmann::json& jsonClass, const TimetableConfig& p_config) : EntityWithCatalog(jsonClass, p_config) {}
+Class::Class(const nlohmann::json& jsonClass, const TimetableConfig& p_config) : EntityWithCatalog(jsonClass, p_config), m_location(jsonClass["location"].get<std::string>()) {}
 
 std::shared_ptr<Class> Class::Clone() const
 {

@@ -215,7 +215,7 @@ void Catalog::SetLocation(std::shared_ptr<Location> p_Location, Time p_time)
 	m_locations[p_time.GetDay()][p_time.GetHour()] = p_Location;
 }
 
-const nlohmann::json Catalog::GetJSONObj()
+const nlohmann::json Catalog::GetJSONObj(CatalogType p_catalogType)
 {
 	nlohmann::json json;
 	for (int nDay = 0; nDay < m_catalog.size(); nDay++)
@@ -223,13 +223,29 @@ const nlohmann::json Catalog::GetJSONObj()
 		nlohmann::json array;
 		for (int nHour = 0; nHour < m_catalog[nDay].size(); nHour++)
 		{
-			nlohmann::json jsonClassHour;
 			auto classHour = GetClassHour(Time{ nDay, nHour });
 			const auto& location = GetLocation(Time{ nDay, nHour });
-			jsonClassHour["classID"] = classHour ? classHour->GetClass()->GetId() : "";
-			jsonClassHour["subjectID"] = classHour ? classHour->GetSubject()->GetId() : "";
-			jsonClassHour["teacherID"] = classHour ? classHour->GetTeacher()->GetId() : "";
-			jsonClassHour["locationID"] = location ? location->GetId() : "";
+
+			nlohmann::json jsonClassHour;
+			jsonClassHour["class"] = classHour && p_catalogType != CatalogType::Class ? classHour->GetClass()->GetName() : "";
+			jsonClassHour["subject"] = classHour ? classHour->GetSubject()->GetName() : "";
+			jsonClassHour["teacher"] = classHour && p_catalogType != CatalogType::Teacher ? classHour->GetTeacher()->GetName() : "";
+			
+			switch (p_catalogType) {
+				case CatalogType::Location:
+					jsonClassHour["location"] = "";
+					break;
+				case CatalogType::Teacher: 
+				{
+					auto classRoom = classHour ? classHour->GetClass()->GetClassRoom() : "";
+					jsonClassHour["location"] = location ? location->GetName() : classRoom;
+					break;
+				}
+				case CatalogType::Class:
+					jsonClassHour["location"] = location ? location->GetName() : "";
+					break;
+			}
+		
 			array.push_back(jsonClassHour);
 		}
 		json.push_back(array);

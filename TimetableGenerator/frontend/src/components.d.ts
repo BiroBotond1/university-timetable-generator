@@ -10,7 +10,7 @@ declare module 'vue' {
     ActionButtons: typeof import('./components/Common/ActionButtons.vue')['default']
     CatalogDataTable: typeof import('./components/Common/CatalogDataTable.vue')['default']
     ClassCatalog: typeof import('./components/Class/ClassCatalog.vue')['default']
-    ClassHour: typeof import('./components/ClassHour.vue')['default']
+    ClassHour: typeof import('./components/Common/ClassHour.vue')['default']
     ColorsLabel: typeof import('./components/Common/ColorsLabel.vue')['default']
     DatePicker: typeof import('./components/DatePicker.vue')['default']
     LocationCatalog: typeof import('./components/Location/LocationCatalog.vue')['default']

@@ -17,7 +17,6 @@ import locationApi from './api/LocationApi.js';
 import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
-import userApi from './api/UserApi.js';
 import * as constraintService from './services/ConstraintService.js';
 
 import 'dotenv/config'
@@ -58,8 +57,6 @@ app.use('/api/teachers', teacherApi);
 app.use('/api/locations', locationApi);
 app.use('/api/classes', classApi);
 app.use('/api/classHours', classHourApi);
-
-app.use('/api/users', userApi);
 
 // Routes
 app.use('/timetable', timetableApiRouter);

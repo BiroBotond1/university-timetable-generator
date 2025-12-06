@@ -1,7 +1,9 @@
 import { model } from '../models/Subject.js'
 
 export const getAll = async () => {
-  return await model.find();
+  return await model
+    .find()
+    .populate("locations");
 };
 
 export const create = async (subject) => {
@@ -9,7 +11,9 @@ export const create = async (subject) => {
 };
 
 export const getById = async (id) => {
-  return await model.findById(id);
+  return await model
+    .findById(id)
+    .populate("locations");;
 };
 
 export const update = async (id, subject) => {
@@ -21,13 +25,7 @@ export const deleteById = async (id) => {
 };
 
 export const isLocationUsed = async (locationId) => {
-  const subjectWithLocation = await model.findOne({
-    locations: {
-      $elemMatch: { _id : locationId }
-    }
-  });
-
-  return subjectWithLocation !== null; 
+  return await model.exists({ locations: locationId });
 };
 
 export const imp = async (subjects) => {

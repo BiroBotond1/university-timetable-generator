@@ -1,8 +1,8 @@
-import type { ClassHourData } from './classhour.type';
+import type { ClassHourData, PopulatedClassHourData } from './classhour.type';
 import { socket } from '@/modules/app/app.socket'
 
 export const setupClassHourSocketListeners = (
-  classHours: Ref<ClassHourData[]>
+  classHours: Ref<PopulatedClassHourData[]>
 ) => {
   socket.on('updateClassHour', async (obj) => {
     const index = classHours.value.findIndex(classHour => classHour._id === obj.id);

@@ -8,7 +8,12 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <ClassCatalog ref="classCatalogRef" v-model:id="classId"/>
+    <div ref="classCatalogRef" app>
+      <div class="font-bold mb-5">
+        Class Room: <span class="text-location">{{ classRoom }} </span>
+      </div>
+      <CatalogDataTable v-if="catalog" :catalog="catalog" />
+    </div>
     <ColorsLabel :show-class="false"/>
     <v-btn class="mt-2" color="primary" block @click="printComponent(classCatalogRef)"> Print</v-btn>
   </div>
@@ -36,4 +41,16 @@ onMounted(async () => {
 const selectClass = (id: string) => {
   classId.value = id
 }
+
+const selectedClass = computed(() => {
+  return classes.value.find(clas => clas._id === classId.value)
+})
+
+const classRoom = computed(() => {
+  return selectedClass.value?.location 
+})
+
+const catalog = computed(() => {
+  return selectedClass.value?.catalog
+})
 </script>

@@ -14,6 +14,7 @@ const handleEvents = (socket, io) => {
   socket.on('sendCreateClassHour', async (obj) => {
     try {
       obj.classHour = await service.create(obj.classHour);
+      obj.classHour = await service.getById(obj.classHour._id);
       io.emit('createClassHour', obj);
     } catch (error) {
       console.error('Error creating class hour:', error);

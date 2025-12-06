@@ -12,7 +12,9 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <LocationCatalog ref="locationCatalogRef" v-model:id="locationId" />
+    <div ref="locationCatalogRef">
+      <CatalogDataTable v-if="catalog" :catalog="catalog"/>
+    </div>
     <ColorsLabel :show-location="false" />
     <v-btn class="mt-2" color="primary" block @click="printComponent(locationCatalogRef)">
       Print
@@ -29,7 +31,7 @@ const locationCatalogRef = ref<ComponentPublicInstance | null>(null);
 const locations = ref<LocationData[]>([]);
 const locationId = ref<string | undefined>();
 
-onMounted(async () => {
+onBeforeMount(async () => {
   locations.value = await fetchLocations();
   locations.value = locations.value.sort((a, b) => a.name.localeCompare(b.name))
   if (locations.value.length > 0) {
@@ -40,4 +42,12 @@ onMounted(async () => {
 const selectLocation = (id: string) => {
   locationId.value = id;
 };
+
+const selectedLocation = computed(() => {
+  return locations.value.find(location => location._id === locationId.value)
+})
+
+const catalog = computed(() => {
+  return selectedLocation.value?.catalog
+})
 </script>

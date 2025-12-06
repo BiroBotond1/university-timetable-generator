@@ -1,13 +1,23 @@
 import mongoose from 'mongoose'
-import { schema as classSchema } from './Class.js'
-import { schema as teacherSchema } from './Teacher.js'
-import { schema as subjectSchema } from './Subject.js'
 
 const schema = new mongoose.Schema({
   number: Number,
-  class: classSchema,
-  subject: subjectSchema,
-  teacher: teacherSchema,
+
+  class: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Class" 
+  },
+
+  subject: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Subject" 
+  },
+
+  teacher: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Teacher" 
+  },
+
   weight: Number
 });
 

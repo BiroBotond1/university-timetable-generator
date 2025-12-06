@@ -1,7 +1,11 @@
 import model from '../models/ClassHour.js'
 
 export const getAll = async () => {
-  return await model.find();
+  return await model
+    .find()
+    .populate("class")
+    .populate("subject")
+    .populate("teacher");
 };
 
 export const create = async (classHour) => {
@@ -9,7 +13,11 @@ export const create = async (classHour) => {
 };
 
 export const getById = async (id) => {
-  return await model.findById(id);
+  return await model
+    .findById(id)
+    .populate("class")
+    .populate("subject")
+    .populate("teacher");
 };
 
 export const update = async (id, classHour) => {
@@ -21,27 +29,15 @@ export const deleteById = async (id) => {
 };
 
 export const isClassUsed = async (classId) => {
-  const classHourWithClass = await model.findOne({
-    'class._id': classId
-  });
-
-  return classHourWithClass !== null;
+  return await model.exists({ class: classId })
 };
 
 export const isTeacherUsed = async (teacherId) => {
-  const classHourWithTeacher = await model.findOne({
-    'teacher._id': teacherId
-  });
-
-  return classHourWithTeacher !== null;
+  return await model.exists({ teacher: teacherId })
 };
 
 export const isSubjectUsed = async (subjectId) => {
-  const classHourWithSubject = await model.findOne({
-    'subject._id': subjectId
-  });
-
-  return classHourWithSubject !== null;
+  return await model.exists({ subject: subjectId })
 };
 
 export const imp = async (classHours) => {

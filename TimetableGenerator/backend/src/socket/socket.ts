@@ -8,6 +8,7 @@ import handleClassEvents from './ClassSocket.js';
 import handleClassHourEvents from './ClassHourSocket.js';
 import handleGenerationEvents from './GenerationSocket.js';
 import handleImportExportEvents from './ImportExportSocket.js';
+import handleAuth0Events from './Auth0Socket.js'
 
 const initializeSocket = (server) => {
   const io = new SocketIOServer(server, {
@@ -29,6 +30,7 @@ const initializeSocket = (server) => {
       handleClassHourEvents(socket, io);
       handleGenerationEvents(socket, io);
       handleImportExportEvents(socket, io);
+      handleAuth0Events(socket, io)
     } catch (error) {
       console.error('Error handling socket events:', error);
     }

@@ -7,6 +7,7 @@
 #include "Subject.h"
 #include "ClassHour.h"
 #include "Random.h"
+#include "Catalog.h"
 
 void Database::Fill(const std::string& input)
 {
@@ -56,16 +57,19 @@ json Database::WriteCatalog()
     json res, classCatalogs, teacherCatalogs, locationsCatalogs;
     for (auto& clas : m_classes)
     {
-        classCatalogs[clas.first] = clas.second->GetCatalog().GetJSONObj();
+        classCatalogs[clas.first] = clas.second->GetCatalog().GetJSONObj(CatalogType::Class);
     }
+
     for (auto& teacher : m_teachers)
     {
-        teacherCatalogs[teacher.first] = teacher.second->GetCatalog().GetJSONObj();
+        teacherCatalogs[teacher.first] = teacher.second->GetCatalog().GetJSONObj(CatalogType::Teacher);
     }
+
     for (auto& location : m_locations)
     {
-        locationsCatalogs[location.first] = location.second->GetCatalog().GetJSONObj();
+        locationsCatalogs[location.first] = location.second->GetCatalog().GetJSONObj(CatalogType::Location);
     }
+
     res["classCatalogs"] = classCatalogs;
     res["teacherCatalogs"] = teacherCatalogs;
     res["locationCatalogs"] = locationsCatalogs;

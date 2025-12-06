@@ -8,6 +8,12 @@ class Location;
 using ClassHourMap = std::unordered_map<std::string, std::shared_ptr<ClassHour>>;
 using LocationMap = std::unordered_map<std::string, std::shared_ptr<Location>>;
 
+enum class CatalogType {
+	Class,
+	Teacher,
+	Location
+};
+
 class Catalog
 {
 public:
@@ -30,7 +36,7 @@ public:
 
 	void				SetChange(bool p_bChanged) { m_bChanged = p_bChanged; }
 
-	const nlohmann::json GetJSONObj();
+	const nlohmann::json GetJSONObj(CatalogType p_catalogType);
 
 	void				ChangePointers(const ClassHourMap& p_classHours, const LocationMap& p_locations);
 
