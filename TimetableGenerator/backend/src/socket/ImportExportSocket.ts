@@ -1,5 +1,5 @@
 import * as service from '../services/ImportExportService.js'
-import { projectOf } from './ProjectRoomSocket.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('getTimetableData', async () => {
@@ -15,7 +15,7 @@ const handleEvents = (socket, io) => {
     if (!projectId) return;
 
     await service.doImport(projectId, obj.content)
-    io.emit('importDone')
+    io.to(roomOf(projectId)).emit('importDone')
   })
 }
 

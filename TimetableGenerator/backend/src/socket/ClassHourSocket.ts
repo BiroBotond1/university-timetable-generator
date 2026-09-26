@@ -1,5 +1,5 @@
 import * as service from '../services/ClassHourService.js'
-import { projectOf } from './ProjectRoomSocket.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('sendUpdateClassHour', async (obj) => {
@@ -9,7 +9,7 @@ const handleEvents = (socket, io) => {
 
       await service.update(projectId, obj.id, obj.classHour);
       obj.classHour = await service.getById(projectId, obj.id);
-      io.emit('updateClassHour', obj);
+      io.to(roomOf(projectId)).emit('updateClassHour', obj);
     } catch (error) {
       console.error('Error updating class hour:', error);
     }
@@ -22,7 +22,7 @@ const handleEvents = (socket, io) => {
 
       obj.classHour = await service.create(projectId, obj.classHour);
       obj.classHour = await service.getById(projectId, obj.classHour._id);
-      io.emit('createClassHour', obj);
+      io.to(roomOf(projectId)).emit('createClassHour', obj);
     } catch (error) {
       console.error('Error creating class hour:', error);
     }
@@ -34,7 +34,7 @@ const handleEvents = (socket, io) => {
       if (!projectId) return;
 
       await service.deleteById(projectId, obj.id);
-      io.emit('deleteClassHour', obj);
+      io.to(roomOf(projectId)).emit('deleteClassHour', obj);
     } catch (error) {
       console.error('Error deleting class hour:', error);
     }

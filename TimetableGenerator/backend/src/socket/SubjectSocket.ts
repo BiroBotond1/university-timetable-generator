@@ -1,6 +1,6 @@
 import * as service from '../services/SubjectService.js'
 import * as classHourService from '../services/ClassHourService.js'
-import { projectOf } from './ProjectRoomSocket.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('sendUpdateSubject', async (obj) => {
@@ -10,7 +10,7 @@ const handleEvents = (socket, io) => {
 
       await service.update(projectId, obj.id, obj.subject);
       obj.subject = await service.getById(projectId, obj.id);
-      io.emit('updateSubject', obj);
+      io.to(roomOf(projectId)).emit('updateSubject', obj);
     } catch (error) {
       console.error('Error updating subject:', error);
     }
@@ -23,7 +23,7 @@ const handleEvents = (socket, io) => {
 
       obj.subject = await service.create(projectId, obj.subject);
       obj.subject = await service.getById(projectId, obj.subject._id);
-      io.emit('createSubject', obj);
+      io.to(roomOf(projectId)).emit('createSubject', obj);
     } catch (error) {
       console.error('Error creating subject:', error);
     }
@@ -35,11 +35,11 @@ const handleEvents = (socket, io) => {
       if (!projectId) return;
 
       if (await classHourService.isSubjectUsed(projectId, obj.id)) {
-        return io.emit('deleteSubject', { error: 'Subject cannot be deleted because it is used' });
+        return socket.emit('deleteSubject', { error: 'Subject cannot be deleted because it is used' });
       }
 
       await service.deleteById(projectId, obj.id);
-      io.emit('deleteSubject', obj);
+      io.to(roomOf(projectId)).emit('deleteSubject', obj);
     } catch (error) {
       console.error('Error deleting subject:', error);
     }

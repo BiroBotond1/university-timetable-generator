@@ -1,6 +1,6 @@
 import * as service from '../services/TeacherService.js'
 import * as classHourService from '../services/ClassHourService.js'
-import { projectOf } from './ProjectRoomSocket.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('sendUpdateTeacher', async (obj) => {
@@ -10,7 +10,7 @@ const handleEvents = (socket, io) => {
 
       await service.update(projectId, obj.id, obj.teacher);
       obj.teacher = await service.getById(projectId, obj.id);
-      io.emit('updateTeacher', obj);
+      io.to(roomOf(projectId)).emit('updateTeacher', obj);
     } catch (error) {
       console.error('Error updating teacher:', error);
     }
@@ -22,7 +22,7 @@ const handleEvents = (socket, io) => {
       if (!projectId) return;
 
       obj.teacher = await service.create(projectId, obj.teacher);
-      io.emit('createTeacher', obj);
+      io.to(roomOf(projectId)).emit('createTeacher', obj);
     } catch (error) {
       console.error('Error creating teacher:', error);
     }
@@ -34,11 +34,11 @@ const handleEvents = (socket, io) => {
       if (!projectId) return;
 
       if (await classHourService.isTeacherUsed(projectId, obj.id)) {
-        return io.emit('deleteTeacher', { error: 'Teacher cannot be deleted because it is used' });
+        return socket.emit('deleteTeacher', { error: 'Teacher cannot be deleted because it is used' });
       }
 
       await service.deleteById(projectId, obj.id);
-      io.emit('deleteTeacher', obj);
+      io.to(roomOf(projectId)).emit('deleteTeacher', obj);
     } catch (error) {
       console.error('Error deleting teacher:', error);
     }
