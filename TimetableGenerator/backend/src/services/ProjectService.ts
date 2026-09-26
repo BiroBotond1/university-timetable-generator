@@ -1,6 +1,11 @@
 import { model as Project } from '../models/Project.js'
 import { model as ProjectMember } from '../models/ProjectMember.js'
 import { model as User } from '../models/User.js'
+import { model as Teacher } from '../models/Teacher.js'
+import { model as Location } from '../models/Location.js'
+import { model as Subject } from '../models/Subject.js'
+import { model as Class } from '../models/Class.js'
+import ClassHour from '../models/ClassHour.js'
 
 const normaliseEmail = (email) => (email || '').trim().toLowerCase()
 
@@ -49,14 +54,29 @@ export const rename = async (projectId, name) => {
 };
 
 /**
- * Deletes the project and its memberships.
+ * Deletes the project and everything in it.
  *
- * The cascade across the six entity collections is added in ADR 0001 step 3,
- * once those entities carry a project field.
+ * A hard cascade rather than a soft delete: soft deleting would mean a second
+ * `deleted: false` filter on every entity query forever, with no benefit
+ * unless an undelete UI were also built (ADR 0001). The UI asks the owner to
+ * type the project name first, and offers an export.
+ *
+ * Class hours go first so nothing is left referencing a deleted class,
+ * subject or teacher part-way through.
  */
 export const remove = async (projectId) => {
-  const project = await Project.findByIdAndDelete(projectId);
+  const project = await Project.findById(projectId);
+
+  if (!project) return null;
+
+  await ClassHour.deleteMany({ project: projectId });
+  await Subject.deleteMany({ project: projectId });
+  await Class.deleteMany({ project: projectId });
+  await Teacher.deleteMany({ project: projectId });
+  await Location.deleteMany({ project: projectId });
   await ProjectMember.deleteMany({ project: projectId });
+
+  await Project.findByIdAndDelete(projectId);
 
   return project;
 };

@@ -1,38 +1,37 @@
 import { model } from '../models/Class.js'
 
-export const getAll = async () => {
-  return await model.find();
+export const getAll = async (projectId) => {
+  return await model.find({ project: projectId });
 };
 
-export const create = async (clas) => {
-  return await model.create(clas);
+export const create = async (projectId, clas) => {
+  return await model.create({ ...clas, project: projectId });
 };
 
-export const getById = async (id) => {
-  return await model.findById(id);
+export const getById = async (projectId, id) => {
+  return await model.findOne({ _id: id, project: projectId });
 };
 
-export const update = async (id, clas) => {
-  return await model.findByIdAndUpdate(id, clas);
+export const update = async (projectId, id, clas) => {
+  const { project, ...changes } = clas;
+  return await model.findOneAndUpdate({ _id: id, project: projectId }, changes);
 };
 
-export const deleteById = async (id) => {
-  return await model.findByIdAndRemove(id);
+export const deleteById = async (projectId, id) => {
+  return await model.findOneAndDelete({ _id: id, project: projectId });
 };
 
-export const addCatalog = async (id, catalog) => {
-  const clas = await model.findById(id);
-
-  if (clas === null) return
-
-  clas.catalog = catalog;
-  return await model.findByIdAndUpdate(id, clas);
+export const addCatalog = async (projectId, id, catalog) => {
+  return await model.findOneAndUpdate(
+    { _id: id, project: projectId },
+    { catalog }
+  );
 };
 
-export const imp = async (classes) => {
-  await model.deleteMany();
+export const imp = async (projectId, classes) => {
+  await model.deleteMany({ project: projectId });
 
   classes.forEach(async clas => {
-    await create(clas)
+    await create(projectId, clas)
   });
 }

@@ -33,3 +33,37 @@ export const disconnectSocket = () => {
 socket.on('connect_error', (error) => {
   console.error('Socket connection failed:', error.message)
 })
+
+// Remembered so the room can be re-entered after a reconnect; the server drops
+// its socket.data when the connection goes away.
+let currentProjectId: string | null = null
+
+interface JoinResult { ok: boolean, role?: string, error?: string }
+
+/**
+ * Binds this connection to a project. The server verifies membership against
+ * the handshake identity, so a rejection here is authoritative.
+ */
+export const joinProject = (projectId: string) => {
+  currentProjectId = projectId
+
+  return new Promise<JoinResult>((resolve) => {
+    socket.emit('joinProject', { projectId }, (result: JoinResult) => {
+      if (!result?.ok) {
+        console.error('Could not join project:', result?.error)
+      }
+      resolve(result ?? { ok: false })
+    })
+  })
+}
+
+export const leaveProject = () => {
+  currentProjectId = null
+  socket.emit('leaveProject')
+}
+
+socket.on('connect', () => {
+  if (currentProjectId) {
+    joinProject(currentProjectId)
+  }
+})

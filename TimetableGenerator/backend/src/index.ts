@@ -8,6 +8,7 @@ import initializeSocket from './socket/socket.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import mongoMiddleware from './middleware/mongoMiddleware.js';
 import userContext from './middleware/userContext.js';
+import { requireProjectAccess } from './middleware/projectAccess.js';
 import {auth} from 'express-oauth2-jwt-bearer'
 
 import subjectApi from './api/SubjectApi.js';
@@ -56,12 +57,18 @@ app.use(userContext);
 
 // api
 app.use('/api/projects', projectApi);
+
+// Constraints are still global; they become per-project in ADR 0001 step 6.
 app.use('/api/constraints', constraintApi);
-app.use('/api/subjects', subjectApi);
-app.use('/api/teachers', teacherApi);
-app.use('/api/locations', locationApi);
-app.use('/api/classes', classApi);
-app.use('/api/classHours', classHourApi);
+
+// Project-scoped entities. requireProjectAccess resolves :projectId and
+// verifies membership once, before any controller runs.
+const scoped = '/api/projects/:projectId';
+app.use(`${scoped}/subjects`, requireProjectAccess, subjectApi);
+app.use(`${scoped}/teachers`, requireProjectAccess, teacherApi);
+app.use(`${scoped}/locations`, requireProjectAccess, locationApi);
+app.use(`${scoped}/classes`, requireProjectAccess, classApi);
+app.use(`${scoped}/classHours`, requireProjectAccess, classHourApi);
 
 app.use(errorMiddleware); 
 

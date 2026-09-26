@@ -5,7 +5,7 @@ import * as subjectService from './SubjectService.js'
 import * as teacherService from './TeacherService.js'
 import * as classHourService from './ClassHourService.js'    
 
-export async function getTimetableData()
+export async function getTimetableData(projectId)
 {
   const object = {};
 
@@ -16,24 +16,24 @@ export async function getTimetableData()
   });
 
   // Fetch other data and add to object
-  object.classes = await classService.getAll();
-  object.classHours = await classHourService.getAll();
-  object.locations = await locationService.getAll();
-  object.subjects = await subjectService.getAll();
-  object.teachers = await teacherService.getAll();
+  object.classes = await classService.getAll(projectId);
+  object.classHours = await classHourService.getAll(projectId);
+  object.locations = await locationService.getAll(projectId);
+  object.subjects = await subjectService.getAll(projectId);
+  object.teachers = await teacherService.getAll(projectId);
 
   return JSON.stringify(object);
 }
 
-export async function doImport(data) 
+export async function doImport(projectId, data) 
 {
   const dataObj = JSON.parse(data)
   await updateConstraints(dataObj)
-  await classService.imp(dataObj.classes)
-  await teacherService.imp(dataObj.teachers)
-  await subjectService.imp(dataObj.subjects)
-  await locationService.imp(dataObj.locations)
-  await classHourService.imp(dataObj.classHours)
+  await classService.imp(projectId, dataObj.classes)
+  await teacherService.imp(projectId, dataObj.teachers)
+  await subjectService.imp(projectId, dataObj.subjects)
+  await locationService.imp(projectId, dataObj.locations)
+  await classHourService.imp(projectId, dataObj.classHours)
 }
 
 async function updateConstraints(dataObj) {

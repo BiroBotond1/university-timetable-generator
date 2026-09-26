@@ -1,37 +1,43 @@
 import { model } from '../models/Teacher.js'
 
-export const getAll = async () => {
-  return await model.find();
+// Every query is scoped by project. The filter lives here rather than in the
+// controllers because the socket handlers call these same functions directly
+// (ADR 0001).
+
+export const getAll = async (projectId) => {
+  return await model.find({ project: projectId });
 };
 
-export const create = async (teacher) => {
-  return await model.create(teacher);
+export const create = async (projectId, teacher) => {
+  return await model.create({ ...teacher, project: projectId });
 };
 
-export const getById = async (id) => {
-  return await model.findById(id);
+export const getById = async (projectId, id) => {
+  return await model.findOne({ _id: id, project: projectId });
 };
 
-export const update = async (id, teacher) => {
-  return await model.findByIdAndUpdate(id, teacher);
+export const update = async (projectId, id, teacher) => {
+  // `project` is never taken from the payload: an entity cannot be moved
+  // between projects by editing it.
+  const { project, ...changes } = teacher;
+  return await model.findOneAndUpdate({ _id: id, project: projectId }, changes);
 };
 
-export const deleteById = async (id) => {
-  return await model.findByIdAndRemove(id);
+export const deleteById = async (projectId, id) => {
+  return await model.findOneAndDelete({ _id: id, project: projectId });
 };
 
-export const addCatalog = async (id, catalog) => {
-  const teacher = await model.findById(id);
-  if (teacher === null) return
-
-  teacher.catalog = catalog;
-  return await model.findByIdAndUpdate(id, teacher);
+export const addCatalog = async (projectId, id, catalog) => {
+  return await model.findOneAndUpdate(
+    { _id: id, project: projectId },
+    { catalog }
+  );
 };
 
-export const imp = async (teachers) => {
-  await model.deleteMany();
+export const imp = async (projectId, teachers) => {
+  await model.deleteMany({ project: projectId });
 
   teachers.forEach(async teacher => {
-    await create(teacher)
+    await create(projectId, teacher)
   });
 }

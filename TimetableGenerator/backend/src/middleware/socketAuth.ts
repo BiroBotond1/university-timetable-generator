@@ -1,4 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose'
+import * as userService from '../services/UserService.js'
 
 let jwks = null
 
@@ -45,6 +46,11 @@ export const socketAuth = async (socket, next) => {
     // Kept so the sync handler can ask Auth0 for a *verified* email; the
     // client-supplied one cannot be trusted to bind invitations.
     socket.data.rawToken = token
+
+    // Resolved once per connection so project membership checks do not have to
+    // look the user up on every event.
+    const user = await userService.getOrCreateByAuth0Id(payload.sub)
+    socket.data.userId = user._id
 
     return next()
   } catch (error) {

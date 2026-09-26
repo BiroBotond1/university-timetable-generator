@@ -1,11 +1,15 @@
 import * as service from '../services/GenerationService.js'
+import { projectOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('sendGenerationStarted',async () => {
+    const projectId = projectOf(socket);
+    if (!projectId) return;
+
     try {
       io.emit('GenerationStarted');
       console.log('GenerationStarted')
-      await service.generate()
+      await service.generate(projectId)
       console.log('GenerationFinished')
       io.emit('GenerationFinished');
     } catch (error) {
@@ -22,6 +26,9 @@ const handleEvents = (socket, io) => {
   });
 
   socket.on('sendGenerationCancelled', async () => {
+    const projectId = projectOf(socket);
+    if (!projectId) return;
+
     try {
       console.log('GenerationCancelled')
       service.cancel()

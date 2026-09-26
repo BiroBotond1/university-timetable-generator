@@ -9,6 +9,7 @@ import handleClassHourEvents from './ClassHourSocket.js';
 import handleGenerationEvents from './GenerationSocket.js';
 import handleImportExportEvents from './ImportExportSocket.js';
 import handleAuth0Events from './Auth0Socket.js'
+import handleProjectRoomEvents from './ProjectRoomSocket.js'
 import socketAuth from '../middleware/socketAuth.js'
 
 const initializeSocket = (server) => {
@@ -26,6 +27,7 @@ const initializeSocket = (server) => {
   io.on('connection', (socket) => {
 
     try {
+      handleProjectRoomEvents(socket, io);
       handleConstraintEvents(socket, io);
       handleLocationEvents(socket, io);
       handleTeacherEvents(socket, io);

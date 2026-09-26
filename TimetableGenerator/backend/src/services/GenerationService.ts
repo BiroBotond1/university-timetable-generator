@@ -22,12 +22,12 @@ var target = 'localhost:50051';
 
 let call = null
 
-export const generate = async () => {
+export const generate = async (projectId) => {
   try {
     var client = new generatorProto.Generator(target,
                                           grpc.credentials.createInsecure());
 
-    const inputString = await impExpService.getTimetableData();
+    const inputString = await impExpService.getTimetableData(projectId);
 
     const response = await new Promise((resolve, reject) => {
         call = client.Generate({ input: inputString }, (err, response) => {
@@ -46,7 +46,7 @@ export const generate = async () => {
     console.log(`Location fitnes: ${catalogs.fitnesLocation}`);
     console.log(`Elapsed time: ${catalogs.elapsedTime}`);
 
-    await updateCatalogs(catalogs);
+    await updateCatalogs(projectId, catalogs);
 
   } catch (e) {
     if (e.code === grpc.status.CANCELLED) {
@@ -64,14 +64,14 @@ export const cancel = () => {
   }
 }
 
-async function updateCatalogs(catalogs) {
+async function updateCatalogs(projectId, catalogs) {
   for (const classID in catalogs.classCatalogs) {
-    await classService.addCatalog(classID, catalogs.classCatalogs[classID]);
+    await classService.addCatalog(projectId, classID, catalogs.classCatalogs[classID]);
   }
   for (const teacherID in catalogs.teacherCatalogs) {
-    await teacherService.addCatalog(teacherID, catalogs.teacherCatalogs[teacherID]);
+    await teacherService.addCatalog(projectId, teacherID, catalogs.teacherCatalogs[teacherID]);
   }
   for (const locationID in catalogs.locationCatalogs) {
-    await locationService.addCatalog(locationID, catalogs.locationCatalogs[locationID]);
+    await locationService.addCatalog(projectId, locationID, catalogs.locationCatalogs[locationID]);
   }
 }
