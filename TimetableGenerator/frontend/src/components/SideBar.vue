@@ -1,10 +1,15 @@
 <template>
   <div>
     <v-app-bar color="highlight" app clipped-left clipped-right flat dark>
-      <v-toolbar-title>TimetableGenerator</v-toolbar-title>
+      <v-toolbar-title> 
+        <v-btn v-if="projectId" icon="mdi-home" @click="goHome"></v-btn>
+        TimetableGenerator
+      </v-toolbar-title>
       <v-spacer></v-spacer>
+      <template v-if="projectId">
       <v-btn @click="importData()" class="py-2">Import</v-btn>
       <v-btn @click="exportData()">Export</v-btn>
+      </template>
       <user/>
       <v-progress-circular
         v-if="generating"
@@ -25,26 +30,31 @@
     <v-navigation-drawer v-model:rail="isRail" color="highlight" expand-on-hover rail permanent dark>
       <div class="d-flex flex-column h-[100%]">
         <v-list density="compact" nav>
-          <v-list-item
-            v-for="item in items"
-            :key="item.title"
-            link
-            :to="item.route"
-            :prepend-icon="item.icon"
-            :title="item.title"
-          >
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item
-            v-for="item in catalogItems"
-            :key="item.title"
-            link
-            :to="item.route"
-            :disabled="generating"
-            :prepend-icon="item.icon"
-            :title="item.title"
-          >
-          </v-list-item>
+          <template v-if="projectId">
+            <v-list-item 
+              v-for="item in items"
+              :key="item.title"
+              link
+              :to="item.route"
+              :prepend-icon="item.icon"
+              :title="item.title"
+            >
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              v-for="item in catalogItems"
+              :key="item.title"
+              link
+              :to="item.route"
+              :disabled="generating"
+              :prepend-icon="item.icon"
+              :title="item.title"
+            >
+            </v-list-item>
+          </template>
+          <template v-else>
+            
+          </template>
         </v-list>
         <div class="mt-auto pa-2">
            <theme-toggle :showLabel="!isRail" />
@@ -64,12 +74,13 @@ import {
   setupImportExportSocketListeners,
 } from "@/modules/import-export/import-export.socket";
 import { doImport } from "@/modules/import-export/import-export.service";
+
 onMounted(async () => {
   setupImportExportSocketListeners(router);
 });
 
 const items = ref([
-  { title: "Generate timetable", icon: "mdi-pencil", route: "/" },
+  { title: "Generate timetable", icon: "mdi-pencil", route: "/generate" },
   { title: "Locations", icon: "mdi-map-marker", route: "/locations" },
   { title: "Teachers", icon: "mdi-account-edit", route: "/teachers" },
   { title: "Subjects", icon: "mdi-book-variant", route: "/subjects" },
@@ -99,8 +110,10 @@ const isRail = ref(true)
 
 const router = useRouter();
 
-const generating = computed(() => useAppStore().generating);
-const notification = computed(() => useAppStore().notification);
+const appStore = useAppStore()
+const generating = computed(() => appStore.generating);
+const notification = computed(() => appStore.notification);
+const projectId = computed(() => appStore.projectId);
 
 function exportData(): void {
   emitGetTimetableData();
@@ -109,5 +122,9 @@ function exportData(): void {
 async function importData(): Promise<void> {
   const fileContent = await doImport();
   emitDoImport(fileContent);
+}
+
+const goHome = () => {
+  router.push({ name: "/" })
 }
 </script>

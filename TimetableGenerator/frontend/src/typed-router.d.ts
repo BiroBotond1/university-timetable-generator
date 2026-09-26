@@ -22,6 +22,7 @@ declare module 'vue-router/auto-routes' {
     '/ClassCatalogs': RouteRecordInfo<'/ClassCatalogs', '/ClassCatalogs', Record<never, never>, Record<never, never>>,
     '/Classes': RouteRecordInfo<'/Classes', '/Classes', Record<never, never>, Record<never, never>>,
     '/ClassHours': RouteRecordInfo<'/ClassHours', '/ClassHours', Record<never, never>, Record<never, never>>,
+    '/Generate': RouteRecordInfo<'/Generate', '/Generate', Record<never, never>, Record<never, never>>,
     '/LocationCatalogs': RouteRecordInfo<'/LocationCatalogs', '/LocationCatalogs', Record<never, never>, Record<never, never>>,
     '/Locations': RouteRecordInfo<'/Locations', '/Locations', Record<never, never>, Record<never, never>>,
     '/Login': RouteRecordInfo<'/Login', '/Login', Record<never, never>, Record<never, never>>,
