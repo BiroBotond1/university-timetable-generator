@@ -7,6 +7,7 @@ import cors from 'cors';
 import initializeSocket from './socket/socket.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import mongoMiddleware from './middleware/mongoMiddleware.js';
+import userContext from './middleware/userContext.js';
 import {auth} from 'express-oauth2-jwt-bearer'
 
 import subjectApi from './api/SubjectApi.js';
@@ -15,6 +16,7 @@ import locationApi from './api/LocationApi.js';
 import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
+import projectApi from './api/ProjectApi.js';
 import * as constraintService from './services/ConstraintService.js';
 
 import 'dotenv/config'
@@ -48,7 +50,12 @@ app.use(auth({
 
 app.use(mongoMiddleware);
 
+// Bridges the validated JWT to the data layer; everything below reads
+// req.context.user rather than touching req.auth.
+app.use(userContext);
+
 // api
+app.use('/api/projects', projectApi);
 app.use('/api/constraints', constraintApi);
 app.use('/api/subjects', subjectApi);
 app.use('/api/teachers', teacherApi);

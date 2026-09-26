@@ -3,23 +3,15 @@ import mongoose from 'mongoose'
 const projectSchema = new mongoose.Schema({
   name: { type: String, required: true },
 
+  // Exactly one owner. Denormalised here so the ownership check is a single
+  // read; the owner also has a ProjectMember row with role 'owner'.
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
+}, { timestamps: true });
 
-  collaborators: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-
-  invitations: [{
-    email: String,
-    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    invitedAt: { type: Date, default: Date.now },
-    status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' }
-  }]
-});
+projectSchema.index({ owner: 1 });
 
 export const model = mongoose.model('Project', projectSchema);

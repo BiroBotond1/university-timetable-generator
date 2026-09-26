@@ -1,0 +1,212 @@
+import { model as Project } from '../models/Project.js'
+import { model as ProjectMember } from '../models/ProjectMember.js'
+import { model as User } from '../models/User.js'
+
+const normaliseEmail = (email) => (email || '').trim().toLowerCase()
+
+/** Projects the user is an active member of, newest first. */
+export const listForUser = async (userId) => {
+  const memberships = await ProjectMember
+    .find({ user: userId, status: 'active' })
+    .populate('project')
+    .sort({ createdAt: -1 });
+
+  return memberships
+    .filter((membership) => membership.project !== null)
+    .map((membership) => ({
+      ...membership.project.toObject(),
+      role: membership.role,
+    }));
+};
+
+/** Invitations addressed to this user that have not been answered yet. */
+export const listInvitationsForUser = async (userId) => {
+  return await ProjectMember
+    .find({ user: userId, status: 'pending' })
+    .populate('project')
+    .populate('invitedBy', 'username email');
+};
+
+export const create = async (name, ownerId) => {
+  const project = await Project.create({ name, owner: ownerId });
+
+  await ProjectMember.create({
+    project: project._id,
+    user: ownerId,
+    role: 'owner',
+    status: 'active',
+  });
+
+  return project;
+};
+
+export const getById = async (projectId) => {
+  return await Project.findById(projectId);
+};
+
+export const rename = async (projectId, name) => {
+  return await Project.findByIdAndUpdate(projectId, { name }, { new: true });
+};
+
+/**
+ * Deletes the project and its memberships.
+ *
+ * The cascade across the six entity collections is added in ADR 0001 step 3,
+ * once those entities carry a project field.
+ */
+export const remove = async (projectId) => {
+  const project = await Project.findByIdAndDelete(projectId);
+  await ProjectMember.deleteMany({ project: projectId });
+
+  return project;
+};
+
+/** The caller's membership, or null if they are not an active member. */
+export const getMembership = async (projectId, userId) => {
+  return await ProjectMember.findOne({
+    project: projectId,
+    user: userId,
+    status: 'active',
+  });
+};
+
+export const listMembers = async (projectId) => {
+  return await ProjectMember
+    .find({ project: projectId, status: { $ne: 'declined' } })
+    .populate('user', 'username email');
+};
+
+/**
+ * Invites an email address. If that address already belongs to a user the
+ * invitation is bound immediately; otherwise it waits for them to sign in.
+ */
+export const invite = async (projectId, email, invitedById) => {
+  const normalised = normaliseEmail(email);
+
+  if (!normalised) {
+    throw new Error('An email address is required');
+  }
+
+  const invitee = await User.findOne({ email: normalised });
+
+  if (invitee) {
+    const existing = await ProjectMember.findOne({
+      project: projectId,
+      user: invitee._id,
+    });
+
+    if (existing && existing.status === 'active') {
+      throw new Error('That user is already a member of this project');
+    }
+
+    if (existing) {
+      existing.status = 'pending';
+      existing.invitedBy = invitedById;
+      existing.invitedAt = new Date();
+      return await existing.save();
+    }
+  } else {
+    const existing = await ProjectMember.findOne({
+      project: projectId,
+      email: normalised,
+      status: 'pending',
+    });
+
+    if (existing) {
+      return existing;
+    }
+  }
+
+  return await ProjectMember.create({
+    project: projectId,
+    user: invitee ? invitee._id : null,
+    email: normalised,
+    role: 'collaborator',
+    status: 'pending',
+    invitedBy: invitedById,
+  });
+};
+
+export const respondToInvitation = async (projectId, userId, accept) => {
+  const invitation = await ProjectMember.findOne({
+    project: projectId,
+    user: userId,
+    status: 'pending',
+  });
+
+  if (!invitation) return null;
+
+  invitation.status = accept ? 'active' : 'declined';
+
+  return await invitation.save();
+};
+
+export const removeMember = async (projectId, userId) => {
+  const project = await Project.findById(projectId);
+
+  if (project && String(project.owner) === String(userId)) {
+    throw new Error('The owner cannot be removed; transfer ownership first');
+  }
+
+  return await ProjectMember.findOneAndDelete({
+    project: projectId,
+    user: userId,
+  });
+};
+
+/**
+ * Hands the project to an existing active collaborator. The previous owner
+ * stays on as a collaborator, which is what makes it safe for them to leave
+ * afterwards (ADR 0001).
+ */
+export const transferOwnership = async (projectId, newOwnerId) => {
+  const project = await Project.findById(projectId);
+
+  if (!project) return null;
+
+  const incoming = await ProjectMember.findOne({
+    project: projectId,
+    user: newOwnerId,
+    status: 'active',
+  });
+
+  if (!incoming) {
+    throw new Error('The new owner must already be a member of the project');
+  }
+
+  const outgoing = await ProjectMember.findOne({
+    project: projectId,
+    user: project.owner,
+  });
+
+  if (outgoing) {
+    outgoing.role = 'collaborator';
+    await outgoing.save();
+  }
+
+  incoming.role = 'owner';
+  await incoming.save();
+
+  project.owner = newOwnerId;
+
+  return await project.save();
+};
+
+/**
+ * Attaches invitations addressed to this user's email once they sign in.
+ *
+ * Only called with an email Auth0 has marked verified -- an unverified address
+ * would otherwise be a way into somebody else's project (ADR 0001).
+ */
+export const bindPendingInvitations = async (userId, verifiedEmail) => {
+  const normalised = normaliseEmail(verifiedEmail);
+
+  if (!normalised) return 0;
+
+  const result = await ProjectMember.updateMany(
+    { email: normalised, user: null, status: 'pending' },
+    { $set: { user: userId } }
+  );
+
+  return result.modifiedCount;
+};

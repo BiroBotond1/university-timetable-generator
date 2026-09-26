@@ -21,10 +21,12 @@ let teardownUserListeners: (() => void) | null = null
 
 // Set the fetcher during setup / onMounted (inside a component's context)
 onMounted(() => {
-  Api.setFetcher(async (path: string) => {
+  Api.setFetcher(async (path: string, init: RequestInit = {}) => {
     const token = await getAccessTokenSilently()
     const resp = await fetch(`http://127.0.0.1:3000/api/${path}`, {
+      ...init,
       headers: {
+        ...(init.headers ?? {}),
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }

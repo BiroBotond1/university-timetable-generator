@@ -42,6 +42,9 @@ export const socketAuth = async (socket, next) => {
 
     socket.data.auth0Id = payload.sub
     socket.data.token = payload
+    // Kept so the sync handler can ask Auth0 for a *verified* email; the
+    // client-supplied one cannot be trusted to bind invitations.
+    socket.data.rawToken = token
 
     return next()
   } catch (error) {

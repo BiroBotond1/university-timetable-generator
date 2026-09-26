@@ -47,3 +47,20 @@ export const syncUser = async (auth0User) => {
 
   return user;
 };
+
+export const getByAuth0Id = async (auth0Id) => {
+  return await model.findOne({ auth0Id });
+};
+
+/**
+ * Used by the REST context middleware. The socket sync normally creates this
+ * row at login, but a REST call can arrive first, so fall back to a minimal
+ * record rather than rejecting an otherwise valid request.
+ */
+export const getOrCreateByAuth0Id = async (auth0Id) => {
+  const existing = await model.findOne({ auth0Id });
+
+  if (existing) return existing;
+
+  return await model.create({ auth0Id });
+};
