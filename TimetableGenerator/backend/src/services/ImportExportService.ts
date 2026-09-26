@@ -10,7 +10,7 @@ export async function getTimetableData(projectId)
   const object = {};
 
   // Fetch constraints and add to object
-  const constraints = await constraintService.getAll();
+  const constraints = await constraintService.getAll(projectId);
   constraints.forEach((constraint) => {
     object[constraint.name] = constraint.active;
   });
@@ -28,7 +28,7 @@ export async function getTimetableData(projectId)
 export async function doImport(projectId, data) 
 {
   const dataObj = JSON.parse(data)
-  await updateConstraints(dataObj)
+  await updateConstraints(projectId, dataObj)
   await classService.imp(projectId, dataObj.classes)
   await teacherService.imp(projectId, dataObj.teachers)
   await subjectService.imp(projectId, dataObj.subjects)
@@ -36,12 +36,12 @@ export async function doImport(projectId, data)
   await classHourService.imp(projectId, dataObj.classHours)
 }
 
-async function updateConstraints(dataObj) {
-  await constraintService.updateByName('OneTypeOfCourseOnADayClass', dataObj.OneTypeOfCourseOnADayClass)
-  await constraintService.updateByName('ClassCoursesStartsAtEight', dataObj.ClassCoursesStartsAtEight)
-  await constraintService.updateByName('NoHoleHoursInClass', dataObj.NoHoleHoursInClass)
-  await constraintService.updateByName('EvenHoursInClass', dataObj.EvenHoursInClass)
-  await constraintService.updateByName('NoHoleHoursInTeacher', dataObj.NoHoleHoursInTeacher)
-  await constraintService.updateByName('EvenHoursInTeacher', dataObj.EvenHoursInTeacher)
-  await constraintService.updateByName('CoursesWeightInClass', dataObj.CoursesWeightInClass)
+async function updateConstraints(projectId, dataObj) {
+  await constraintService.updateByName(projectId, 'OneTypeOfCourseOnADayClass', dataObj.OneTypeOfCourseOnADayClass)
+  await constraintService.updateByName(projectId, 'ClassCoursesStartsAtEight', dataObj.ClassCoursesStartsAtEight)
+  await constraintService.updateByName(projectId, 'NoHoleHoursInClass', dataObj.NoHoleHoursInClass)
+  await constraintService.updateByName(projectId, 'EvenHoursInClass', dataObj.EvenHoursInClass)
+  await constraintService.updateByName(projectId, 'NoHoleHoursInTeacher', dataObj.NoHoleHoursInTeacher)
+  await constraintService.updateByName(projectId, 'EvenHoursInTeacher', dataObj.EvenHoursInTeacher)
+  await constraintService.updateByName(projectId, 'CoursesWeightInClass', dataObj.CoursesWeightInClass)
 }

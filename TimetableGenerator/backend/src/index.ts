@@ -18,7 +18,6 @@ import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
 import projectApi from './api/ProjectApi.js';
-import * as constraintService from './services/ConstraintService.js';
 
 import 'dotenv/config'
 
@@ -37,7 +36,6 @@ mongoose
   })
   .then(() => {
     console.log('MongoDB database Connected...')
-    constraintService.initializeConstraints() 
   })
   .catch((err) => console.log(err));
 
@@ -58,12 +56,10 @@ app.use(userContext);
 // api
 app.use('/api/projects', projectApi);
 
-// Constraints are still global; they become per-project in ADR 0001 step 6.
-app.use('/api/constraints', constraintApi);
-
 // Project-scoped entities. requireProjectAccess resolves :projectId and
 // verifies membership once, before any controller runs.
 const scoped = '/api/projects/:projectId';
+app.use(`${scoped}/constraints`, requireProjectAccess, constraintApi);
 app.use(`${scoped}/subjects`, requireProjectAccess, subjectApi);
 app.use(`${scoped}/teachers`, requireProjectAccess, teacherApi);
 app.use(`${scoped}/locations`, requireProjectAccess, locationApi);

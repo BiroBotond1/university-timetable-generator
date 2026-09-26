@@ -6,6 +6,8 @@ import { model as Location } from '../models/Location.js'
 import { model as Subject } from '../models/Subject.js'
 import { model as Class } from '../models/Class.js'
 import ClassHour from '../models/ClassHour.js'
+import { model as Constraint } from '../models/Constraint.js'
+import * as constraintService from './ConstraintService.js'
 
 const normaliseEmail = (email) => (email || '').trim().toLowerCase()
 
@@ -42,6 +44,10 @@ export const create = async (name, ownerId) => {
     status: 'active',
   });
 
+  // Each project gets its own copy of the constraint set; they used to be
+  // seven rows shared by everybody (ADR 0001).
+  await constraintService.seedForProject(project._id);
+
   return project;
 };
 
@@ -70,6 +76,7 @@ export const remove = async (projectId) => {
   if (!project) return null;
 
   await ClassHour.deleteMany({ project: projectId });
+  await Constraint.deleteMany({ project: projectId });
   await Subject.deleteMany({ project: projectId });
   await Class.deleteMany({ project: projectId });
   await Teacher.deleteMany({ project: projectId });
