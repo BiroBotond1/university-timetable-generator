@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-26
 - **Supersedes:** the note in `CLAUDE.md` describing one project per owner
+- **Implemented:** 2026-09-26, in eight commits on `project-based-schools`
 
 ## Context
 

@@ -68,14 +68,20 @@ add it to both the file and this list.
 
 ## How the pieces talk
 
+**Everything is project-scoped.** A project is one school. Entity REST paths
+live under `/api/projects/:projectId/...`; sockets carry the project through a
+`joinProject` handshake that puts the connection in a room. See
+[ADR 0001](docs/adr/0001-project-scoped-multi-tenancy.md).
+
 **Frontend → backend, two channels.** Reads go over REST through the
 `ApiService` singleton (`frontend/src/modules/app/fetch.service.ts`) to
-`http://127.0.0.1:3000/api/...` with an `Authorization: Bearer` header. *Writes
-and live updates go over Socket.IO*, not REST — one `*.socket.ts` per module,
-emitting `sendCreateX` / `sendUpdateX` / `sendDeleteX` and listening for the
-broadcast `createX` / `updateX` / `deleteX`. When you add a mutation, the socket
-handler is the real path; the REST `POST`/`PATCH`/`DELETE` routes exist but the
-UI does not use them.
+`http://127.0.0.1:3000/api/...` with an `Authorization: Bearer` header; the
+`scoped()` helper in `modules/app/project.scope.ts` builds the project-prefixed
+path. *Writes and live updates go over Socket.IO*, not REST — one `*.socket.ts`
+per module, emitting `sendCreateX` / `sendUpdateX` / `sendDeleteX` and listening
+for `createX` / `updateX` / `deleteX`, which are broadcast to the project room
+only. When you add a mutation, the socket handler is the real path; the REST
+`POST`/`PATCH`/`DELETE` routes exist but the UI does not use them.
 
 **Backend → engine, gRPC.** `Generate(GenerateRequest{string input})` returns
 `GenerateReply{string output}` — a whole JSON document in, a whole JSON document
@@ -84,7 +90,16 @@ polls `context->IsCancelled()` every 100 ms.
 
 **Backend layering.** `api/` (routers) → `controllers/` → `services/` →
 `models/`. The `socket/` handlers call the *same* services, so business logic
-belongs in `services/` and nowhere else.
+belongs in `services/` and nowhere else — **and so does the tenant filter**. A
+filter applied in a controller would leave every socket write unscoped, and
+every write in this application is a socket write.
+
+Two middlewares carry the context: `userContext` turns the validated JWT into
+`req.context.user`, and `requireProjectAccess` resolves `:projectId`, verifies
+membership once and adds `req.context.projectId`. On the socket side the
+equivalents are the `io.use` handshake (`middleware/socketAuth.ts`, sets
+`socket.data.auth0Id` and `socket.data.userId`) and `ProjectRoomSocket.ts`
+(`projectOf(socket)`, `roomOf(projectId)`).
 
 ## Things that will bite you
 
@@ -94,42 +109,35 @@ belongs in `services/` and nowhere else.
   `TimetableConfig.cpp` reads `data["OneTypeOfCourseOnADayClass"]`). The engine's
   own field names differ from these keys. Renaming a seeded constraint breaks
   generation at runtime, not at compile time.
-- **Constraints are seeded at boot** by `ConstraintService.initializeConstraints()`,
-  which only inserts names that are missing. Changing a seeded description or
-  `hard` flag does *not* update existing rows in your local DB.
+- **Constraints are seeded per project**, at project creation, by
+  `ConstraintService.seedForProject`. It uses `$setOnInsert`, so changing a
+  description or `hard` flag in `DEFAULT_CONSTRAINTS` does *not* update projects
+  that already exist.
+- **Service functions take `projectId` first.** `getAll(projectId)`,
+  `getById(projectId, id)`, `update(projectId, id, body)`. A socket handler must
+  call `projectOf(socket)` and bail out if it is null rather than falling back to
+  any global scope.
+- **`update()` strips `project` from the payload**, so an entity cannot be moved
+  between projects by editing it.
 - **The `fitnes` typo is load-bearing.** `fitnesClas`, `fitnesTeacher`,
   `fitnesLocation` are spelled that way in both the C++ output and the TS that
   reads it. Fix both sides or neither.
-- **Socket.IO is not authenticated.** REST is globally guarded by
-  `express-oauth2-jwt-bearer`, but the socket layer has no auth middleware — and
-  the socket layer is where all writes happen. Scheduled for fixing, see below.
-- **`deleteMany()` is called with no filter** in all five `imp()` functions, so
-  an import currently wipes the entire collection for everyone.
+- **Generation state is in memory** (`GenerationService`'s `inFlight` map) and
+  mirrored onto the project as `generationStatus`. A restart clears the mirror at
+  boot; don't treat the DB field as the source of truth for a *live* run.
 - **The C++ grid is fixed at compile time**: `DAY_COUNT 5`, `HOUR_COUNT 8`,
   `#define`d in `stdafx.h` — and duplicated in `TimetableGeneratorExe/stdafx.h`.
 
 ## Known gaps and dead code
 
-Don't treat any of this as intentional design. Items marked *(ADR 0001)* have a
-decision attached and are scheduled.
+Don't treat any of this as intentional design.
 
-- **Socket.IO is unauthenticated** and `sendSyncUser` trusts a client-supplied
-  `auth0Id` without checking it against any token. Fixed in step 1 *(ADR 0001)*.
-- `backend/src/routes/timetable.ts` — dead but **mounted** at `/timetable`, with
-  its own complete unscoped generation path. From the pre-gRPC era when the
-  backend wrote `in.json` and shelled out to an `.exe`. References an undefined
-  MQTT `client` and would throw if ever called. To be deleted in step 1
-  *(ADR 0001)*.
-- `backend/TimetableGenerator.exe` — stale committed binary from that same era.
-  Deleted alongside it.
-- The five `imp()` functions use `array.forEach(async x => await create(x))`,
-  which does not await — imports signal completion before inserts finish and race
-  each other's `deleteMany`. Fixed in step 8 *(ADR 0001)*.
-- `socket.off` appears nowhere on the frontend; listeners registered in
-  `onMounted` are never torn down, so they stack on every navigation. Fixed in
-  step 5 *(ADR 0001)*.
+- `backend/src/controllers/UserController.ts` is dead and broken — it calls
+  `UserService` functions that are commented out. Nothing routes to it.
 - `backend/src/index.ts` ends with a CommonJS `module.exports = app` inside an ESM
   file.
+- `backend/TimetableGenerator.exe` — stale binary from the pre-gRPC era. Untracked
+  and gitignored, so it is a local leftover rather than something in the repo.
 - Committed C++ build output (`cmake/build/`, `.vs/`) and two Office `~$` lock
   files.
 - `TimetableGeneratorEngine/Dockerfile` (untracked) does not build: gRPC is never
@@ -141,32 +149,14 @@ decision attached and are scheduled.
 
 ## Roadmap
 
-In progress — **make everything project-scoped.** Today all entities are global;
-there is effectively one implicit project. Target shape: a user owns several
-projects, each holding one complete school; one owner plus collaborators who can
-edit and generate, with inviting, ownership transfer and deletion reserved to the
-owner.
+**Done — everything is project-scoped.** A user owns several projects, each
+holding one complete school; one owner plus collaborators who can edit and
+generate, with inviting, ownership transfer and deletion reserved to the owner.
+Implemented in eight commits on `project-based-schools`; the decisions, the
+rejected alternatives and the step order are in
+[ADR 0001](docs/adr/0001-project-scoped-multi-tenancy.md).
 
-The design is settled — see
-[ADR 0001](docs/adr/0001-project-scoped-multi-tenancy.md) for the decisions, the
-rejected alternatives, and the eight-step implementation order. Headline numbers:
-45 unscoped Mongoose queries, 23 global `io.emit` broadcasts, 35 controller
-handlers and 12 frontend fetch functions to thread a project through, plus a
-socket layer that currently has no authentication at all.
-
-Two rules from that ADR worth having in front of you while working:
-
-- **The tenant filter belongs in `services/`**, never in controllers — socket
-  handlers bypass controllers and call services directly, so a filter placed
-  higher leaves every write unscoped.
-- **Socket handshake auth ships first**, before any scoping. Tenant checks on an
-  anonymous socket guard a caller the server cannot identify.
-
-The uncommitted work on `SideBar.vue` / `index.vue` / `Generate.vue` is an early
-sketch of the frontend flow; step 5 of the ADR replaces it, including the
-placeholder `appStore.projectId = "set"`.
-
-Then, in order:
+Next, in order:
 
 1. **Fix the initialization infinite loop.** When the input is over-subscribed
    and no free slot exists, `ClassHour::GetFreeTime` and
