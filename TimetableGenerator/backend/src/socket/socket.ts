@@ -9,6 +9,7 @@ import handleClassHourEvents from './ClassHourSocket.js';
 import handleGenerationEvents from './GenerationSocket.js';
 import handleImportExportEvents from './ImportExportSocket.js';
 import handleAuth0Events from './Auth0Socket.js'
+import socketAuth from '../middleware/socketAuth.js'
 
 const initializeSocket = (server) => {
   const io = new SocketIOServer(server, {
@@ -18,6 +19,9 @@ const initializeSocket = (server) => {
   });
 
   console.log('initialize socket')
+
+  // Every connection must present a valid Auth0 token before any handler runs.
+  io.use(socketAuth);
 
   io.on('connection', (socket) => {
 

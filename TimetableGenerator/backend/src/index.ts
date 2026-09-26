@@ -9,8 +9,6 @@ import errorMiddleware from './middleware/errorMiddleware.js';
 import mongoMiddleware from './middleware/mongoMiddleware.js';
 import {auth} from 'express-oauth2-jwt-bearer'
 
-import timetableApiRouter from './routes/timetable.js';
-
 import subjectApi from './api/SubjectApi.js';
 import teacherApi from './api/TeacherApi.js';
 import locationApi from './api/LocationApi.js';
@@ -57,9 +55,6 @@ app.use('/api/teachers', teacherApi);
 app.use('/api/locations', locationApi);
 app.use('/api/classes', classApi);
 app.use('/api/classHours', classHourApi);
-
-// Routes
-app.use('/timetable', timetableApiRouter);
 
 app.use(errorMiddleware); 
 

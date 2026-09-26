@@ -7,11 +7,17 @@
 <script lang="ts" setup>
 import { useAuth0 } from '@auth0/auth0-vue'
 import Api from '@/modules/app/fetch.service'
+import { connectSocket, disconnectSocket } from '@/modules/app/app.socket'
+import { useAppStore } from '@/modules/app/app.store'
 import {
-  emitSyncUser
+  emitSyncUser,
+  setupUserSocketListeners
 } from "@/modules/auth0/auth0.socket";
 
 const { getAccessTokenSilently,  user, isAuthenticated, isLoading  } = useAuth0()
+const appStore = useAppStore()
+
+let teardownUserListeners: (() => void) | null = null
 
 // Set the fetcher during setup / onMounted (inside a component's context)
 onMounted(() => {
@@ -25,16 +31,32 @@ onMounted(() => {
     })
     return resp
   })
+
+  teardownUserListeners = setupUserSocketListeners((syncedUser) => {
+    appStore.currentUser = syncedUser
+  })
+})
+
+onUnmounted(() => {
+  teardownUserListeners?.()
+  disconnectSocket()
 })
 
 watch(isAuthenticated, async (value) => {
-  if (value) {
-    await getAccessTokenSilently()  // forces hydration
-    emitSyncUser({
-      auth0Id: user.value?.sub,
-      username: user.value?.nickname,
-      email: user.value?.email,
-    })
+  if (!value) {
+    appStore.currentUser = null
+    disconnectSocket()
+    return
   }
+
+  await getAccessTokenSilently()  // forces hydration
+
+  // The server rejects unauthenticated handshakes, so connect before emitting.
+  connectSocket(() => getAccessTokenSilently())
+
+  emitSyncUser({
+    username: user.value?.nickname,
+    email: user.value?.email,
+  })
 });
 </script>

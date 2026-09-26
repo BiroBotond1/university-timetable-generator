@@ -20,6 +20,14 @@ import { model } from '../models/User.js'
 //   return await model.findByIdAndRemove(id);
 // };
 
+/**
+ * Upserts the Mongo user for an authenticated Auth0 identity.
+ *
+ * `auth0Id` is taken from the verified handshake token by the caller. The
+ * username and email are client-supplied profile hints and are NOT verified --
+ * do not bind project invitations to this email without checking Auth0's
+ * `email_verified` claim first (ADR 0001).
+ */
 export const syncUser = async (auth0User) => {
 
   // Find existing
