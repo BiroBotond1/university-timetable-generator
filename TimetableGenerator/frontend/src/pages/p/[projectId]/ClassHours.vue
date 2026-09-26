@@ -161,9 +161,15 @@ watch(dialogDelete, (val) => {
   val || closeDelete();
 });
 
+let teardown: (() => void) | null = null
+
 onMounted(async () => {
   classHours.value = await fetchClassHours();
-  setupClassHourSocketListeners(classHours);
+  teardown = setupClassHourSocketListeners(classHours);
+});
+
+onUnmounted(() => {
+  teardown?.()
 });
 
 const setEditedItem = async () => {

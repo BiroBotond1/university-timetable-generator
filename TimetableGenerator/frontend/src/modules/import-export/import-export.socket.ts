@@ -1,20 +1,17 @@
 import { socket } from '@/modules/app/app.socket'
+import { listen } from '@/modules/app/socket.listeners'
 import { doExport } from './import-export.service'
-import type { Router } from 'vue-router';
 
-export const setupImportExportSocketListeners = (router: Router) => {
-  socket.on('timetableData', async (data) => {
+export const setupImportExportSocketListeners = () => listen({
+  timetableData: async (data) => {
     await doExport(data)
-  })
+  },
 
-  socket.on('importDone', () => {
-    if (router.currentRoute.value.path === '/') {
-      window.location.reload(); // Full page reload
-    } else {
-      router.push('/'); // Navigate to /
-    }
-  })
-}
+  importDone: () => {
+    // Reload the current project's pages so they pick up the imported data.
+    window.location.reload();
+  },
+})
 
 export const emitGetTimetableData = () => {
   socket.emit('getTimetableData')

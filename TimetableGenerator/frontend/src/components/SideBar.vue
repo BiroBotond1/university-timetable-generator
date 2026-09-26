@@ -27,7 +27,7 @@
       </v-alert>
     </v-app-bar>
 
-    <v-navigation-drawer v-model:rail="isRail" color="highlight" expand-on-hover rail permanent dark>
+    <v-navigation-drawer v-model:rail="isRail" color="highlight" expand-on-hover permanent dark>
       <div class="d-flex flex-column h-[100%]">
         <v-list density="compact" nav>
           <template v-if="projectId">
@@ -75,45 +75,55 @@ import {
 } from "@/modules/import-export/import-export.socket";
 import { doImport } from "@/modules/import-export/import-export.service";
 
-onMounted(async () => {
-  setupImportExportSocketListeners(router);
-});
-
-const items = ref([
-  { title: "Generate timetable", icon: "mdi-pencil", route: "/generate" },
-  { title: "Locations", icon: "mdi-map-marker", route: "/locations" },
-  { title: "Teachers", icon: "mdi-account-edit", route: "/teachers" },
-  { title: "Subjects", icon: "mdi-book-variant", route: "/subjects" },
-  { title: "Classes", icon: "mdi-account-group", route: "/classes" },
-  { title: "ClassHours", icon: "mdi-clock-outline", route: "/classHours" },
-]);
-
-const catalogItems = ref([
-  {
-    title: "Class Catalogs",
-    icon: "mdi-calendar-clock-outline",
-    route: "/classCatalogs",
-  },
-  {
-    title: "Teacher Catalogs",
-    icon: "mdi-calendar-account-outline",
-    route: "/teacherCatalogs",
-  },
-  {
-    title: "Location Catalogs",
-    icon: "mdi-file-marker",
-    route: "/locationCatalogs",
-  }
-]);
-
-const isRail = ref(true) 
-
 const router = useRouter();
 
 const appStore = useAppStore()
 const generating = computed(() => appStore.generating);
 const notification = computed(() => appStore.notification);
 const projectId = computed(() => appStore.projectId);
+
+let teardownImportExport: (() => void) | null = null
+
+onMounted(() => {
+  teardownImportExport = setupImportExportSocketListeners();
+});
+
+onUnmounted(() => {
+  teardownImportExport?.()
+});
+
+// Nav targets are relative to the project in the URL, so a link is only ever
+// valid for the project the user is actually looking at.
+const base = computed(() => `/p/${projectId.value}`)
+
+const items = computed(() => [
+  { title: "Generate timetable", icon: "mdi-pencil", route: `${base.value}/Generate` },
+  { title: "Locations", icon: "mdi-map-marker", route: `${base.value}/Locations` },
+  { title: "Teachers", icon: "mdi-account-edit", route: `${base.value}/Teachers` },
+  { title: "Subjects", icon: "mdi-book-variant", route: `${base.value}/Subjects` },
+  { title: "Classes", icon: "mdi-account-group", route: `${base.value}/Classes` },
+  { title: "ClassHours", icon: "mdi-clock-outline", route: `${base.value}/ClassHours` },
+]);
+
+const catalogItems = computed(() => [
+  {
+    title: "Class Catalogs",
+    icon: "mdi-calendar-clock-outline",
+    route: `${base.value}/ClassCatalogs`,
+  },
+  {
+    title: "Teacher Catalogs",
+    icon: "mdi-calendar-account-outline",
+    route: `${base.value}/TeacherCatalogs`,
+  },
+  {
+    title: "Location Catalogs",
+    icon: "mdi-file-marker",
+    route: `${base.value}/LocationCatalogs`,
+  }
+]);
+
+const isRail = ref(true) 
 
 function exportData(): void {
   emitGetTimetableData();

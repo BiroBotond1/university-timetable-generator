@@ -1,30 +1,33 @@
 import type { TeacherData } from './teacher.type';
 import { socket } from '@/modules/app/app.socket'
+import { listen } from '@/modules/app/socket.listeners'
 
 export const setupTeacherSocketListeners = (
   teachers: Ref<TeacherData[]>
-) => {
-  socket.on('updateTeacher', async (obj) => {
-    const index = teachers.value.findIndex(teacher => teacher._id === obj.id);
+) => listen({
+  updateTeacher: (obj) => {
+    const index = teachers.value.findIndex(item => item._id === obj.id);
     if (index !== -1) {
       teachers.value[index] = obj.teacher
     }
-  })
-  socket.on('createTeacher', async (obj) => {
+  },
+
+  createTeacher: (obj) => {
     teachers.value.push(obj.teacher);
-  })
-  socket.on('deleteTeacher', async (obj) => {
+  },
+
+  deleteTeacher: (obj) => {
     if (obj.error) {
       console.log(obj.error)
+      return
     }
-    else {
-      const index = teachers.value.findIndex(teacher => teacher._id === obj.id);
-      if (index !== -1) {
-        teachers.value.splice(index, 1);
-      }
+
+    const index = teachers.value.findIndex(item => item._id === obj.id);
+    if (index !== -1) {
+      teachers.value.splice(index, 1);
     }
-  })
-};
+  },
+});
 
 export const emitCreateTeacher = (teacherData: Partial<TeacherData>) => {
   socket.emit('sendCreateTeacher', { teacher: teacherData });

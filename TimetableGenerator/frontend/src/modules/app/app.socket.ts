@@ -48,7 +48,16 @@ export const joinProject = (projectId: string) => {
   currentProjectId = projectId
 
   return new Promise<JoinResult>((resolve) => {
+    // The emit is buffered until the socket connects. Time it out rather than
+    // leaving a navigation hanging forever if the connection never comes up.
+    const timer = setTimeout(
+      () => resolve({ ok: false, error: 'Timed out joining the project' }),
+      10000
+    )
+
     socket.emit('joinProject', { projectId }, (result: JoinResult) => {
+      clearTimeout(timer)
+
       if (!result?.ok) {
         console.error('Could not join project:', result?.error)
       }

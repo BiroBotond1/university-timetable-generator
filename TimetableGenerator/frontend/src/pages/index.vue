@@ -131,8 +131,6 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { useAppStore } from "@/modules/app/app.store";
-import { joinProject, leaveProject } from "@/modules/app/app.socket";
 import {
   createProject,
   deleteProject,
@@ -146,7 +144,6 @@ import type {
 } from "@/modules/project/project.type";
 
 const router = useRouter();
-const appStore = useAppStore()
 
 const projects = ref<ProjectData[]>([])
 const invitations = ref<ProjectInvitationData[]>([])
@@ -175,23 +172,12 @@ const load = async () => {
 }
 
 onMounted(async () => {
-  // Leaving a project returns here, so drop the previous selection.
-  appStore.projectId = null
-  leaveProject()
   await load()
 });
 
-const openProject = async (project: ProjectData) => {
-  // The socket must be in the project's room before any page starts listening.
-  const joined = await joinProject(project._id)
-
-  if (!joined.ok) {
-    error.value = joined.error ?? 'Could not open the project'
-    return
-  }
-
-  appStore.projectId = project._id
-  router.push({ name: "/Generate" })
+const openProject = (project: ProjectData) => {
+  // The route guard joins the socket room and sets the scope from the URL.
+  router.push(`/p/${project._id}/Generate`)
 }
 
 const openCreateDialog = () => {
@@ -206,7 +192,7 @@ const submitCreate = async () => {
     const project = await createProject(newName.value.trim())
     createDialog.value = false
     await load()
-    await openProject(project)
+    openProject(project)
   } catch (err) {
     error.value = (err as Error).message
   }

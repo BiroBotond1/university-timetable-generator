@@ -61,8 +61,14 @@ const submit = () => {
   emitGenerationStarted()
 }
 
+let teardown: (() => void) | null = null
+
 onMounted(async () => {
   await fetchConstraintss()
-  setupConstraintSocketListeners(hardConstraints, softConstraints)
+  teardown = setupConstraintSocketListeners(hardConstraints, softConstraints)
 })
+
+onUnmounted(() => {
+  teardown?.()
+});
 </script>

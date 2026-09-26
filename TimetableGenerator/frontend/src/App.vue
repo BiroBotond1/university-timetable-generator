@@ -44,6 +44,9 @@ onUnmounted(() => {
   disconnectSocket()
 })
 
+// immediate, because on a reload Auth0 may already have rehydrated before the
+// watcher is installed, in which case a lazy watcher would never fire and the
+// socket would never connect.
 watch(isAuthenticated, async (value) => {
   if (!value) {
     appStore.currentUser = null
@@ -60,5 +63,5 @@ watch(isAuthenticated, async (value) => {
     username: user.value?.nickname,
     email: user.value?.email,
   })
-});
+}, { immediate: true });
 </script>

@@ -1,30 +1,33 @@
 import type { ClassHourData, PopulatedClassHourData } from './classhour.type';
 import { socket } from '@/modules/app/app.socket'
+import { listen } from '@/modules/app/socket.listeners'
 
 export const setupClassHourSocketListeners = (
   classHours: Ref<PopulatedClassHourData[]>
-) => {
-  socket.on('updateClassHour', async (obj) => {
+) => listen({
+  updateClassHour: (obj) => {
     const index = classHours.value.findIndex(classHour => classHour._id === obj.id);
     if (index !== -1) {
       classHours.value[index] = obj.classHour
     }
-  })
-  socket.on('createClassHour', async (obj) => {
+  },
+
+  createClassHour: (obj) => {
     classHours.value.push(obj.classHour);
-  })
-  socket.on('deleteClassHour', async (obj) => {
+  },
+
+  deleteClassHour: (obj) => {
     if (obj.error) {
       console.log(obj.error)
+      return
     }
-    else {
-      const index = classHours.value.findIndex(classHour => classHour._id === obj.id);
-      if (index !== -1) {
-        classHours.value.splice(index, 1);
-      }
+
+    const index = classHours.value.findIndex(classHour => classHour._id === obj.id);
+    if (index !== -1) {
+      classHours.value.splice(index, 1);
     }
-  })
-};
+  },
+});
 
 export const emitCreateClassHour = (classHourData: Partial<ClassHourData>) => {
   socket.emit('sendCreateClassHour', { classHour: classHourData });
