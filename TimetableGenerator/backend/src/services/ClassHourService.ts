@@ -41,10 +41,6 @@ export const isSubjectUsed = async (projectId, subjectId) => {
   return await model.exists({ project: projectId, subject: subjectId })
 };
 
-export const imp = async (projectId, classHours) => {
-  await model.deleteMany({ project: projectId });
-
-  classHours.forEach(async classHour => {
-    await create(projectId, classHour)
-  });
+export const removeAll = async (projectId) => {
+  return await model.deleteMany({ project: projectId });
 }

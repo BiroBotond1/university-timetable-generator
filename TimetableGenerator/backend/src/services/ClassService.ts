@@ -28,10 +28,6 @@ export const addCatalog = async (projectId, id, catalog) => {
   );
 };
 
-export const imp = async (projectId, classes) => {
-  await model.deleteMany({ project: projectId });
-
-  classes.forEach(async clas => {
-    await create(projectId, clas)
-  });
+export const removeAll = async (projectId) => {
+  return await model.deleteMany({ project: projectId });
 }
