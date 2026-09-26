@@ -28,13 +28,34 @@ import type { ConstraintData } from '@/modules/constraint/constraint.type';
 import { fetchConstraints } from '@/modules/constraint/constraint.api';
 import { setupConstraintSocketListeners, emitGenerationStarted, emitUpdateConstraint, emitGenerationCancelled } from '@/modules/constraint/constraint.socket';
 import { useAppStore } from '@/modules/app/app.store';
+import { fetchProject } from '@/modules/project/project.api';
+import { useRoute } from 'vue-router';
 
 const hardConstraints = ref<ConstraintData[]>([])
 const softConstraints = ref<ConstraintData[]>([])
 const valid = ref(false)
 
 const appStore = useAppStore();
+const route = useRoute();
 const generating = computed(() => appStore.generating);
+
+/**
+ * A run started by somebody else, or before this page was opened, is not
+ * something the socket can tell us about after the fact -- the broadcast only
+ * reaches clients that were connected at the time. Read the persisted state
+ * instead so the button is right on arrival and after a reload.
+ */
+const syncGenerationState = async () => {
+  try {
+    const projectId = (route.params as { projectId?: string }).projectId
+    if (!projectId) return
+
+    const project = await fetchProject(projectId)
+    appStore.generating = project.generationStatus !== 'idle'
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const fetchConstraintss = async () => {
   try {
@@ -65,6 +86,7 @@ let teardown: (() => void) | null = null
 
 onMounted(async () => {
   await fetchConstraintss()
+  await syncGenerationState()
   teardown = setupConstraintSocketListeners(hardConstraints, softConstraints)
 })
 

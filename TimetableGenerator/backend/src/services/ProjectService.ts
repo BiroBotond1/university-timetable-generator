@@ -88,6 +88,30 @@ export const remove = async (projectId) => {
   return project;
 };
 
+export const setGenerationStatus = async (projectId, status) => {
+  return await Project.findByIdAndUpdate(
+    projectId,
+    {
+      generationStatus: status,
+      generationStartedAt: status === 'idle' ? null : new Date(),
+    },
+    { new: true }
+  );
+};
+
+/**
+ * Generation state lives in memory, so a restart leaves any project that was
+ * mid-run claiming to be busy forever. Cleared at boot.
+ */
+export const clearStaleGenerationStatus = async () => {
+  const result = await Project.updateMany(
+    { generationStatus: { $ne: 'idle' } },
+    { $set: { generationStatus: 'idle', generationStartedAt: null } }
+  );
+
+  return result.modifiedCount;
+};
+
 /** The caller's membership, or null if they are not an active member. */
 export const getMembership = async (projectId, userId) => {
   return await ProjectMember.findOne({

@@ -18,6 +18,7 @@ import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
 import projectApi from './api/ProjectApi.js';
+import * as projectService from './services/ProjectService.js';
 
 import 'dotenv/config'
 
@@ -36,6 +37,8 @@ mongoose
   })
   .then(() => {
     console.log('MongoDB database Connected...')
+    // In-flight generations do not survive a restart; clear what they left.
+    projectService.clearStaleGenerationStatus()
   })
   .catch((err) => console.log(err));
 

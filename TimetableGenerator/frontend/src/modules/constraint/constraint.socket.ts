@@ -20,6 +20,13 @@ export const setupConstraintSocketListeners = (
       appStore.generating = false
     },
 
+    // The server refused because a run is already going -- the button was
+    // showing stale state, so correct it.
+    GenerationRefused: (payload) => {
+      appStore.generating = true
+      console.warn(payload?.message)
+    },
+
     GenerationFinished: () => {
       appStore.generating = false
       appStore.notification = true

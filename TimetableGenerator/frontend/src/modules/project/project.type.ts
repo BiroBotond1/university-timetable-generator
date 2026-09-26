@@ -5,6 +5,8 @@ export interface ProjectData {
   name: string,
   owner: string,
   role?: ProjectRole,
+  generationStatus?: 'idle' | 'queued' | 'running',
+  generationStartedAt?: string | null,
   createdAt?: string,
   updatedAt?: string
 }

@@ -2,6 +2,7 @@ import * as classService from './ClassService.js'
 import * as locationService from './LocationService.js'
 import * as teacherService from './TeacherService.js'
 import * as impExpService from './ImportExportService.js';
+import * as projectService from './ProjectService.js';
 
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
@@ -20,17 +21,63 @@ var generatorProto = grpc.loadPackageDefinition(packageDefinition).generator;
 
 var target = 'localhost:50051';
 
-let call = null
+/**
+ * In-flight generations, keyed by project.
+ *
+ * This used to be a single module-level `call`, which was fine when there was
+ * one implicit project: with several, a second run overwrote the first's
+ * handle, cancel() could only ever reach the most recent one, and both runs
+ * raced to write catalogs (ADR 0001).
+ */
+const inFlight = new Map();
+
+/**
+ * One generation at a time across the whole server, because a single
+ * GeneratorServer process running two annealing searches just makes both
+ * slower. Projects queue rather than being refused -- "another school is busy"
+ * is not something a user can act on. A real job queue belongs with the
+ * deployment work.
+ */
+let queue = Promise.resolve();
+
+export const isGenerating = (projectId) => inFlight.has(String(projectId));
 
 export const generate = async (projectId) => {
+  const key = String(projectId);
+
+  if (inFlight.has(key)) {
+    throw new Error('A generation is already running for this project');
+  }
+
+  // Claim the slot before awaiting anything, so two events arriving together
+  // cannot both get past the check above.
+  const entry = { call: null, cancelled: false };
+  inFlight.set(key, entry);
+
+  await projectService.setGenerationStatus(projectId, 'queued');
+
+  const run = queue.then(() => execute(projectId, key, entry));
+
+  // Keep the chain alive even if this run throws, or every later generation
+  // would inherit the rejection.
+  queue = run.catch(() => {});
+
+  return run;
+};
+
+const execute = async (projectId, key, entry) => {
   try {
-    var client = new generatorProto.Generator(target,
+    if (entry.cancelled) return;
+
+    await projectService.setGenerationStatus(projectId, 'running');
+
+    const client = new generatorProto.Generator(target,
                                           grpc.credentials.createInsecure());
 
     const inputString = await impExpService.getTimetableData(projectId);
 
     const response = await new Promise((resolve, reject) => {
-        call = client.Generate({ input: inputString }, (err, response) => {
+      entry.call = client.Generate({ input: inputString }, (err, response) => {
         if (err) {
           reject(err);
         } else {
@@ -54,14 +101,27 @@ export const generate = async (projectId) => {
     } else {
       console.error('An error occurred:', e);
     }
+  } finally {
+    inFlight.delete(key);
+    await projectService.setGenerationStatus(projectId, 'idle');
   }
 }
 
-export const cancel = () => {
-  if (call != null) {
+export const cancel = (projectId) => {
+  const entry = inFlight.get(String(projectId));
+
+  if (!entry) return false;
+
+  // Still waiting its turn: there is no gRPC call to cancel yet, so mark it
+  // and let execute() drop it when the queue reaches it.
+  entry.cancelled = true;
+
+  if (entry.call) {
     console.log('Cancelling generation...');
-    call.cancel()
+    entry.call.cancel();
   }
+
+  return true;
 }
 
 async function updateCatalogs(projectId, catalogs) {

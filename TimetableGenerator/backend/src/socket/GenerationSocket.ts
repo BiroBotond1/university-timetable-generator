@@ -2,11 +2,19 @@ import * as service from '../services/GenerationService.js'
 import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
-  socket.on('sendGenerationStarted',async () => {
+  socket.on('sendGenerationStarted', async () => {
     const projectId = projectOf(socket);
     if (!projectId) return;
 
     try {
+      // Enforced here, not only by disabling the button: the button is only
+      // correct for clients that were watching when the run started.
+      if (service.isGenerating(projectId)) {
+        return socket.emit('GenerationRefused', {
+          message: 'A generation is already running for this project'
+        });
+      }
+
       io.to(roomOf(projectId)).emit('GenerationStarted');
       console.log('GenerationStarted')
       await service.generate(projectId)
@@ -14,6 +22,7 @@ const handleEvents = (socket, io) => {
       io.to(roomOf(projectId)).emit('GenerationFinished');
     } catch (error) {
       console.error('Error starting generation:', error);
+      io.to(roomOf(projectId)).emit('GenerationFinished');
     }
   });
 
@@ -34,7 +43,7 @@ const handleEvents = (socket, io) => {
 
     try {
       console.log('GenerationCancelled')
-      service.cancel()
+      service.cancel(projectId)
       io.to(roomOf(projectId)).emit('GenerationCancelled')
     } catch (error) {
       console.error('Error cancelling generation:', error);
