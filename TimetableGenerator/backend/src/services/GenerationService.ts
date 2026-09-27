@@ -75,6 +75,31 @@ const report = async (projectId, entry) => {
 
 const cancelledOutcome = (entry) => ({ status: 'cancelled', cancelledBy: entry.cancelledBy });
 
+// Only FAILED_PRECONDITION carries text written for the user: the engine's
+// account of what cannot be scheduled. Anything else would show them a stack
+// trace or a JSON parser error, so it gets a plain sentence and the error
+// stays in details.
+const failedOutcome = (e) => {
+  const details = String(e?.stack ?? e);
+
+  if (e?.code === grpc.status.FAILED_PRECONDITION) {
+    return { status: 'failed', message: e.details, details };
+  }
+  if (e?.code === grpc.status.UNAVAILABLE) {
+    return { status: 'failed', message: 'The timetable engine is not running.', details };
+  }
+  return { status: 'failed', message: 'Generation failed because of an internal error.', details };
+};
+
+// The engine spells these fitnes*; see CLAUDE.md.
+const resultOf = (catalogs) => ({
+  active: catalogs.active,
+  fitnessClass: catalogs.fitnesClas,
+  fitnessTeacher: catalogs.fitnesTeacher,
+  fitnessLocation: catalogs.fitnesLocation,
+  elapsedTime: catalogs.elapsedTime,
+});
+
 const execute = async (projectId, key, entry) => {
   let outcome = null;
 
@@ -119,15 +144,15 @@ const execute = async (projectId, key, entry) => {
 
     await updateCatalogs(projectId, catalogs);
 
-    outcome = { status: 'succeeded' };
+    outcome = { status: 'succeeded', result: resultOf(catalogs) };
 
   } catch (e) {
-    if (e.code === grpc.status.CANCELLED) {
+    if (e?.code === grpc.status.CANCELLED) {
       console.log('Generation was cancelled by the user.');
       outcome = cancelledOutcome(entry);
     } else {
       console.error('An error occurred:', e);
-      outcome = { status: 'failed', details: String(e?.stack ?? e) };
+      outcome = failedOutcome(e);
     }
   } finally {
     inFlight.delete(key);

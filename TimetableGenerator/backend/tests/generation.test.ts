@@ -298,3 +298,53 @@ describe('run records after a restart', () => {
     assert.equal((await GenerationRun.findById(done._id)).status, 'succeeded')
   })
 })
+
+describe('what a run tells the user', () => {
+  const failWith = async (code: number, details: string) => {
+    const project = await makeProject(await makeUser())
+    const { run, updates } = startRecorded(project)
+    await engine.waitForCalls(1)
+    engine.failAll(code, details)
+    await run
+    return { record: updates.at(-1), stored: await GenerationRun.findById(updates.at(-1)._id) }
+  }
+
+  test('an input the engine cannot schedule shows the engine\'s own words', { timeout: 20000 }, async () => {
+    const { record } = await failWith(grpc.status.FAILED_PRECONDITION, 'Teacher Kovacs needs 41 hours, the week has 40.')
+
+    assert.equal(record.status, 'failed')
+    assert.equal(record.message, 'Teacher Kovacs needs 41 hours, the week has 40.')
+  })
+
+  test('an engine that is not running is named as such', { timeout: 20000 }, async () => {
+    const { record } = await failWith(grpc.status.UNAVAILABLE, 'No connection established')
+
+    assert.equal(record.message, 'The timetable engine is not running.')
+  })
+
+  test('an internal error gets a plain sentence, and the error is kept aside', { timeout: 20000 }, async () => {
+    const { record, stored } = await failWith(grpc.status.INTERNAL, '[json.exception.parse_error.101] parse error')
+
+    assert.equal(record.message, 'Generation failed because of an internal error.')
+    assert.match(stored.details, /parse_error/)
+  })
+
+  test('a finished run keeps the engine\'s verdict and fitness', { timeout: 20000 }, async () => {
+    const project = await makeProject(await makeUser())
+    const { run, updates } = startRecorded(project)
+    await engine.waitForCalls(1)
+    engine.releaseAll({
+      classCatalogs: {}, teacherCatalogs: {}, locationCatalogs: {},
+      active: false, fitnesClas: 1500, fitnesTeacher: -40, fitnesLocation: 2000, elapsedTime: 12.5,
+    })
+    await run
+
+    const record = updates.at(-1)
+    assert.equal(record.status, 'succeeded')
+    assert.equal(record.message, null)
+    assert.deepEqual(
+      { ...record.result.toObject() },
+      { active: false, fitnessClass: 1500, fitnessTeacher: -40, fitnessLocation: 2000, elapsedTime: 12.5 }
+    )
+  })
+})
