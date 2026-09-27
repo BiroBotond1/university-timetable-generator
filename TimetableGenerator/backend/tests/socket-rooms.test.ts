@@ -6,7 +6,8 @@ import { io as createClient, type Socket } from 'socket.io-client'
 
 import { connectTestDb, disconnectTestDb, resetTestDb } from './helpers/db.js'
 import { makeProject, makeUser } from './helpers/fixtures.js'
-import handleProjectRoomEvents from '../src/socket/ProjectRoomSocket.js'
+import handleProjectRoomEvents, { userRoomOf } from '../src/socket/ProjectRoomSocket.js'
+import { evictFromProject, setIo, toProject, toUser } from '../src/socket/notify.js'
 import handleTeacherEvents from '../src/socket/TeacherSocket.js'
 import * as projectService from '../src/services/ProjectService.js'
 
@@ -27,7 +28,11 @@ const startServer = async () => {
     next()
   })
 
+  setIo(io)
+
+  // Mirrors socket.ts: every connection joins its own user's room.
   io.on('connection', (socket) => {
+    socket.join(userRoomOf(socket.data.userId))
     handleProjectRoomEvents(socket, io)
     handleTeacherEvents(socket, io)
   })
@@ -179,5 +184,130 @@ describe('a connection with no project', () => {
     await settle()
 
     assert.equal(echoed, null)
+  })
+})
+
+describe('notifications', () => {
+  test('an invitee is reached before they belong to any project', async () => {
+    const alice = await makeUser()
+    const bob = await makeUser()
+    await makeProject(alice)
+
+    const bobSocket = await open(String(bob._id))
+
+    let received: unknown = null
+    bobSocket.on('invitationsChanged', (payload) => { received = payload })
+
+    toUser(bob._id, 'invitationsChanged', { reason: 'received' })
+    await settle()
+
+    assert.deepEqual(received, { reason: 'received' })
+  })
+
+  test('a user notification reaches only that user', async () => {
+    const alice = await makeUser()
+    const bob = await makeUser()
+
+    const aliceSocket = await open(String(alice._id))
+    await open(String(bob._id))
+
+    let aliceGot = false
+    aliceSocket.on('invitationsChanged', () => { aliceGot = true })
+
+    toUser(bob._id, 'invitationsChanged')
+    await settle()
+
+    assert.equal(aliceGot, false)
+  })
+
+  test('a project notification reaches members inside it', async () => {
+    const alice = await makeUser()
+    const project = await makeProject(alice)
+
+    const socket = await open(String(alice._id))
+    await join(socket, String(project._id))
+
+    let got = false
+    socket.on('membersChanged', () => { got = true })
+
+    toProject(project._id, 'membersChanged')
+    await settle()
+
+    assert.equal(got, true)
+  })
+})
+
+describe('eviction', () => {
+  /** Alice owns the project; Bob is an active collaborator inside it. */
+  const collaboratorInside = async () => {
+    const alice = await makeUser()
+    const bob = await makeUser('bob@school.hu')
+    const project = await makeProject(alice)
+
+    await projectService.invite(project._id, 'bob@school.hu', alice._id)
+    await projectService.respondToInvitation(project._id, bob._id, true)
+
+    const aliceSocket = await open(String(alice._id))
+    const bobSocket = await open(String(bob._id))
+    await join(aliceSocket, String(project._id))
+    await join(bobSocket, String(project._id))
+
+    return { alice, bob, project, aliceSocket, bobSocket }
+  }
+
+  test('a removed member is told, and loses write access on open tabs', async () => {
+    const { bob, project, aliceSocket, bobSocket } = await collaboratorInside()
+
+    let closed: unknown = null
+    bobSocket.on('projectClosed', (payload) => { closed = payload })
+
+    await projectService.removeMember(project._id, bob._id)
+    const evicted = evictFromProject(project._id, bob._id, 'removed')
+    await settle()
+
+    assert.equal(evicted, 1)
+    assert.deepEqual(closed, { projectId: String(project._id), reason: 'removed' })
+
+    // The actual point: the socket he still has open can no longer write.
+    let aliceSaw: string | null = null
+    aliceSocket.on('createTeacher', (obj) => { aliceSaw = obj.teacher?.name })
+
+    bobSocket.emit('sendCreateTeacher', { teacher: { name: 'AfterRemoval' } })
+    await settle()
+
+    assert.equal(aliceSaw, null)
+  })
+
+  test('evicting one member leaves the others in place', async () => {
+    const { bob, project, aliceSocket } = await collaboratorInside()
+
+    let aliceClosed = false
+    aliceSocket.on('projectClosed', () => { aliceClosed = true })
+
+    evictFromProject(project._id, bob._id, 'removed')
+    await settle()
+
+    assert.equal(aliceClosed, false)
+
+    let aliceSaw: string | null = null
+    aliceSocket.on('createTeacher', (obj) => { aliceSaw = obj.teacher?.name })
+    aliceSocket.emit('sendCreateTeacher', { teacher: { name: 'StillWorks' } })
+    await settle()
+
+    assert.equal(aliceSaw, 'StillWorks')
+  })
+
+  test('deleting a project evicts everyone inside it', async () => {
+    const { project, aliceSocket, bobSocket } = await collaboratorInside()
+
+    const reasons: string[] = []
+    aliceSocket.on('projectClosed', (p) => reasons.push(p.reason))
+    bobSocket.on('projectClosed', (p) => reasons.push(p.reason))
+
+    const evicted = evictFromProject(project._id, null, 'deleted')
+    await settle()
+
+    assert.equal(evicted, 2)
+    assert.deepEqual(reasons, ['deleted', 'deleted'])
   })
 })

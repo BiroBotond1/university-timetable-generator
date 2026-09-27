@@ -10,6 +10,7 @@ import {
   invite,
   respondToInvitation,
   removeMember,
+  revokeInvitation,
   transferOwnership
 } from '../controllers/ProjectController.js'
 import {
@@ -38,6 +39,9 @@ router.route('/:projectId/members')
 
 router.route('/:projectId/members/:userId')
   .delete(requireProjectAccess, requireProjectOwner, removeMember);
+
+router.route('/:projectId/invitations/:memberId')
+  .delete(requireProjectAccess, requireProjectOwner, revokeInvitation);
 
 router.route('/:projectId/ownership')
   .post(requireProjectAccess, requireProjectOwner, transferOwnership);

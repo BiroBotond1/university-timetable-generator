@@ -52,6 +52,13 @@ const handleEvents = (socket, io) => {
 export const roomOf = (projectId) => `project:${projectId}`;
 
 /**
+ * Every connection joins its own user's room at connect time. It is how an
+ * invitation reaches someone who is not a member yet, and so is in no project
+ * room at all.
+ */
+export const userRoomOf = (userId) => `user:${String(userId)}`;
+
+/**
  * The project this connection is working in, or null when it has not joined
  * one. Entity handlers must refuse to act when this is null rather than
  * falling back to any kind of global scope.

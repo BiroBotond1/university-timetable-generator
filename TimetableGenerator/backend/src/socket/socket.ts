@@ -9,7 +9,8 @@ import handleClassHourEvents from './ClassHourSocket.js';
 import handleGenerationEvents from './GenerationSocket.js';
 import handleImportExportEvents from './ImportExportSocket.js';
 import handleAuth0Events from './Auth0Socket.js'
-import handleProjectRoomEvents from './ProjectRoomSocket.js'
+import handleProjectRoomEvents, { userRoomOf } from './ProjectRoomSocket.js'
+import { setIo } from './notify.js'
 import socketAuth from '../middleware/socketAuth.js'
 
 const initializeSocket = (server) => {
@@ -24,7 +25,10 @@ const initializeSocket = (server) => {
   // Every connection must present a valid Auth0 token before any handler runs.
   io.use(socketAuth);
 
+  setIo(io);
+
   io.on('connection', (socket) => {
+    socket.join(userRoomOf(socket.data.userId));
 
     try {
       handleProjectRoomEvents(socket, io);

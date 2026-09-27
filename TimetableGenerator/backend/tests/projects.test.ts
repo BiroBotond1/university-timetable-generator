@@ -140,6 +140,76 @@ describe('invitations', () => {
   })
 })
 
+describe('revoking and listing', () => {
+  test('the owner can withdraw a pending invitation', async () => {
+    const alice = await makeUser()
+    const bob = await makeUser('bob@school.hu')
+    const project = await makeProject(alice)
+
+    const invitation = await projectService.invite(project._id, 'bob@school.hu', alice._id)
+    const revoked = await projectService.revokeInvitation(project._id, invitation._id)
+
+    assert.notEqual(revoked, null)
+    assert.equal((await projectService.listInvitationsForUser(bob._id)).length, 0)
+  })
+
+  test('an invitation to someone with no account can be withdrawn too', async () => {
+    const alice = await makeUser()
+    const project = await makeProject(alice)
+
+    const invitation = await projectService.invite(project._id, 'nobody@school.hu', alice._id)
+
+    assert.notEqual(await projectService.revokeInvitation(project._id, invitation._id), null)
+    assert.equal(await ProjectMember.countDocuments({ email: 'nobody@school.hu' }), 0)
+  })
+
+  test('revoking cannot remove an active member', async () => {
+    const alice = await makeUser()
+    const project = await makeProject(alice)
+    const ownerRow = await projectService.getMembership(project._id, alice._id)
+
+    assert.equal(await projectService.revokeInvitation(project._id, ownerRow._id), null)
+    assert.notEqual(await projectService.getMembership(project._id, alice._id), null)
+  })
+
+  test('an invitation cannot be revoked through another project', async () => {
+    const alice = await makeUser()
+    const a = await makeProject(alice, 'A')
+    const b = await makeProject(alice, 'B')
+
+    const invitation = await projectService.invite(a._id, 'bob@school.hu', alice._id)
+
+    assert.equal(await projectService.revokeInvitation(b._id, invitation._id), null)
+    assert.equal(await ProjectMember.countDocuments({ _id: invitation._id }), 1)
+  })
+
+  test('pending invitations are listed only when asked for', async () => {
+    const alice = await makeUser()
+    const project = await makeProject(alice)
+
+    await projectService.invite(project._id, 'bob@school.hu', alice._id)
+
+    const withPending = await projectService.listMembers(project._id, { includePending: true })
+    const withoutPending = await projectService.listMembers(project._id)
+
+    assert.equal(withPending.length, 2)
+    assert.equal(withoutPending.length, 1)
+    assert.equal(withoutPending[0].role, 'owner')
+  })
+
+  test('declined invitations are never listed', async () => {
+    const alice = await makeUser()
+    const bob = await makeUser('bob@school.hu')
+    const project = await makeProject(alice)
+
+    await projectService.invite(project._id, 'bob@school.hu', alice._id)
+    await projectService.respondToInvitation(project._id, bob._id, false)
+
+    const members = await projectService.listMembers(project._id, { includePending: true })
+    assert.equal(members.length, 1)
+  })
+})
+
 describe('ownership', () => {
   test('the owner cannot be removed', async () => {
     const alice = await makeUser()

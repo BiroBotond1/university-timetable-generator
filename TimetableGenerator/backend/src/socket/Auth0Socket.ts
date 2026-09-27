@@ -19,7 +19,13 @@ const handleEvents = (socket, io) => {
       });
 
       if (verifiedEmail) {
-        await projectService.bindPendingInvitations(user._id, verifiedEmail);
+        const bound = await projectService.bindPendingInvitations(user._id, verifiedEmail);
+
+        // Invitations sent before this person had an account only become
+        // visible now, so the badge needs to refresh.
+        if (bound > 0) {
+          socket.emit('invitationsChanged', { reason: 'bound' });
+        }
       }
 
       // The client needs its own Mongo _id to own or join projects.

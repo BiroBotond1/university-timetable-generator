@@ -121,10 +121,18 @@ export const getMembership = async (projectId, userId) => {
   });
 };
 
-export const listMembers = async (projectId) => {
+/**
+ * Active members, and -- for callers allowed to manage them -- pending
+ * invitations. Collaborators see who is on the project, but not which email
+ * addresses have been invited and have not answered yet.
+ */
+export const listMembers = async (projectId, { includePending = false } = {}) => {
+  const statuses = includePending ? ['active', 'pending'] : ['active'];
+
   return await ProjectMember
-    .find({ project: projectId, status: { $ne: 'declined' } })
-    .populate('user', 'username email');
+    .find({ project: projectId, status: { $in: statuses } })
+    .populate('user', 'username email')
+    .sort({ createdAt: 1 });
 };
 
 /**
@@ -190,6 +198,19 @@ export const respondToInvitation = async (projectId, userId, accept) => {
   invitation.status = accept ? 'active' : 'declined';
 
   return await invitation.save();
+};
+
+/**
+ * Withdraws an invitation that has not been answered. Addressed by the
+ * membership row rather than by user, because an invitation to someone with no
+ * account yet has no user to address.
+ */
+export const revokeInvitation = async (projectId, memberId) => {
+  return await ProjectMember.findOneAndDelete({
+    _id: memberId,
+    project: projectId,
+    status: 'pending',
+  });
 };
 
 export const removeMember = async (projectId, userId) => {
