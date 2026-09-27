@@ -47,10 +47,41 @@ Other scripts:
 | `yarn lint` | `frontend/`, `backend/` | eslint with `--fix` |
 | `yarn build` | `frontend/` | type-check + vite build |
 
-**There is no test suite anywhere** — no framework, no test script, no C++ test
-target. The only automated gate is a cppcheck GitHub Action, and that workflow is
-misconfigured (it fails on any stderr output, and cppcheck writes progress to
-stderr), so it is permanently red. Don't read CI status as signal.
+## Tests
+
+```bash
+yarn deps:up                  # the suite needs MongoDB
+yarn workspace backend test   # or `yarn test` from TimetableGenerator/
+```
+
+Backend integration tests in `backend/tests/`, using Node's built-in test runner
+through `tsx` — no test framework dependency. They exercise the real services
+against a real MongoDB rather than mocking it, because what they are guarding is
+query-level behaviour: tenant filtering, cascades, socket room membership.
+
+Each file gets its own database (`timetabledb_test_<name>`), since the runner
+executes files in parallel and they would otherwise drop each other's data.
+
+- `projects.test.ts` — membership, the invite/accept/decline cycle, late binding
+  of invitations, ownership transfer
+- `scoping.test.ts` — cross-tenant reads and writes are refused; the delete
+  cascade
+- `constraints.test.ts` — per-project seeding and isolation, plus an assertion
+  that the seeded names still match the keys the C++ engine reads
+- `import-export.test.ts` — id regeneration, reference remapping, round trips
+- `generation.test.ts` — the per-project lock and global queue, against a stub
+  engine on `:50051` whose calls park until the test releases them
+- `socket-rooms.test.ts` — real handlers on a real socket server, with only the
+  Auth0 handshake stubbed
+
+**There is no frontend or C++ test target.** The only other automated gate is a
+cppcheck GitHub Action, and that workflow is misconfigured (it fails on any
+stderr output, and cppcheck writes progress to stderr), so it is permanently red.
+Don't read CI status as signal.
+
+When adding a test, prefer an explicit observation over a sleep. The generation
+tests originally used fixed timeouts and were flaky; the stub engine now parks
+each call so ordering is observed, not raced.
 
 ## Package manager
 

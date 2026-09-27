@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx watch src/index.ts",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\"",
     "lint": "eslint ./src --ext .ts --fix"
   },
   "author": "Biro Botond",
