@@ -18,6 +18,8 @@
       <v-btn color="error" @click="emitGenerationCancelled" block class="mt-2" v-else>
         Cancel
       </v-btn>
+      <GenerationRunCard :run="generationStore.latest" />
+      <GenerationRunHistory v-if="generationStore.runs.length" :runs="generationStore.runs" />
      </v-container>
   </v-form>
 </template>
