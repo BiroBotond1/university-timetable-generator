@@ -48,6 +48,7 @@
 #include <future>
 #include "MyTime.h"
 #include "TimetableGenerator.h"
+#include "GenerationError.h"
 
  using grpc::Server;
  using grpc::ServerBuilder;
@@ -76,10 +77,20 @@
          auto status = future.wait_for(std::chrono::milliseconds(100));
 
          if (status == std::future_status::ready) {
-             // Finished normally
-             auto output = future.get();
-             reply->set_output(output);
-             return Status::OK;
+             // get() rethrows whatever Run threw on the worker thread
+             try {
+                 reply->set_output(future.get());
+                 return Status::OK;
+             } catch (const GenerationError& e) {
+                 // The input cannot be scheduled; the message is meant for the user
+                 std::cout << "Generation failed: " << e.what() << std::endl;
+                 return Status(grpc::StatusCode::FAILED_PRECONDITION, e.what());
+             } catch (const std::exception& e) {
+                 // Malformed input or an engine bug; gRPC would otherwise report only
+                 // UNKNOWN "Unexpected error in RPC handling" and drop the message
+                 std::cout << "Generation error: " << e.what() << std::endl;
+                 return Status(grpc::StatusCode::INTERNAL, e.what());
+             }
          }
 
          if (context->IsCancelled()) {
