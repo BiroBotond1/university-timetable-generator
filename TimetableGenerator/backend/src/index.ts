@@ -18,7 +18,9 @@ import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
 import projectApi from './api/ProjectApi.js';
+import generationRunApi from './api/GenerationRunApi.js';
 import * as projectService from './services/ProjectService.js';
+import * as generationRunService from './services/GenerationRunService.js';
 
 import 'dotenv/config'
 
@@ -38,6 +40,7 @@ mongoose
   .then(() => {
     console.log('MongoDB database Connected...')
     projectService.clearStaleGenerationStatus()
+    generationRunService.closeInterrupted()
   })
   .catch((err) => console.log(err));
 
@@ -63,6 +66,7 @@ app.use(`${scoped}/teachers`, requireProjectAccess, teacherApi);
 app.use(`${scoped}/locations`, requireProjectAccess, locationApi);
 app.use(`${scoped}/classes`, requireProjectAccess, classApi);
 app.use(`${scoped}/classHours`, requireProjectAccess, classHourApi);
+app.use(`${scoped}/generation-runs`, requireProjectAccess, generationRunApi);
 
 app.use(errorMiddleware); 
 

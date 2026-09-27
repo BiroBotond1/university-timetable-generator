@@ -19,7 +19,7 @@ export const startStubEngine = async (port = 50051) => {
   let served = 0
   let concurrent = 0
   let maxConcurrent = 0
-  let parked: Array<() => void> = []
+  let parked: Array<(err: object | null, output?: string) => void> = []
   let callOrder: string[] = []
   let waiters: Array<{ count: number, resolve: () => void }> = []
 
@@ -47,9 +47,10 @@ export const startStubEngine = async (port = 50051) => {
       concurrent += 1
       maxConcurrent = Math.max(maxConcurrent, concurrent)
 
-      parked.push(() => {
+      parked.push((err, output = EMPTY_RESULT) => {
         concurrent -= 1
-        callback(null, { output: EMPTY_RESULT })
+        if (err) callback(err)
+        else callback(null, { output })
       })
 
       notifyWaiters()
@@ -71,10 +72,19 @@ export const startStubEngine = async (port = 50051) => {
       waiters.push({ count, resolve })
     }),
 
-    releaseAll: () => {
+    // output: what the engine returns; defaults to an empty, valid timetable.
+    releaseAll: (output?: object) => {
       const toRelease = parked
       parked = []
-      toRelease.forEach(release => release())
+      toRelease.forEach(release => release(null, output && JSON.stringify(output)))
+    },
+
+    // Answers every parked call with a gRPC error, the way the engine reports
+    // an input it cannot schedule.
+    failAll: (code: number, details: string) => {
+      const toRelease = parked
+      parked = []
+      toRelease.forEach(release => release({ code, details }))
     },
 
     reset: () => {

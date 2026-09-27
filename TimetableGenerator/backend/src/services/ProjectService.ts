@@ -7,6 +7,7 @@ import { model as Subject } from '../models/Subject.js'
 import { model as Class } from '../models/Class.js'
 import ClassHour from '../models/ClassHour.js'
 import { model as Constraint } from '../models/Constraint.js'
+import { model as GenerationRun } from '../models/GenerationRun.js'
 import * as constraintService from './ConstraintService.js'
 
 const normaliseEmail = (email) => (email || '').trim().toLowerCase()
@@ -69,6 +70,7 @@ export const remove = async (projectId) => {
   await Teacher.deleteMany({ project: projectId });
   await Location.deleteMany({ project: projectId });
   await ProjectMember.deleteMany({ project: projectId });
+  await GenerationRun.deleteMany({ project: projectId });
 
   await Project.findByIdAndDelete(projectId);
 

@@ -16,26 +16,27 @@ const strip = (doc) => {
   return plain;
 }
 
-// Removes __v and project at every depth. _id is kept: references inside the
-// file use it, and import rewrites it.
-const forExport = (value) => {
-  if (Array.isArray(value)) return value.map(forExport);
+const scrub = (value) => {
+  if (Array.isArray(value)) return value.map(scrub);
 
   if (value && typeof value === 'object') {
-    const plain = typeof value.toObject === 'function' ? value.toObject() : { ...value };
+    const { __v, project, ...rest } = value;
 
-    delete plain.__v;
-    delete plain.project;
-
-    for (const key of Object.keys(plain)) {
-      plain[key] = forExport(plain[key]);
+    for (const key of Object.keys(rest)) {
+      rest[key] = scrub(rest[key]);
     }
 
-    return plain;
+    return rest;
   }
 
   return value;
 }
+
+// Removes __v and project at every depth. _id is kept: references inside the
+// file use it, and import rewrites it. The JSON round trip comes first so that
+// ObjectIds and Dates become strings before anything is copied; spreading an
+// ObjectId yields {}.
+const forExport = (value) => scrub(JSON.parse(JSON.stringify(value)));
 
 const idOf = (ref) => String(ref?._id ?? ref ?? '');
 

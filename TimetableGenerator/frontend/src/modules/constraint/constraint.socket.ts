@@ -1,36 +1,12 @@
 import type { ConstraintData } from './constraint.type';
 import { socket } from '@/modules/app/app.socket'
 import { listen } from '@/modules/app/socket.listeners'
-import { useAppStore } from '../app/app.store';
 
 export const setupConstraintSocketListeners = (
   hardConstraints: Ref<ConstraintData[]>,
   softConstraints: Ref<ConstraintData[]>
 ) => {
-  // Not at module scope: Pinia may not be installed at import time.
-  const appStore = useAppStore()
-
   return listen({
-    GenerationStarted: () => {
-      appStore.generating = true
-    },
-
-    GenerationCancelled: () => {
-      appStore.generating = false
-    },
-
-    // A run is already going; the button was showing stale state.
-    GenerationRefused: (payload) => {
-      appStore.generating = true
-      console.warn(payload?.message)
-    },
-
-    GenerationFinished: () => {
-      appStore.generating = false
-      appStore.notification = true
-      setTimeout(() => appStore.notification = false, 5000);
-    },
-
     updateConstraint: (constraintData) => {
       updateConstraints(hardConstraints, constraintData.constraint)
       updateConstraints(softConstraints, constraintData.constraint)
@@ -43,14 +19,6 @@ const updateConstraints = (constraints: Ref<ConstraintData[]>, updatedConstraint
   if (index !== -1) {
     constraints.value[index] = updatedConstraint;
   }
-}
-
-export const emitGenerationStarted = () => {
-  socket.emit('sendGenerationStarted');
-}
-
-export const emitGenerationCancelled = () => {
-  socket.emit('sendGenerationCancelled');
 }
 
 export const emitUpdateConstraint = (constraintData: Partial<ConstraintData>) => {

@@ -18,6 +18,8 @@
       <v-btn color="error" @click="emitGenerationCancelled" block class="mt-2" v-else>
         Cancel
       </v-btn>
+      <GenerationRunCard :run="generationStore.latest" />
+      <GenerationRunHistory v-if="generationStore.runs.length" :runs="generationStore.runs" />
      </v-container>
   </v-form>
 </template>
@@ -26,32 +28,17 @@
 
 import type { ConstraintData } from '@/modules/constraint/constraint.type';
 import { fetchConstraints } from '@/modules/constraint/constraint.api';
-import { setupConstraintSocketListeners, emitGenerationStarted, emitUpdateConstraint, emitGenerationCancelled } from '@/modules/constraint/constraint.socket';
-import { useAppStore } from '@/modules/app/app.store';
-import { fetchProject } from '@/modules/project/project.api';
-import { useRoute } from 'vue-router';
+import { setupConstraintSocketListeners, emitUpdateConstraint } from '@/modules/constraint/constraint.socket';
+import { emitGenerationStarted, emitGenerationCancelled } from '@/modules/generation/generation.socket';
+import { useGenerationStore } from '@/modules/generation/generation.store';
 
 const hardConstraints = ref<ConstraintData[]>([])
 const softConstraints = ref<ConstraintData[]>([])
 const valid = ref(false)
 
-const appStore = useAppStore();
-const route = useRoute();
-const generating = computed(() => appStore.generating);
-
-// The socket only reports runs that start while this tab is connected, so read
-// the persisted status on load.
-const syncGenerationState = async () => {
-  try {
-    const projectId = (route.params as { projectId?: string }).projectId
-    if (!projectId) return
-
-    const project = await fetchProject(projectId)
-    appStore.generating = project.generationStatus !== 'idle'
-  } catch (error) {
-    console.log(error)
-  }
-}
+// The sidebar loads the project's runs and keeps them current.
+const generationStore = useGenerationStore();
+const generating = computed(() => generationStore.generating);
 
 const fetchConstraintss = async () => {
   try {
@@ -82,7 +69,6 @@ let teardown: (() => void) | null = null
 
 onMounted(async () => {
   await fetchConstraintss()
-  await syncGenerationState()
   teardown = setupConstraintSocketListeners(hardConstraints, softConstraints)
 })
 

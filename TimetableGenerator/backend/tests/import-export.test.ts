@@ -47,6 +47,20 @@ describe('export', () => {
     assert.ok(JSON.parse(file).teachers[0]._id)
   })
 
+  test('writes ids as id strings, including inside populated references', async () => {
+    const { school, file } = await exported()
+    const parsed = JSON.parse(file)
+    const HEX_ID = /^[0-9a-f]{24}$/
+
+    // This payload is also what the engine receives; an ObjectId copied with a
+    // spread used to arrive as {} and make Database::Fill throw.
+    assert.equal(parsed.teachers[0]._id, String(school.teacher._id))
+    assert.match(parsed.classHours[0]._id, HEX_ID)
+    assert.match(parsed.classHours[0].teacher._id, HEX_ID)
+    assert.match(parsed.classHours[0].class._id, HEX_ID)
+    assert.match(parsed.subjects[0].locations[0]._id, HEX_ID)
+  })
+
   test('carries the constraint states as top-level booleans', async () => {
     const { file } = await exported()
 
@@ -111,6 +125,30 @@ describe('import into a different project', () => {
     await impexp.doImport(b._id, file)
 
     assert.equal((await teacherService.getAll(a._id)).length, 1)
+  })
+})
+
+describe('several entities of each kind', () => {
+  test('each class hour keeps pointing at its own teacher', async () => {
+    const owner = await makeUser()
+    const a = await makeProject(owner, 'A')
+    const b = await makeProject(owner, 'B')
+
+    const first = await makeSchool(a._id)
+    const second = await teacherService.create(a._id, { name: 'Nagy' })
+    await classHourService.create(a._id, {
+      number: 2, class: first.clas._id, subject: first.subject._id, teacher: second._id, weight: 1,
+    })
+
+    await impexp.doImport(b._id, await impexp.getTimetableData(a._id))
+
+    const teachers = await teacherService.getAll(b._id)
+    const byTeacher = (await classHourService.getAll(b._id))
+      .map(ch => ch.teacher?.name)
+      .sort()
+
+    assert.equal(teachers.length, 2)
+    assert.deepEqual(byTeacher, ['Kovacs', 'Nagy'])
   })
 })
 
