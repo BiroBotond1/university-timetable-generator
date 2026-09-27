@@ -31,6 +31,7 @@ set(HEADERS
     Entity.h
     EntityWithCatalog.h
     EntityWithName.h
+    GenerationError.h
     Random.h
     Location.h
     stdafx.h

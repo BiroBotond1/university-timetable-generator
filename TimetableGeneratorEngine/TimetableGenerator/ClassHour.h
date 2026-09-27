@@ -26,12 +26,11 @@ public:
 
 	double		GetWeight() const { return m_dWeight; }
 	
-	void		AddClassHoursToCatalog();
+	bool		AddClassHoursToCatalog();
 	bool		HasLocation() const;
 
 private:
-	Time GetFreeTime();
-	std::pair<Time, std::shared_ptr<Location>> GetFreeTimeWithLocation();
+	std::optional<std::pair<Time, std::shared_ptr<Location>>> GetRandomFreeSlot() const;
 
 private:
 	std::weak_ptr<Teacher>		m_teacher;

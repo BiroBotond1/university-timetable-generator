@@ -6,6 +6,21 @@
 #include "Subject.h"
 #include "ClassHour.h"
 #include "Random.h"
+#include "GenerationError.h"
+
+namespace
+{
+    std::string CouldNotPlace(const ClassHour& p_classHour)
+    {
+        auto subject = p_classHour.GetSubject();
+        std::string freeTogether = subject->HasLocations()
+            ? "the class, the teacher and one of the subject's rooms are all free"
+            : "the class and the teacher are both free";
+
+        return "Could not place " + subject->GetName() + " for " + p_classHour.GetClass()->GetName()
+            + " with " + p_classHour.GetTeacher()->GetName() + ": no slot where " + freeTogether + ".";
+    }
+}
 
 std::string TimetableGenerator::Run(const std::string& input)
 {    
@@ -26,7 +41,8 @@ void TimetableGenerator::InitCatalogs()
     m_bActive = false;
     for (auto& classHour : m_DB.GetClassHours())
     {
-        classHour.second->AddClassHoursToCatalog();
+        if (!classHour.second->AddClassHoursToCatalog())
+            throw GenerationError(CouldNotPlace(*classHour.second));
     }
 }
 
