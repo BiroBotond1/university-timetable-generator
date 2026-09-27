@@ -19,6 +19,7 @@ import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
 import projectApi from './api/ProjectApi.js';
 import * as projectService from './services/ProjectService.js';
+import * as generationRunService from './services/GenerationRunService.js';
 
 import 'dotenv/config'
 
@@ -38,6 +39,7 @@ mongoose
   .then(() => {
     console.log('MongoDB database Connected...')
     projectService.clearStaleGenerationStatus()
+    generationRunService.closeInterrupted()
   })
   .catch((err) => console.log(err));
 

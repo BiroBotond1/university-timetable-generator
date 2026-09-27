@@ -9,8 +9,9 @@ import { model as Subject } from '../../src/models/Subject.js'
 import { model as Class } from '../../src/models/Class.js'
 import { model as Constraint } from '../../src/models/Constraint.js'
 import ClassHour from '../../src/models/ClassHour.js'
+import { model as GenerationRun } from '../../src/models/GenerationRun.js'
 
-const models = [User, Project, ProjectMember, Teacher, Location, Subject, Class, Constraint, ClassHour]
+const models = [User, Project, ProjectMember, Teacher, Location, Subject, Class, Constraint, ClassHour, GenerationRun]
 
 // dropDatabase drops indexes too, and some tests rely on them.
 const syncIndexes = async () => {

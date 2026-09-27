@@ -9,6 +9,8 @@ import * as classHourService from '../src/services/ClassHourService.js'
 import * as locationService from '../src/services/LocationService.js'
 import { model as Teacher } from '../src/models/Teacher.js'
 import ClassHour from '../src/models/ClassHour.js'
+import { model as GenerationRun } from '../src/models/GenerationRun.js'
+import * as generationRunService from '../src/services/GenerationRunService.js'
 
 before(() => connectTestDb('scoping'))
 beforeEach(() => resetTestDb())
@@ -107,14 +109,18 @@ describe('bulk removal is scoped', () => {
 describe('deleting a project cascades', () => {
   test('everything in the project goes, and only that project', async () => {
     const { a, b } = await twoSchools()
+    await generationRunService.create(a._id)
+    await generationRunService.create(b._id)
 
     await projectService.remove(a._id)
 
     assert.equal(await Teacher.countDocuments({ project: a._id }), 0)
     assert.equal(await ClassHour.countDocuments({ project: a._id }), 0)
     assert.equal(await locationService.getAll(a._id).then(l => l.length), 0)
+    assert.equal(await GenerationRun.countDocuments({ project: a._id }), 0)
 
     assert.equal(await Teacher.countDocuments({ project: b._id }), 1)
     assert.equal(await ClassHour.countDocuments({ project: b._id }), 1)
+    assert.equal(await GenerationRun.countDocuments({ project: b._id }), 1)
   })
 })

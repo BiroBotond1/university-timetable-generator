@@ -16,7 +16,7 @@ const handleEvents = (socket, io) => {
 
       io.to(roomOf(projectId)).emit('GenerationStarted');
       console.log('GenerationStarted')
-      await service.generate(projectId)
+      await service.generate(projectId, { startedBy: socket.data.userId })
       console.log('GenerationFinished')
       io.to(roomOf(projectId)).emit('GenerationFinished');
     } catch (error) {
@@ -42,7 +42,7 @@ const handleEvents = (socket, io) => {
 
     try {
       console.log('GenerationCancelled')
-      service.cancel(projectId)
+      service.cancel(projectId, socket.data.userId)
       io.to(roomOf(projectId)).emit('GenerationCancelled')
     } catch (error) {
       console.error('Error cancelling generation:', error);
