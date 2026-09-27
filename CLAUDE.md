@@ -141,9 +141,12 @@ only. When you add a mutation, the socket handler is the real path; the REST
 `GenerateReply{string output}` — a whole JSON document in, a whole JSON document
 out. An input the engine cannot schedule comes back as `FAILED_PRECONDITION`
 with a message naming the class, teacher or subject; malformed input or an
-engine bug as `INTERNAL`. Cancellation is only half real: the backend calls
-`call.cancel()`, and the C++ handler notices within 100 ms and returns
-`CANCELLED`, but the run itself keeps going (see Known gaps).
+engine bug as `INTERNAL`. Cancellation is real: the backend calls
+`call.cancel()`, the C++ handler notices within 100 ms, sets the cancel flag
+`TimetableGenerator::Run` checks every placement attempt and annealing
+iteration, and waits for the run to stop before returning `CANCELLED`. Anything
+new in the engine that can loop for long has to check that flag too, or a
+cancel will wait for it.
 
 **Backend layering.** `api/` (routers) → `controllers/` → `services/` →
 `models/`. The `socket/` handlers call the *same* services, so business logic
@@ -203,11 +206,6 @@ Don't treat any of this as intentional design.
   This was an experiment, not live work.
 - Root `README.md` is stale — it describes invoking `timetable_generator.exe`
   directly and predates gRPC and Auth0.
-- Cancelling a generation does not stop the engine. `server.cc` runs
-  `TimetableGenerator::Run` through `std::async`, and that future's destructor
-  waits for the task, so after returning `CANCELLED` the handler thread and one
-  CPU core stay busy until the annealing finishes. The fix is a stop flag passed
-  into `Run` and checked in its loops.
 - Engine failure messages never reach the user. `GenerationService.execute`
   logs the gRPC error with `console.error` and resets the status to idle, so the
   UI only sees generation stop.
