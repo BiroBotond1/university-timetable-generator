@@ -1,37 +1,34 @@
 import { model } from '../models/Subject.js'
 
-export const getAll = async () => {
+export const getAll = async (projectId) => {
   return await model
-    .find()
+    .find({ project: projectId })
     .populate("locations");
 };
 
-export const create = async (subject) => {
-  return await model.create(subject);
+export const create = async (projectId, subject) => {
+  return await model.create({ ...subject, project: projectId });
 };
 
-export const getById = async (id) => {
+export const getById = async (projectId, id) => {
   return await model
-    .findById(id)
-    .populate("locations");;
+    .findOne({ _id: id, project: projectId })
+    .populate("locations");
 };
 
-export const update = async (id, subject) => {
-  return await model.findByIdAndUpdate(id, subject);
+export const update = async (projectId, id, subject) => {
+  const { project, ...changes } = subject;
+  return await model.findOneAndUpdate({ _id: id, project: projectId }, changes);
 };
 
-export const deleteById = async (id) => {
-  return await model.findByIdAndRemove(id);
+export const deleteById = async (projectId, id) => {
+  return await model.findOneAndDelete({ _id: id, project: projectId });
 };
 
-export const isLocationUsed = async (locationId) => {
-  return await model.exists({ locations: locationId });
+export const isLocationUsed = async (projectId, locationId) => {
+  return await model.exists({ project: projectId, locations: locationId });
 };
 
-export const imp = async (subjects) => {
-  await model.deleteMany();
-
-  subjects.forEach(async subject => {
-    await create(subject)
-  });
+export const removeAll = async (projectId) => {
+  return await model.deleteMany({ project: projectId });
 }

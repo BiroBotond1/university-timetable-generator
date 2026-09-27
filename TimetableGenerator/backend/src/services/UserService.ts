@@ -20,6 +20,8 @@ import { model } from '../models/User.js'
 //   return await model.findByIdAndRemove(id);
 // };
 
+// username and email come from the client and are not verified, so don't bind
+// invitations to this email.
 export const syncUser = async (auth0User) => {
 
   // Find existing
@@ -38,4 +40,16 @@ export const syncUser = async (auth0User) => {
   }
 
   return user;
+};
+
+export const getByAuth0Id = async (auth0Id) => {
+  return await model.findOne({ auth0Id });
+};
+
+export const getOrCreateByAuth0Id = async (auth0Id) => {
+  const existing = await model.findOne({ auth0Id });
+
+  if (existing) return existing;
+
+  return await model.create({ auth0Id });
 };

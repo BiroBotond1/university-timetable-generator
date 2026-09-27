@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { useAppStore } from '@/modules/app/app.store'
+import { joinProject, leaveProject } from '@/modules/app/app.socket'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +33,31 @@ router.beforeEach(async (to, from, next) => {
   //Redirect every other route to /login if not authenticated
   if (!isAuthenticated.value) {
     return next('/Login')
+  }
+
+  // Entering a project route joins its socket room; leaving one drops it.
+  const appStore = useAppStore()
+  const projectId = 'projectId' in to.params
+    ? (to.params.projectId as string)
+    : undefined
+
+  if (!projectId) {
+    if (appStore.projectId) {
+      appStore.projectId = null
+      leaveProject()
+    }
+    return next()
+  }
+
+  if (appStore.projectId !== projectId) {
+    const joined = await joinProject(projectId)
+
+    if (!joined.ok) {
+      appStore.projectId = null
+      return next('/')
+    }
+
+    appStore.projectId = projectId
   }
 
   next()

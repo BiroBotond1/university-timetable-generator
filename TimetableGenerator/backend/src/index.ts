@@ -7,9 +7,9 @@ import cors from 'cors';
 import initializeSocket from './socket/socket.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import mongoMiddleware from './middleware/mongoMiddleware.js';
+import userContext from './middleware/userContext.js';
+import { requireProjectAccess } from './middleware/projectAccess.js';
 import {auth} from 'express-oauth2-jwt-bearer'
-
-import timetableApiRouter from './routes/timetable.js';
 
 import subjectApi from './api/SubjectApi.js';
 import teacherApi from './api/TeacherApi.js';
@@ -17,7 +17,8 @@ import locationApi from './api/LocationApi.js';
 import classApi from './api/ClassApi.js';
 import classHourApi from './api/ClassHourApi.js';
 import constraintApi from './api/ConstraintApi.js';
-import * as constraintService from './services/ConstraintService.js';
+import projectApi from './api/ProjectApi.js';
+import * as projectService from './services/ProjectService.js';
 
 import 'dotenv/config'
 
@@ -36,7 +37,7 @@ mongoose
   })
   .then(() => {
     console.log('MongoDB database Connected...')
-    constraintService.initializeConstraints() 
+    projectService.clearStaleGenerationStatus()
   })
   .catch((err) => console.log(err));
 
@@ -50,16 +51,18 @@ app.use(auth({
 
 app.use(mongoMiddleware);
 
-// api
-app.use('/api/constraints', constraintApi);
-app.use('/api/subjects', subjectApi);
-app.use('/api/teachers', teacherApi);
-app.use('/api/locations', locationApi);
-app.use('/api/classes', classApi);
-app.use('/api/classHours', classHourApi);
+app.use(userContext);
 
-// Routes
-app.use('/timetable', timetableApiRouter);
+// api
+app.use('/api/projects', projectApi);
+
+const scoped = '/api/projects/:projectId';
+app.use(`${scoped}/constraints`, requireProjectAccess, constraintApi);
+app.use(`${scoped}/subjects`, requireProjectAccess, subjectApi);
+app.use(`${scoped}/teachers`, requireProjectAccess, teacherApi);
+app.use(`${scoped}/locations`, requireProjectAccess, locationApi);
+app.use(`${scoped}/classes`, requireProjectAccess, classApi);
+app.use(`${scoped}/classHours`, requireProjectAccess, classHourApi);
 
 app.use(errorMiddleware); 
 

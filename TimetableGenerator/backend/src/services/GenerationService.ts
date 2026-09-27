@@ -2,6 +2,7 @@ import * as classService from './ClassService.js'
 import * as locationService from './LocationService.js'
 import * as teacherService from './TeacherService.js'
 import * as impExpService from './ImportExportService.js';
+import * as projectService from './ProjectService.js';
 
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
@@ -20,17 +21,55 @@ var generatorProto = grpc.loadPackageDefinition(packageDefinition).generator;
 
 var target = 'localhost:50051';
 
-let call = null
+const inFlight = new Map();
 
-export const generate = async () => {
+// One generation at a time across the server: a single engine process running
+// two searches just makes both slower. Other projects queue instead of being
+// refused.
+let queue = Promise.resolve();
+
+export const isGenerating = (projectId) => inFlight.has(String(projectId));
+
+export const generate = async (projectId) => {
+  const key = String(projectId);
+
+  if (inFlight.has(key)) {
+    throw new Error('A generation is already running for this project');
+  }
+
+  // Set before any await, so two simultaneous requests can't both pass the check.
+  const entry = { call: null, cancelled: false };
+  inFlight.set(key, entry);
+
+  // Not awaited here: the queue slot must be taken synchronously to keep
+  // request order.
+  const queuedWrite = projectService.setGenerationStatus(projectId, 'queued');
+
+  const run = queue.then(async () => {
+    // Must land before execute() sets 'running'.
+    await queuedWrite;
+    return execute(projectId, key, entry);
+  });
+
+  // Keep the chain alive if this run fails.
+  queue = run.catch(() => {});
+
+  return run;
+};
+
+const execute = async (projectId, key, entry) => {
   try {
-    var client = new generatorProto.Generator(target,
+    if (entry.cancelled) return;
+
+    await projectService.setGenerationStatus(projectId, 'running');
+
+    const client = new generatorProto.Generator(target,
                                           grpc.credentials.createInsecure());
 
-    const inputString = await impExpService.getTimetableData();
+    const inputString = await impExpService.getTimetableData(projectId);
 
     const response = await new Promise((resolve, reject) => {
-        call = client.Generate({ input: inputString }, (err, response) => {
+      entry.call = client.Generate({ input: inputString }, (err, response) => {
         if (err) {
           reject(err);
         } else {
@@ -46,7 +85,7 @@ export const generate = async () => {
     console.log(`Location fitnes: ${catalogs.fitnesLocation}`);
     console.log(`Elapsed time: ${catalogs.elapsedTime}`);
 
-    await updateCatalogs(catalogs);
+    await updateCatalogs(projectId, catalogs);
 
   } catch (e) {
     if (e.code === grpc.status.CANCELLED) {
@@ -54,24 +93,36 @@ export const generate = async () => {
     } else {
       console.error('An error occurred:', e);
     }
+  } finally {
+    inFlight.delete(key);
+    await projectService.setGenerationStatus(projectId, 'idle');
   }
 }
 
-export const cancel = () => {
-  if (call != null) {
+export const cancel = (projectId) => {
+  const entry = inFlight.get(String(projectId));
+
+  if (!entry) return false;
+
+  // Still queued: there is no gRPC call yet, so execute() skips it instead.
+  entry.cancelled = true;
+
+  if (entry.call) {
     console.log('Cancelling generation...');
-    call.cancel()
+    entry.call.cancel();
   }
+
+  return true;
 }
 
-async function updateCatalogs(catalogs) {
+async function updateCatalogs(projectId, catalogs) {
   for (const classID in catalogs.classCatalogs) {
-    await classService.addCatalog(classID, catalogs.classCatalogs[classID]);
+    await classService.addCatalog(projectId, classID, catalogs.classCatalogs[classID]);
   }
   for (const teacherID in catalogs.teacherCatalogs) {
-    await teacherService.addCatalog(teacherID, catalogs.teacherCatalogs[teacherID]);
+    await teacherService.addCatalog(projectId, teacherID, catalogs.teacherCatalogs[teacherID]);
   }
   for (const locationID in catalogs.locationCatalogs) {
-    await locationService.addCatalog(locationID, catalogs.locationCatalogs[locationID]);
+    await locationService.addCatalog(projectId, locationID, catalogs.locationCatalogs[locationID]);
   }
 }

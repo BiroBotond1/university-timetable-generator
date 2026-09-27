@@ -9,6 +9,9 @@ import handleClassHourEvents from './ClassHourSocket.js';
 import handleGenerationEvents from './GenerationSocket.js';
 import handleImportExportEvents from './ImportExportSocket.js';
 import handleAuth0Events from './Auth0Socket.js'
+import handleProjectRoomEvents, { userRoomOf } from './ProjectRoomSocket.js'
+import { setIo } from './notify.js'
+import socketAuth from '../middleware/socketAuth.js'
 
 const initializeSocket = (server) => {
   const io = new SocketIOServer(server, {
@@ -19,9 +22,15 @@ const initializeSocket = (server) => {
 
   console.log('initialize socket')
 
+  io.use(socketAuth);
+
+  setIo(io);
+
   io.on('connection', (socket) => {
+    socket.join(userRoomOf(socket.data.userId));
 
     try {
+      handleProjectRoomEvents(socket, io);
       handleConstraintEvents(socket, io);
       handleLocationEvents(socket, io);
       handleTeacherEvents(socket, io);

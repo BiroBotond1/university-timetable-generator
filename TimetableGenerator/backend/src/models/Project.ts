@@ -3,23 +3,23 @@ import mongoose from 'mongoose'
 const projectSchema = new mongoose.Schema({
   name: { type: String, required: true },
 
+  // Denormalised from ProjectMember for a one-read ownership check.
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
 
-  collaborators: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
+  // Persisted so a reloaded page still sees a run in progress.
+  generationStatus: {
+    type: String,
+    enum: ['idle', 'queued', 'running'],
+    default: 'idle',
+  },
 
-  invitations: [{
-    email: String,
-    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    invitedAt: { type: Date, default: Date.now },
-    status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' }
-  }]
-});
+  generationStartedAt: { type: Date, default: null },
+}, { timestamps: true });
+
+projectSchema.index({ owner: 1 });
 
 export const model = mongoose.model('Project', projectSchema);

@@ -11,6 +11,7 @@
     "start:backend": "yarn workspace backend start",
     "start:frontend": "yarn workspace frontend dev",
     "start": "concurrently \"yarn start:backend\" \"yarn start:frontend\"",
+    "test": "yarn workspace backend test",
     "deps:up": "docker compose -f docker-compose-deps.yml up -d",
     "deps:down": "docker compose -f docker-compose-deps.yml down"
   },

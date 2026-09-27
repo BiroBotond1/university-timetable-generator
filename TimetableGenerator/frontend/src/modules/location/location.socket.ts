@@ -1,30 +1,33 @@
 import type { LocationData } from './location.type';
 import { socket } from '@/modules/app/app.socket'
+import { listen } from '@/modules/app/socket.listeners'
 
 export const setupLocationSocketListeners = (
   locations: Ref<LocationData[]>
-) => {
-  socket.on('updateLocation', async (obj) => {
-    const index = locations.value.findIndex(location => location._id === obj.id);
+) => listen({
+  updateLocation: (obj) => {
+    const index = locations.value.findIndex(item => item._id === obj.id);
     if (index !== -1) {
       locations.value[index] = obj.location
     }
-  })
-  socket.on('createLocation', async (obj) => {
+  },
+
+  createLocation: (obj) => {
     locations.value.push(obj.location);
-  })
-  socket.on('deleteLocation', async (obj) => {
+  },
+
+  deleteLocation: (obj) => {
     if (obj.error) {
       console.log(obj.error)
+      return
     }
-    else {
-      const index = locations.value.findIndex(location => location._id === obj.id);
-      if (index !== -1) {
-        locations.value.splice(index, 1);
-      }
+
+    const index = locations.value.findIndex(item => item._id === obj.id);
+    if (index !== -1) {
+      locations.value.splice(index, 1);
     }
-  })
-};
+  },
+});
 
 export const emitCreateLocation = (locationData: Partial<LocationData>) => {
   socket.emit('sendCreateLocation', { location: locationData });

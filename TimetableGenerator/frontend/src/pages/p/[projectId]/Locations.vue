@@ -110,9 +110,15 @@ watch(dialogDelete, (val) => {
   val || closeDelete();
 });
 
+let teardown: (() => void) | null = null
+
 onMounted(async () => {
   locations.value = await fetchLocations();
-  setupLocationSocketListeners(locations);
+  teardown = setupLocationSocketListeners(locations);
+});
+
+onUnmounted(() => {
+  teardown?.()
 });
 
 const setEditedItem = () => {

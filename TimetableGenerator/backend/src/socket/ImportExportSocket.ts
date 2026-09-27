@@ -1,14 +1,21 @@
 import * as service from '../services/ImportExportService.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('getTimetableData', async () => {
-    const timetableData = await service.getTimetableData()
+    const projectId = projectOf(socket);
+    if (!projectId) return;
+
+    const timetableData = await service.getTimetableData(projectId)
     socket.emit('timetableData', timetableData);
   })
 
   socket.on('doImport', async (obj) => {
-    await service.doImport(obj.content)
-    io.emit('importDone')
+    const projectId = projectOf(socket);
+    if (!projectId) return;
+
+    await service.doImport(projectId, obj.content)
+    io.to(roomOf(projectId)).emit('importDone')
   })
 }
 

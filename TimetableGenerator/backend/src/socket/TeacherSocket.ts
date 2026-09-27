@@ -1,12 +1,16 @@
 import * as service from '../services/TeacherService.js'
 import * as classHourService from '../services/ClassHourService.js'
+import { projectOf, roomOf } from './ProjectRoomSocket.js'
 
 const handleEvents = (socket, io) => {
   socket.on('sendUpdateTeacher', async (obj) => {
     try {
-      await service.update(obj.id, obj.teacher);
-      obj.teacher = await service.getById(obj.id);
-      io.emit('updateTeacher', obj);
+      const projectId = projectOf(socket);
+      if (!projectId) return;
+
+      await service.update(projectId, obj.id, obj.teacher);
+      obj.teacher = await service.getById(projectId, obj.id);
+      io.to(roomOf(projectId)).emit('updateTeacher', obj);
     } catch (error) {
       console.error('Error updating teacher:', error);
     }
@@ -14,8 +18,11 @@ const handleEvents = (socket, io) => {
 
   socket.on('sendCreateTeacher', async (obj) => {
     try {
-      obj.teacher = await service.create(obj.teacher);
-      io.emit('createTeacher', obj);
+      const projectId = projectOf(socket);
+      if (!projectId) return;
+
+      obj.teacher = await service.create(projectId, obj.teacher);
+      io.to(roomOf(projectId)).emit('createTeacher', obj);
     } catch (error) {
       console.error('Error creating teacher:', error);
     }
@@ -23,12 +30,15 @@ const handleEvents = (socket, io) => {
 
   socket.on('sendDeleteTeacher', async (obj) => {
     try {
-      if (await classHourService.isTeacherUsed(obj.id)) {
-        return io.emit('deleteTeacher', { error: 'Teacher cannot be deleted because it is used' });
+      const projectId = projectOf(socket);
+      if (!projectId) return;
+
+      if (await classHourService.isTeacherUsed(projectId, obj.id)) {
+        return socket.emit('deleteTeacher', { error: 'Teacher cannot be deleted because it is used' });
       }
 
-      await service.deleteById(obj.id);
-      io.emit('deleteTeacher', obj);
+      await service.deleteById(projectId, obj.id);
+      io.to(roomOf(projectId)).emit('deleteTeacher', obj);
     } catch (error) {
       console.error('Error deleting teacher:', error);
     }

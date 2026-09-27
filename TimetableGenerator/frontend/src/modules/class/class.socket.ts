@@ -1,31 +1,33 @@
 import type { ClassData } from '@/modules/class/class.type';
 import { socket } from '@/modules/app/app.socket'
+import { listen } from '@/modules/app/socket.listeners'
 
 export const setupClassSocketListeners = (
   classes: Ref<ClassData[]>
-) => {
-  socket.on('updateClass', async (obj) => {
-    const index = classes.value.findIndex(classs => classs._id === obj.id);
+) => listen({
+  updateClass: (obj) => {
+    const index = classes.value.findIndex(item => item._id === obj.id);
     if (index !== -1) {
-      classes.value[index] = obj.class;
+      classes.value[index] = obj.class
     }
-  });
+  },
 
-  socket.on('createClass', async (obj) => {
+  createClass: (obj) => {
     classes.value.push(obj.class);
-  });
+  },
 
-  socket.on('deleteClass', async (obj) => {
+  deleteClass: (obj) => {
     if (obj.error) {
-      console.log(obj.error);
-    } else {
-      const index = classes.value.findIndex(classs => classs._id === obj.id);
-      if (index !== -1) {
-        classes.value.splice(index, 1);
-      }
+      console.log(obj.error)
+      return
     }
-  });
-};
+
+    const index = classes.value.findIndex(item => item._id === obj.id);
+    if (index !== -1) {
+      classes.value.splice(index, 1);
+    }
+  },
+});
 
 export const emitCreateClass = (classData: Partial<ClassData>) => {
   socket.emit('sendCreateClass', { class: classData });

@@ -19,14 +19,16 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
-    '/ClassCatalogs': RouteRecordInfo<'/ClassCatalogs', '/ClassCatalogs', Record<never, never>, Record<never, never>>,
-    '/Classes': RouteRecordInfo<'/Classes', '/Classes', Record<never, never>, Record<never, never>>,
-    '/ClassHours': RouteRecordInfo<'/ClassHours', '/ClassHours', Record<never, never>, Record<never, never>>,
-    '/LocationCatalogs': RouteRecordInfo<'/LocationCatalogs', '/LocationCatalogs', Record<never, never>, Record<never, never>>,
-    '/Locations': RouteRecordInfo<'/Locations', '/Locations', Record<never, never>, Record<never, never>>,
     '/Login': RouteRecordInfo<'/Login', '/Login', Record<never, never>, Record<never, never>>,
-    '/Subjects': RouteRecordInfo<'/Subjects', '/Subjects', Record<never, never>, Record<never, never>>,
-    '/TeacherCatalogs': RouteRecordInfo<'/TeacherCatalogs', '/TeacherCatalogs', Record<never, never>, Record<never, never>>,
-    '/Teachers': RouteRecordInfo<'/Teachers', '/Teachers', Record<never, never>, Record<never, never>>,
+    '/p/[projectId]/ClassCatalogs': RouteRecordInfo<'/p/[projectId]/ClassCatalogs', '/p/:projectId/ClassCatalogs', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Classes': RouteRecordInfo<'/p/[projectId]/Classes', '/p/:projectId/Classes', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/ClassHours': RouteRecordInfo<'/p/[projectId]/ClassHours', '/p/:projectId/ClassHours', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Generate': RouteRecordInfo<'/p/[projectId]/Generate', '/p/:projectId/Generate', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/LocationCatalogs': RouteRecordInfo<'/p/[projectId]/LocationCatalogs', '/p/:projectId/LocationCatalogs', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Locations': RouteRecordInfo<'/p/[projectId]/Locations', '/p/:projectId/Locations', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Members': RouteRecordInfo<'/p/[projectId]/Members', '/p/:projectId/Members', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Subjects': RouteRecordInfo<'/p/[projectId]/Subjects', '/p/:projectId/Subjects', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/TeacherCatalogs': RouteRecordInfo<'/p/[projectId]/TeacherCatalogs', '/p/:projectId/TeacherCatalogs', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Teachers': RouteRecordInfo<'/p/[projectId]/Teachers', '/p/:projectId/Teachers', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
   }
 }

@@ -1,14 +1,14 @@
 <template>
-  <v-data-table :headers="headers" :items="teachers" density="comfortable">
+  <v-data-table :headers="headers" :items="subjects" density="comfortable">
     <template v-slot:top>
       <v-toolbar flat color="primary">
-        <v-toolbar-title>Teachers</v-toolbar-title>
+        <v-toolbar-title>Subjects</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="900px">
+        <v-dialog v-model="dialog" max-width="800px">
           <template v-slot:activator="{ props }">
             <v-btn color="white" dark class="mb-2" v-bind="props" @click="editItem(undefined)">
-              New Teacher
+              New Subject
             </v-btn>
           </template>
           <v-card color="background">
@@ -17,14 +17,14 @@
             </v-card-title>
 
             <v-card-text>
-              <v-text-field 
-                class="mb-2"
-                v-model="editedItem.name"
-                label="Teacher name"
-                hide-details
-                density="comfortable">
-              </v-text-field>
-              <DatePicker v-model="editedItem.inappropriateDates" />
+              <v-text-field v-model="editedItem.name" label="Subject name"></v-text-field>
+              <v-combobox 
+                v-model="editedItem.locations"
+                label="Locations"
+                :items="allLocations"
+                item-title="name"
+                multiple>
+              </v-combobox>
             </v-card-text>
 
             <v-card-actions>
@@ -58,35 +58,38 @@
         :onDelete="deleteItem"
       />
     </template>
-    <template v-slot:[`item.inappropriateDates`]="{ item }">
-      <a target="_blank" @click="editItem(item)">
-        Click to see
-      </a>
+    <template v-slot:[`item.locations`]="{ item }">
+      <v-label v-for="location in item.locations" :key="location._id">
+        [{{ location.name }}]
+      </v-label>
     </template>
   </v-data-table>
 </template>
 
 <script setup lang="ts">
-import type { TeacherData } from '@/modules/teacher/teacher.type';
-import { fetchTeachers } from '@/modules/teacher/teacher.api';
-import { setupTeacherSocketListeners, emitCreateTeacher, emitDeleteTeacher, emitUpdateTeacher } from '@/modules/teacher/teacher.socket';
+import type { SubjectData } from '@/modules/subject/subject.type';
+import type { LocationData } from '@/modules/location/location.type';
+import { fetchSubjects } from '@/modules/subject/subject.api';
+import { fetchLocations } from '@/modules/location/location.api';
+import { setupSubjectSocketListeners, emitCreateSubject, emitDeleteSubject, emitUpdateSubject } from '@/modules/subject/subject.socket';
 
 const dialog = ref(false)
 const dialogDelete = ref(false)
 const headers = ref([
   { title: 'Name', key: 'name', },
-  { title: 'Inappropriate Dates', key: 'inappropriateDates' },
+  { title: 'Locations', key: "locations" },
   { title: 'Actions', key: 'actions', sortable: false }
 ])
-const teachers = ref<TeacherData[]>([])
+const subjects = ref<SubjectData[]>([])
+const allLocations = ref<LocationData[]>([])
 const editedIndex = ref(-1)
-const editedItem = ref<TeacherData>({
+const editedItem = ref<SubjectData>({
   _id: '',
   name: '',
-  inappropriateDates: []
+  locations: []
 })
 
-const formTitle = computed(() => editedIndex.value === -1 ? 'New Teacher' : 'Edit Teacher')
+const formTitle = computed(() => editedIndex.value === -1 ? 'New Subject' : 'Edit Subject')
 
 watch(dialog, (val) => {
   val || close()
@@ -96,44 +99,45 @@ watch(dialogDelete, (val) => {
   val || closeDelete()
 })
 
+let teardown: (() => void) | null = null
+
 onMounted(async () => {
-  teachers.value = await fetchTeachers()
-  setupTeacherSocketListeners(teachers)
+  subjects.value = await fetchSubjects()
+  teardown = setupSubjectSocketListeners(subjects)
 })
 
+onUnmounted(() => {
+  teardown?.()
+});
+
 const setEditedItem = () => {
-  editedItem.value = teachers.value[editedIndex.value];
+  editedItem.value = subjects.value[editedIndex.value];
 }
 
-const editItem = async (item: TeacherData | undefined) => {
+const editItem = async (item: SubjectData | undefined) => {
+  allLocations.value = await fetchLocations()
   if(!item) {
     editedIndex.value = -1
     editedItem.value.name = ''
-    editedItem.value.inappropriateDates = [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0]
-    ]
+    editedItem.value.locations = []
   } else {
-    editedIndex.value = teachers.value.indexOf(item)
+    editedIndex.value = subjects.value.indexOf(item)
     if (editedIndex.value !== -1) {
-      editedItem.value = { ...teachers.value[editedIndex.value] };
-    }
+      editedItem.value = { ...subjects.value[editedIndex.value] };
   }
-
+  }
+  
   dialog.value = true
 }
 
-const deleteItem = async (item: TeacherData) => {
-  editedIndex.value = teachers.value.indexOf(item)
+const deleteItem = async(item: SubjectData) => {
+  editedIndex.value = subjects.value.indexOf(item)
   await setEditedItem()
   dialogDelete.value = true
 }
 
 const deleteItemConfirm = () => {
-  emitDeleteTeacher(editedItem.value._id)
+  emitDeleteSubject(editedItem.value._id)
   closeDelete()
 }
 
@@ -145,15 +149,15 @@ const closeDelete = () => {
   dialogDelete.value = false
 }
 
-const save = async () => {
-  let teacher = {
+const save = () => {
+  let subject = {
     name: editedItem.value.name,
-    inappropriateDates: Object.assign([], editedItem.value.inappropriateDates)
+    locations: editedItem.value.locations
   }
   if (editedIndex.value > -1) {
-    emitUpdateTeacher(editedItem.value._id, teacher)
+    emitUpdateSubject(editedItem.value._id, subject)
   } else {
-    emitCreateTeacher(teacher)
+    emitCreateSubject(subject)
   }
   close()
 }
