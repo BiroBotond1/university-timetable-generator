@@ -19,12 +19,17 @@
         color="white"
       ></v-progress-circular>
       <v-alert
-        v-if="notification"
-        color="primary"
-        icon="$success"
+        v-if="generationAlert"
+        :color="ALERTS[generationAlert].color"
+        :icon="ALERTS[generationAlert].icon"
+        :closable="generationAlert !== 'success'"
         density="compact"
+        @click:close="generationStore.dismissAlert()"
       >
-        Generating is done!
+        {{ ALERTS[generationAlert].text }}
+        <v-btn v-if="generationAlert !== 'success'" variant="text" size="small" @click="openGenerate">
+          Details
+        </v-btn>
       </v-alert>
     </v-app-bar>
 
@@ -82,7 +87,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useAppStore } from "@/modules/app/app.store";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import {
   emitDoImport,
   emitGetTimetableData,
@@ -91,13 +96,24 @@ import {
 import { doImport } from "@/modules/import-export/import-export.service";
 import { useInvitationStore } from "@/modules/project/invitation.store";
 import { setupMembershipSocketListeners } from "@/modules/project/project.socket";
+import { useGenerationStore, type GenerationAlert } from "@/modules/generation/generation.store";
+import { setupGenerationSocketListeners } from "@/modules/generation/generation.socket";
 
 const router = useRouter();
+const route = useRoute();
 
 const appStore = useAppStore()
-const generating = computed(() => appStore.generating);
-const notification = computed(() => appStore.notification);
 const projectId = computed(() => appStore.projectId);
+
+const generationStore = useGenerationStore()
+const generating = computed(() => generationStore.generating);
+const generationAlert = computed(() => generationStore.alert);
+
+const ALERTS: Record<GenerationAlert, { color: string, icon: string, text: string }> = {
+  success: { color: "primary", icon: "$success", text: "Generating is done!" },
+  warning: { color: "warning", icon: "$warning", text: "Generated, but some hard constraints are not met." },
+  failure: { color: "error", icon: "$error", text: "Generation failed." },
+};
 
 const invitationStore = useInvitationStore()
 
@@ -108,9 +124,19 @@ const showFlash = computed({
 
 let teardownImportExport: (() => void) | null = null
 let teardownMembership: (() => void) | null = null
+let teardownGeneration: (() => void) | null = null
 
 onMounted(() => {
   teardownImportExport = setupImportExportSocketListeners();
+
+  // Here rather than on the Generate page, so a tab on any page of the project
+  // follows a run and hears how it ended.
+  teardownGeneration = setupGenerationSocketListeners({
+    onRun: (run) => generationStore.apply(run),
+    onStale: () => {
+      if (appStore.projectId) generationStore.load()
+    },
+  });
 
   // Mounted for the whole session, so it hosts the membership listeners.
   teardownMembership = setupMembershipSocketListeners({
@@ -149,7 +175,24 @@ watch(() => appStore.currentUser?._id, (id) => {
 onUnmounted(() => {
   teardownImportExport?.()
   teardownMembership?.()
+  teardownGeneration?.()
 });
+
+// Runs belong to one project; load them whenever another one is opened.
+watch(() => appStore.projectId, (id) => {
+  generationStore.clear()
+  if (id) generationStore.load()
+}, { immediate: true })
+
+// The Generate page shows the run in full, so opening it counts as seeing a
+// warning or a failure.
+watch(() => route.name, (name) => {
+  if (name === '/p/[projectId]/Generate') generationStore.dismissAlert()
+})
+
+const openGenerate = () => {
+  router.push(`${base.value}/Generate`)
+}
 
 const base = computed(() => `/p/${projectId.value}`)
 
