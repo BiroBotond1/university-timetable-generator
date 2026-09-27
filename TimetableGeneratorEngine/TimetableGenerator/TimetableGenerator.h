@@ -14,8 +14,8 @@ private:
 	void SimulatedAnnealing();
 	std::string WriteCatalog();
 
-	void Changes(Database& p_db);
-	void Change(Database& p_db);
+	bool Changes(Database& p_db);
+	bool Change(Database& p_db);
 	bool ChangeLocations(std::shared_ptr<ClassHour> p_classHour, std::shared_ptr<Location> p_location, Time p_time);
 	void SwapLocations(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
 	void SwapTeachers(std::shared_ptr<Class> p_class, Time p_time1, Time p_time2);
@@ -27,7 +27,7 @@ private:
 	double										Fitness(Database& p_db);
 	std::tuple<double, double, double, bool>	Evaluate(Database& p_db);
 
-	std::tuple<Time, Time>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class);
+	std::optional<std::tuple<Time, Time>>	GetRandomFreeHourTime(std::shared_ptr<Class> p_class);
 
 private:
 	bool			m_bActive = false;
