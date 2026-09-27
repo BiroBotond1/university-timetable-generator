@@ -11,6 +11,7 @@ import {
   respondToInvitation,
   removeMember,
   revokeInvitation,
+  leaveProject,
   transferOwnership
 } from '../controllers/ProjectController.js'
 import {
@@ -42,6 +43,10 @@ router.route('/:projectId/members/:userId')
 
 router.route('/:projectId/invitations/:memberId')
   .delete(requireProjectAccess, requireProjectOwner, revokeInvitation);
+
+// Any member may leave; the service refuses the owner.
+router.route('/:projectId/leave')
+  .post(requireProjectAccess, leaveProject);
 
 router.route('/:projectId/ownership')
   .post(requireProjectAccess, requireProjectOwner, transferOwnership);

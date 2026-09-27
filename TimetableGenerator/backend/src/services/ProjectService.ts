@@ -227,6 +227,27 @@ export const removeMember = async (projectId, userId) => {
 };
 
 /**
+ * A collaborator removing themselves. The owner cannot leave: a project with
+ * no owner could never be managed or deleted again, so ownership has to be
+ * handed over first (ADR 0001).
+ */
+export const leaveProject = async (projectId, userId) => {
+  const project = await Project.findById(projectId);
+
+  if (!project) return null;
+
+  if (String(project.owner) === String(userId)) {
+    throw new Error('The owner cannot leave the project; transfer ownership first');
+  }
+
+  return await ProjectMember.findOneAndDelete({
+    project: projectId,
+    user: userId,
+    status: 'active',
+  });
+};
+
+/**
  * Hands the project to an existing active collaborator. The previous owner
  * stays on as a collaborator, which is what makes it safe for them to leave
  * afterwards (ADR 0001).

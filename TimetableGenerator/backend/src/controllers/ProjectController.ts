@@ -185,11 +185,37 @@ export const removeMember = async (req, res) => {
   }
 };
 
+export const leaveProject = async (req, res) => {
+  try {
+    const projectId = req.context.projectId;
+    const userId = req.context.user._id;
+
+    const left = await service.leaveProject(projectId, userId);
+
+    if (!left) {
+      return res.status(404).json({ error: 'Membership not found' });
+    }
+
+    // Every tab the leaver has open in this project, not only the one that
+    // asked -- the others would otherwise keep write access.
+    evictFromProject(projectId, userId, 'left');
+    toUser(userId, 'projectsChanged');
+    toProject(projectId, 'membersChanged');
+
+    res.json({ data: left, status: 'success' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 export const transferOwnership = async (req, res) => {
   try {
+    const previousOwnerId = req.context.user._id;
+    const newOwnerId = req.body.userId;
+
     const project = await service.transferOwnership(
       req.context.projectId,
-      req.body.userId
+      newOwnerId
     );
 
     if (!project) {
@@ -197,6 +223,9 @@ export const transferOwnership = async (req, res) => {
     }
 
     toProject(req.context.projectId, 'membersChanged');
+    // Both people's project lists show a different role now.
+    toUser(previousOwnerId, 'projectsChanged');
+    toUser(newOwnerId, 'projectsChanged');
 
     res.json({ data: project, status: 'success' });
   } catch (err) {
