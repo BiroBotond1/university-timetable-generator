@@ -7,10 +7,17 @@
 #include "ClassHour.h"
 #include "Random.h"
 #include "GenerationError.h"
+#include "GenerationCancelled.h"
 #include <limits>
 
 namespace
 {
+    void ThrowIfCancelled(const std::atomic<bool>& p_cancelled)
+    {
+        if (p_cancelled)
+            throw GenerationCancelled();
+    }
+
     struct WeeklyHours
     {
         std::unordered_map<std::string, int> mByTeacher;
@@ -43,11 +50,17 @@ namespace
 
 std::string TimetableGenerator::Run(const std::string& input)
 {
+    const std::atomic<bool> notCancelled{ false };
+    return Run(input, notCancelled);
+}
+
+std::string TimetableGenerator::Run(const std::string& input, const std::atomic<bool>& p_cancelled)
+{
     m_DB.Fill(input);
     CheckWeeklyHours();
     InitLinearAnnealingParameter();
-    InitCatalogs(input);
-    SimulatedAnnealing();
+    InitCatalogs(input, p_cancelled);
+    SimulatedAnnealing(p_cancelled);
     return WriteCatalog();
 }
 
@@ -87,11 +100,13 @@ void TimetableGenerator::CheckWeeklyHours()
 
 //hours are placed one at a time without backtracking, so even a schedulable school can run into
 //a dead end; a fresh database and a different order usually get past it
-void TimetableGenerator::InitCatalogs(const std::string& p_input)
+void TimetableGenerator::InitCatalogs(const std::string& p_input, const std::atomic<bool>& p_cancelled)
 {
     m_bActive = false;
     for (int nAttempt = 1; ; nAttempt++)
     {
+        ThrowIfCancelled(p_cancelled);
+
         auto unplaced = PlaceClassHours();
         if (!unplaced)
             return;
@@ -132,17 +147,19 @@ std::shared_ptr<ClassHour> TimetableGenerator::PlaceClassHours()
     return nullptr;
 }
 
-void TimetableGenerator::SimulatedAnnealing() 
-{   
+void TimetableGenerator::SimulatedAnnealing(const std::atomic<bool>& p_cancelled)
+{
     Database bestDB;
     m_DB.DeepCopy(bestDB);
 
     auto t_start = std::chrono::high_resolution_clock::now();
     double initialT = MAX_TEMP, t;
     t = initialT;
-    int i = 0, nStepsWithNoBetterSolution = 0; 
+    int i = 0, nStepsWithNoBetterSolution = 0;
     while (t > MIN_TEMP)
     {
+        ThrowIfCancelled(p_cancelled);
+
         double fitnessC = Fitness();
 
         Database localDB;

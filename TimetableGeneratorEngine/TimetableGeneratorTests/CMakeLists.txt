@@ -25,6 +25,8 @@ set(TEST_CASES
     valid_school
     class_without_hours
     only_fits_in_order
+    cancelled_before_start
+    cancelled_while_annealing
 )
 
 foreach(test_case IN LISTS TEST_CASES)
