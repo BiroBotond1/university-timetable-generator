@@ -66,6 +66,12 @@ export const revokeInvitation = async (id: string, memberId: string): Promise<Pr
   }));
 }
 
+export const leaveProject = async (id: string): Promise<ProjectMemberData> => {
+  return unwrap(await fetchService.fetchWithAuth(`projects/${id}/leave`, {
+    method: 'POST'
+  }));
+}
+
 export const transferOwnership = async (id: string, userId: string): Promise<ProjectData> => {
   return unwrap(await fetchService.fetchWithAuth(`projects/${id}/ownership`, {
     method: 'POST',

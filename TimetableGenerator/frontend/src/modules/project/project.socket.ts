@@ -2,7 +2,7 @@ import { listen } from '@/modules/app/socket.listeners'
 
 export interface ProjectClosedEvent {
   projectId: string,
-  reason: 'removed' | 'deleted'
+  reason: 'removed' | 'left' | 'deleted'
 }
 
 /**
@@ -19,7 +19,13 @@ export const setupMembershipSocketListeners = (handlers: {
   projectClosed: (payload) => handlers.onProjectClosed(payload),
 })
 
-/** The member list of the project currently open has changed. */
+/**
+ * The member list of the project currently open has changed.
+ *
+ * Also refetches after a reconnect: anything broadcast while the socket was
+ * down is gone, and the list would otherwise stay stale until a page reload.
+ */
 export const setupMembersSocketListeners = (onChanged: () => void) => listen({
   membersChanged: () => onChanged(),
+  connect: () => onChanged(),
 })

@@ -56,6 +56,16 @@
               :title="item.title"
             >
             </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              v-for="item in memberItems"
+              :key="item.title"
+              link
+              :to="item.route"
+              :prepend-icon="item.icon"
+              :title="item.title"
+            >
+            </v-list-item>
           </template>
           <template v-else>
             
@@ -119,9 +129,11 @@ onMounted(() => {
 
       // The server has already taken this tab out of the project; follow it.
       if (appStore.projectId === closedId) {
-        appStore.flash = reason === 'deleted'
-          ? 'This project was deleted by its owner.'
-          : 'You were removed from this project.'
+        appStore.flash = {
+          deleted: 'This project was deleted by its owner.',
+          removed: 'You were removed from this project.',
+          left: 'You left the project.',
+        }[reason] ?? 'You no longer have access to this project.'
         router.push({ name: "/" })
       }
     },
@@ -152,7 +164,6 @@ const items = computed(() => [
   { title: "Subjects", icon: "mdi-book-variant", route: `${base.value}/Subjects` },
   { title: "Classes", icon: "mdi-account-group", route: `${base.value}/Classes` },
   { title: "ClassHours", icon: "mdi-clock-outline", route: `${base.value}/ClassHours` },
-  { title: "Members", icon: "mdi-account-multiple", route: `${base.value}/Members` },
 ]);
 
 const catalogItems = computed(() => [
@@ -171,6 +182,11 @@ const catalogItems = computed(() => [
     icon: "mdi-file-marker",
     route: `${base.value}/LocationCatalogs`,
   }
+]);
+
+// Its own section: it is about who is on the project, not about the school.
+const memberItems = computed(() => [
+  { title: "Members", icon: "mdi-account-multiple", route: `${base.value}/Members` },
 ]);
 
 const isRail = ref(true) 

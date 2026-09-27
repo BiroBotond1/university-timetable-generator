@@ -88,6 +88,14 @@
             <v-chip v-if="isMe(member)" size="x-small" class="mr-2">you</v-chip>
             <v-btn
               v-if="isOwner"
+              icon="mdi-crown-outline"
+              variant="text"
+              size="small"
+              :aria-label="`Make ${nameOf(member)} the owner`"
+              @click="confirmTransfer(member)"
+            ></v-btn>
+            <v-btn
+              v-if="isOwner"
               icon="mdi-account-remove"
               variant="text"
               size="small"
@@ -125,6 +133,65 @@
       </template>
     </template>
 
+    <v-card v-if="role" class="mt-8" variant="outlined">
+      <v-card-title class="text-subtitle-1">Leave this project</v-card-title>
+      <v-card-text class="d-flex align-center ga-4">
+        <span class="text-body-2 text-medium-emphasis">
+          {{ isOwner
+            ? 'As the owner you cannot leave. Make a collaborator the owner first, using the crown next to their name.'
+            : 'You will lose access immediately. The owner can invite you again later.' }}
+        </span>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="error"
+          variant="tonal"
+          :disabled="isOwner"
+          @click="leaveDialog = true"
+        >
+          Leave
+        </v-btn>
+      </v-card-text>
+    </v-card>
+
+    <v-dialog v-model="transferDialog" max-width="480">
+      <v-card>
+        <v-card-title>Transfer ownership</v-card-title>
+        <v-card-text>
+          <p class="mb-3">
+            Make <strong>{{ memberToPromote ? nameOf(memberToPromote) : '' }}</strong>
+            the owner of <strong>{{ projectName }}</strong>?
+          </p>
+          <p class="mb-0 text-body-2">
+            You will become a collaborator. They will be able to invite and
+            remove members &mdash; including you &mdash; and delete the
+            project. Only they can give ownership back.
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="transferDialog = false">Cancel</v-btn>
+          <v-btn color="primary" :loading="transferring" @click="submitTransfer">
+            Transfer
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="leaveDialog" max-width="460">
+      <v-card>
+        <v-card-title>Leave project</v-card-title>
+        <v-card-text>
+          Leave <strong>{{ projectName }}</strong>? You will lose access
+          immediately, on every tab you have it open in.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="leaveDialog = false">Cancel</v-btn>
+          <v-btn color="error" :loading="leaving" @click="submitLeave">Leave</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="removeDialog" max-width="460">
       <v-card>
         <v-card-title>Remove collaborator</v-card-title>
@@ -144,25 +211,29 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/modules/app/app.store'
 import {
   fetchMembers,
   fetchProject,
   inviteMember,
+  leaveProject,
   removeMember,
-  revokeInvitation
+  revokeInvitation,
+  transferOwnership
 } from '@/modules/project/project.api'
 import { setupMembersSocketListeners } from '@/modules/project/project.socket'
 import type { ProjectMemberData, ProjectRole } from '@/modules/project/project.type'
 
 const route = useRoute()
+const router = useRouter()
 const appStore = useAppStore()
 
 const projectId = computed(() => (route.params as { projectId?: string }).projectId ?? '')
 
 const members = ref<ProjectMemberData[]>([])
 const role = ref<ProjectRole | null>(null)
+const projectName = ref('')
 const loading = ref(true)
 const error = ref('')
 
@@ -173,6 +244,13 @@ const revoking = ref<string | null>(null)
 const removeDialog = ref(false)
 const removing = ref(false)
 const memberToRemove = ref<ProjectMemberData | null>(null)
+
+const transferDialog = ref(false)
+const transferring = ref(false)
+const memberToPromote = ref<ProjectMemberData | null>(null)
+
+const leaveDialog = ref(false)
+const leaving = ref(false)
 
 const isOwner = computed(() => role.value === 'owner')
 
@@ -205,6 +283,7 @@ const load = async () => {
       fetchMembers(projectId.value),
     ])
     role.value = project.role ?? null
+    projectName.value = project.name
     members.value = list
   } catch (err) {
     error.value = (err as Error).message
@@ -264,6 +343,47 @@ const submitRemove = async () => {
     error.value = (err as Error).message
   } finally {
     removing.value = false
+  }
+}
+
+const confirmTransfer = (member: ProjectMemberData) => {
+  memberToPromote.value = member
+  transferDialog.value = true
+}
+
+const submitTransfer = async () => {
+  const userId = memberToPromote.value?.user?._id
+  if (!userId) return
+
+  transferring.value = true
+  error.value = ''
+
+  try {
+    await transferOwnership(projectId.value, userId)
+    transferDialog.value = false
+    // Reloading picks up the new role, so this page switches to the
+    // collaborator view. The new owner's page switches via membersChanged.
+    await load()
+  } catch (err) {
+    error.value = (err as Error).message
+  } finally {
+    transferring.value = false
+  }
+}
+
+const submitLeave = async () => {
+  leaving.value = true
+  error.value = ''
+
+  try {
+    await leaveProject(projectId.value)
+    leaveDialog.value = false
+    appStore.flash = 'You left the project.'
+    router.push({ name: '/' })
+  } catch (err) {
+    error.value = (err as Error).message
+  } finally {
+    leaving.value = false
   }
 }
 
