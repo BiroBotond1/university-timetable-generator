@@ -9,6 +9,7 @@ public:
 	std::string Run(const std::string& input);
 
 private:
+	void CheckWeeklyHours();
 	void InitCatalogs(const std::string& p_input);
 	std::shared_ptr<ClassHour> PlaceClassHours();
 	void SimulatedAnnealing();

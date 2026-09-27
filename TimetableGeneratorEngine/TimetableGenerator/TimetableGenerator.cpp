@@ -44,6 +44,7 @@ namespace
 std::string TimetableGenerator::Run(const std::string& input)
 {
     m_DB.Fill(input);
+    CheckWeeklyHours();
     InitLinearAnnealingParameter();
     InitCatalogs(input);
     SimulatedAnnealing();
@@ -53,6 +54,35 @@ std::string TimetableGenerator::Run(const std::string& input)
 void TimetableGenerator::InitLinearAnnealingParameter() 
 {
     m_linearAnnealing = m_DB.GetClasses().size() <= 14 ? 0.1 : 0.01; //set the linear anneling parameter smaller for bigger schools to be able to get a correct solution
+}
+
+//these inputs fail on every placement attempt whatever the order, and here the message can name
+//the exact excess instead of whichever hour happened to be left over
+void TimetableGenerator::CheckWeeklyHours()
+{
+    const int nWeekSlots = DAY_COUNT * HOUR_COUNT;
+    auto weeklyHours = CountWeeklyHours(m_DB);
+
+    int nTotalHours = 0;
+    for (const auto& [classId, nHours] : weeklyHours.mByClass)
+        nTotalHours += nHours;
+
+    if (nTotalHours == 0)
+        throw GenerationError("There are no class hours to schedule.");
+
+    for (const auto& [classId, nHours] : weeklyHours.mByClass)
+    {
+        if (nHours > nWeekSlots)
+            throw GenerationError("Class " + m_DB.GetClasses().at(classId)->GetName() + " needs "
+                + std::to_string(nHours) + " hours, the week has " + std::to_string(nWeekSlots) + ".");
+    }
+
+    for (const auto& [teacherId, nHours] : weeklyHours.mByTeacher)
+    {
+        if (nHours > nWeekSlots)
+            throw GenerationError("Teacher " + m_DB.GetTeachers().at(teacherId)->GetName() + " needs "
+                + std::to_string(nHours) + " hours, the week has " + std::to_string(nWeekSlots) + ".");
+    }
 }
 
 //hours are placed one at a time without backtracking, so even a schedulable school can run into
