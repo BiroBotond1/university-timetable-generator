@@ -26,6 +26,7 @@ declare module 'vue-router/auto-routes' {
     '/p/[projectId]/Generate': RouteRecordInfo<'/p/[projectId]/Generate', '/p/:projectId/Generate', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
     '/p/[projectId]/LocationCatalogs': RouteRecordInfo<'/p/[projectId]/LocationCatalogs', '/p/:projectId/LocationCatalogs', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
     '/p/[projectId]/Locations': RouteRecordInfo<'/p/[projectId]/Locations', '/p/:projectId/Locations', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
+    '/p/[projectId]/Members': RouteRecordInfo<'/p/[projectId]/Members', '/p/:projectId/Members', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
     '/p/[projectId]/Subjects': RouteRecordInfo<'/p/[projectId]/Subjects', '/p/:projectId/Subjects', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
     '/p/[projectId]/TeacherCatalogs': RouteRecordInfo<'/p/[projectId]/TeacherCatalogs', '/p/:projectId/TeacherCatalogs', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,
     '/p/[projectId]/Teachers': RouteRecordInfo<'/p/[projectId]/Teachers', '/p/:projectId/Teachers', { projectId: ParamValue<true> }, { projectId: ParamValue<false> }>,

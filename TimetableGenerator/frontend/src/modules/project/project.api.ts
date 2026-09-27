@@ -60,6 +60,12 @@ export const removeMember = async (id: string, userId: string): Promise<ProjectM
   }));
 }
 
+export const revokeInvitation = async (id: string, memberId: string): Promise<ProjectMemberData> => {
+  return unwrap(await fetchService.fetchWithAuth(`projects/${id}/invitations/${memberId}`, {
+    method: 'DELETE'
+  }));
+}
+
 export const transferOwnership = async (id: string, userId: string): Promise<ProjectData> => {
   return unwrap(await fetchService.fetchWithAuth(`projects/${id}/ownership`, {
     method: 'POST',

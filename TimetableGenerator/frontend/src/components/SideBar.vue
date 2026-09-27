@@ -10,6 +10,7 @@
       <v-btn @click="importData()" class="py-2">Import</v-btn>
       <v-btn @click="exportData()">Export</v-btn>
       </template>
+      <invitations-bell/>
       <user/>
       <v-progress-circular
         v-if="generating"
@@ -26,6 +27,10 @@
         Generating is done!
       </v-alert>
     </v-app-bar>
+
+    <v-snackbar v-model="showFlash" timeout="5000" location="top right">
+      {{ appStore.flash }}
+    </v-snackbar>
 
     <v-navigation-drawer v-model:rail="isRail" color="highlight" expand-on-hover permanent dark>
       <div class="d-flex flex-column h-[100%]">
@@ -74,6 +79,8 @@ import {
   setupImportExportSocketListeners,
 } from "@/modules/import-export/import-export.socket";
 import { doImport } from "@/modules/import-export/import-export.service";
+import { useInvitationStore } from "@/modules/project/invitation.store";
+import { setupMembershipSocketListeners } from "@/modules/project/project.socket";
 
 const router = useRouter();
 
@@ -82,14 +89,56 @@ const generating = computed(() => appStore.generating);
 const notification = computed(() => appStore.notification);
 const projectId = computed(() => appStore.projectId);
 
+const invitationStore = useInvitationStore()
+
+const showFlash = computed({
+  get: () => !!appStore.flash,
+  set: (visible) => { if (!visible) appStore.flash = null },
+})
+
 let teardownImportExport: (() => void) | null = null
+let teardownMembership: (() => void) | null = null
 
 onMounted(() => {
   teardownImportExport = setupImportExportSocketListeners();
+
+  // The sidebar is mounted for the whole signed-in session, which makes it the
+  // place for events about the user's own memberships.
+  teardownMembership = setupMembershipSocketListeners({
+    onInvitationsChanged: ({ reason }) => {
+      invitationStore.load()
+      if (reason === 'received') {
+        appStore.flash = 'You have been invited to a project.'
+      }
+    },
+
+    onProjectsChanged: () => invitationStore.projectsChanged(),
+
+    onProjectClosed: ({ projectId: closedId, reason }) => {
+      invitationStore.projectsChanged()
+
+      // The server has already taken this tab out of the project; follow it.
+      if (appStore.projectId === closedId) {
+        appStore.flash = reason === 'deleted'
+          ? 'This project was deleted by its owner.'
+          : 'You were removed from this project.'
+        router.push({ name: "/" })
+      }
+    },
+  });
+
+  invitationStore.load()
 });
+
+// Invitations sent before this user had an account are attached during the
+// sync, so load again once it has finished.
+watch(() => appStore.currentUser?._id, (id) => {
+  if (id) invitationStore.load()
+})
 
 onUnmounted(() => {
   teardownImportExport?.()
+  teardownMembership?.()
 });
 
 // Nav targets are relative to the project in the URL, so a link is only ever
@@ -103,6 +152,7 @@ const items = computed(() => [
   { title: "Subjects", icon: "mdi-book-variant", route: `${base.value}/Subjects` },
   { title: "Classes", icon: "mdi-account-group", route: `${base.value}/Classes` },
   { title: "ClassHours", icon: "mdi-clock-outline", route: `${base.value}/ClassHours` },
+  { title: "Members", icon: "mdi-account-multiple", route: `${base.value}/Members` },
 ]);
 
 const catalogItems = computed(() => [

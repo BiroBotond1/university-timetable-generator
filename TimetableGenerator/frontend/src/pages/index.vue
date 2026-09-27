@@ -12,11 +12,11 @@
       {{ error }}
     </v-alert>
 
-    <v-card v-if="invitations.length" class="mb-6" variant="tonal">
+    <v-card v-if="invitationStore.count" class="mb-6" variant="tonal">
       <v-card-title class="text-subtitle-1">Invitations</v-card-title>
       <v-list>
         <v-list-item
-          v-for="invitation in invitations"
+          v-for="invitation in invitationStore.invitations"
           :key="invitation._id"
           :title="invitation.project?.name ?? 'Unnamed project'"
           :subtitle="`Invited by ${invitation.invitedBy?.username ?? invitation.invitedBy?.email ?? 'someone'}`"
@@ -134,19 +134,16 @@ import { useRouter } from "vue-router";
 import {
   createProject,
   deleteProject,
-  fetchInvitations,
-  fetchProjects,
-  respondToInvitation
+  fetchProjects
 } from "@/modules/project/project.api";
-import type {
-  ProjectData,
-  ProjectInvitationData
-} from "@/modules/project/project.type";
+import { useInvitationStore } from "@/modules/project/invitation.store";
+import type { ProjectData } from "@/modules/project/project.type";
 
 const router = useRouter();
 
+const invitationStore = useInvitationStore()
+
 const projects = ref<ProjectData[]>([])
-const invitations = ref<ProjectInvitationData[]>([])
 const loading = ref(true)
 const error = ref('')
 
@@ -163,7 +160,6 @@ const load = async () => {
 
   try {
     projects.value = await fetchProjects()
-    invitations.value = await fetchInvitations()
   } catch (err) {
     error.value = (err as Error).message
   } finally {
@@ -174,6 +170,10 @@ const load = async () => {
 onMounted(async () => {
   await load()
 });
+
+// Accepting an invitation (here or from the bell), being removed from a
+// project, or a project being deleted all change this list.
+watch(() => invitationStore.projectsVersion, () => load())
 
 const openProject = (project: ProjectData) => {
   // The route guard joins the socket room and sets the scope from the URL.
@@ -218,8 +218,7 @@ const submitDelete = async () => {
 
 const respond = async (projectId: string, accept: boolean) => {
   try {
-    await respondToInvitation(projectId, accept)
-    await load()
+    await invitationStore.respond(projectId, accept)
   } catch (err) {
     error.value = (err as Error).message
   }

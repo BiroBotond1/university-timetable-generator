@@ -8,11 +8,14 @@ export const useAppStore =  defineStore('app', () => {
   const projectId = ref<string|null>(null)
   // The Mongo user behind the Auth0 identity; set once the socket sync replies.
   const currentUser = ref<SyncedUser|null>(null)
+  // A one-off message for the app-wide snackbar.
+  const flash = ref<string|null>(null)
 
   return {
     generating,
     notification,
     projectId,
-    currentUser
+    currentUser,
+    flash
   }
 })

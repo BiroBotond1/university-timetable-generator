@@ -12,6 +12,7 @@ declare module 'vue' {
     ClassHour: typeof import('./components/Common/ClassHour.vue')['default']
     ColorsLabel: typeof import('./components/Common/ColorsLabel.vue')['default']
     DatePicker: typeof import('./components/DatePicker.vue')['default']
+    InvitationsBell: typeof import('./components/InvitationsBell.vue')['default']
     LogoutButton: typeof import('./components/Auth/LogoutButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
