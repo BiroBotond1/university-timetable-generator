@@ -2,14 +2,7 @@ import { socket } from './app.socket'
 
 type Handler = (...args: any[]) => void
 
-/**
- * Registers socket listeners and hands back a teardown function.
- *
- * Listeners used to be attached in onMounted and never removed, so they piled
- * up on every navigation and kept firing for a project the user had left. The
- * teardown makes that hard to forget: there is no way to register without
- * getting one back.
- */
+// Registers listeners and returns a function that removes them.
 export const listen = (handlers: Record<string, Handler>) => {
   const entries = Object.entries(handlers)
 

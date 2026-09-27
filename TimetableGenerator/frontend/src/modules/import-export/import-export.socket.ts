@@ -8,7 +8,6 @@ export const setupImportExportSocketListeners = () => listen({
   },
 
   importDone: () => {
-    // Reload the current project's pages so they pick up the imported data.
     window.location.reload();
   },
 })

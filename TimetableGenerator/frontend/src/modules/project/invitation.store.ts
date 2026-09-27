@@ -3,22 +3,14 @@ import { computed, ref } from 'vue'
 import { fetchInvitations, respondToInvitation } from './project.api'
 import type { ProjectInvitationData } from './project.type'
 
-/**
- * The signed-in user's unanswered invitations.
- *
- * One source for both places they appear -- the bell in the app bar and the
- * card on the project list -- so answering in one updates the other.
- */
+// Shared by the bell and the project list, so answering in one updates the other.
 export const useInvitationStore = defineStore('invitations', () => {
   const invitations = ref<ProjectInvitationData[]>([])
   const loading = ref(false)
   const error = ref('')
 
-  /**
-   * Bumped whenever the user's project list may have changed: an invitation
-   * accepted, a membership removed, a project deleted. Pages that show the
-   * list watch it and reload.
-   */
+  // Bumped when the user's project list may have changed; pages that show it
+  // watch this.
   const projectsVersion = ref(0)
 
   const count = computed(() => invitations.value.length)

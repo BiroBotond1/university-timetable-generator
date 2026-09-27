@@ -22,10 +22,7 @@ export const makeProject = async (owner, name = 'Test School') => {
   return await projectService.create(name, owner._id)
 }
 
-/**
- * A minimal but complete school: one room, one teacher, one class, one subject
- * taught in that room, and a class hour tying them together.
- */
+// One room, teacher, class and subject, tied together by a class hour.
 export const makeSchool = async (projectId) => {
   const location = await locationService.create(projectId, {
     name: 'Lab 1',

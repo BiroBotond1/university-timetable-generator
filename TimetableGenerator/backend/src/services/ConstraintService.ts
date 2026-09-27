@@ -1,13 +1,7 @@
 import { model } from '../models/Constraint.js'
 
-/**
- * The constraints every project starts with.
- *
- * The `name` is not just a label: it is used verbatim as a JSON key in the
- * payload sent to the C++ engine, which reads it as
- * `data["OneTypeOfCourseOnADayClass"]`. Renaming one here breaks generation at
- * runtime, not at compile time.
- */
+// `name` is used verbatim as a JSON key by the C++ engine, so renaming one
+// breaks generation at runtime.
 export const DEFAULT_CONSTRAINTS = [
   { name: 'OneTypeOfCourseOnADayClass', hard: true, description: 'Classes can have only one lesson from a subject on a given day' },
   { name: 'ClassCoursesStartsAtEight', hard: true, description: 'All classes start their lessons at eight o\'clock in the morning' },
@@ -47,10 +41,7 @@ export const updateByName = async (projectId, name, active) => {
   );
 }
 
-/**
- * Called when a project is created, replacing the boot-time global seed.
- * Idempotent, so it is safe to call again on a project that already has them.
- */
+// Idempotent: $setOnInsert never resets an existing project's toggles.
 export const seedForProject = async (projectId) => {
   for (const constraint of DEFAULT_CONSTRAINTS) {
     await model.updateOne(

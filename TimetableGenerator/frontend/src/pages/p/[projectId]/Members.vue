@@ -361,8 +361,7 @@ const submitTransfer = async () => {
   try {
     await transferOwnership(projectId.value, userId)
     transferDialog.value = false
-    // Reloading picks up the new role, so this page switches to the
-    // collaborator view. The new owner's page switches via membersChanged.
+    // Reload to pick up the new role.
     await load()
   } catch (err) {
     error.value = (err as Error).message
@@ -391,7 +390,6 @@ let teardown: (() => void) | null = null
 
 onMounted(async () => {
   await load()
-  // Someone else inviting, accepting or leaving updates this page live.
   teardown = setupMembersSocketListeners(load)
 })
 

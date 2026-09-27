@@ -13,12 +13,7 @@ import * as projectService from '../src/services/ProjectService.js'
 
 const PORT = 4599
 
-/**
- * The real socket handlers on a real server. Only the handshake is stubbed:
- * socketAuth verifies a token against Auth0, which a test cannot mint, so the
- * identity it would establish is injected directly. Everything downstream --
- * membership checks, room joins, broadcasts -- is the production code.
- */
+// Real handlers on a real server; only the Auth0 handshake is stubbed.
 const startServer = async () => {
   const httpServer = http.createServer()
   const io = new Server(httpServer, { cors: { origin: '*' } })
@@ -30,7 +25,7 @@ const startServer = async () => {
 
   setIo(io)
 
-  // Mirrors socket.ts: every connection joins its own user's room.
+  // Same as socket.ts.
   io.on('connection', (socket) => {
     socket.join(userRoomOf(socket.data.userId))
     handleProjectRoomEvents(socket, io)
@@ -59,7 +54,6 @@ const join = (socket: Socket, projectId: string) =>
   new Promise<{ ok: boolean, role?: string, error?: string }>(resolve =>
     socket.emit('joinProject', { projectId }, resolve))
 
-/** Give the server a moment to process an emit and broadcast the result. */
 const settle = () => new Promise(resolve => setTimeout(resolve, 250))
 
 let server: Awaited<ReturnType<typeof startServer>>
@@ -268,7 +262,7 @@ describe('eviction', () => {
     assert.equal(evicted, 1)
     assert.deepEqual(closed, { projectId: String(project._id), reason: 'removed' })
 
-    // The actual point: the socket he still has open can no longer write.
+    // The tab he still has open must not be able to write.
     let aliceSaw: string | null = null
     aliceSocket.on('createTeacher', (obj) => { aliceSaw = obj.teacher?.name })
 

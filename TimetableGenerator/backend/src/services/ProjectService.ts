@@ -11,7 +11,6 @@ import * as constraintService from './ConstraintService.js'
 
 const normaliseEmail = (email) => (email || '').trim().toLowerCase()
 
-/** Projects the user is an active member of, newest first. */
 export const listForUser = async (userId) => {
   const memberships = await ProjectMember
     .find({ user: userId, status: 'active' })
@@ -26,7 +25,6 @@ export const listForUser = async (userId) => {
     }));
 };
 
-/** Invitations addressed to this user that have not been answered yet. */
 export const listInvitationsForUser = async (userId) => {
   return await ProjectMember
     .find({ user: userId, status: 'pending' })
@@ -44,8 +42,6 @@ export const create = async (name, ownerId) => {
     status: 'active',
   });
 
-  // Each project gets its own copy of the constraint set; they used to be
-  // seven rows shared by everybody (ADR 0001).
   await constraintService.seedForProject(project._id);
 
   return project;
@@ -59,17 +55,8 @@ export const rename = async (projectId, name) => {
   return await Project.findByIdAndUpdate(projectId, { name }, { new: true });
 };
 
-/**
- * Deletes the project and everything in it.
- *
- * A hard cascade rather than a soft delete: soft deleting would mean a second
- * `deleted: false` filter on every entity query forever, with no benefit
- * unless an undelete UI were also built (ADR 0001). The UI asks the owner to
- * type the project name first, and offers an export.
- *
- * Class hours go first so nothing is left referencing a deleted class,
- * subject or teacher part-way through.
- */
+// Class hours first, so nothing is left pointing at a deleted class, subject
+// or teacher part-way through.
 export const remove = async (projectId) => {
   const project = await Project.findById(projectId);
 
@@ -99,10 +86,8 @@ export const setGenerationStatus = async (projectId, status) => {
   );
 };
 
-/**
- * Generation state lives in memory, so a restart leaves any project that was
- * mid-run claiming to be busy forever. Cleared at boot.
- */
+// Generation state lives in memory, so after a restart any project that was
+// mid-run would stay marked busy forever. Called at boot.
 export const clearStaleGenerationStatus = async () => {
   const result = await Project.updateMany(
     { generationStatus: { $ne: 'idle' } },
@@ -112,7 +97,6 @@ export const clearStaleGenerationStatus = async () => {
   return result.modifiedCount;
 };
 
-/** The caller's membership, or null if they are not an active member. */
 export const getMembership = async (projectId, userId) => {
   return await ProjectMember.findOne({
     project: projectId,
@@ -121,11 +105,6 @@ export const getMembership = async (projectId, userId) => {
   });
 };
 
-/**
- * Active members, and -- for callers allowed to manage them -- pending
- * invitations. Collaborators see who is on the project, but not which email
- * addresses have been invited and have not answered yet.
- */
 export const listMembers = async (projectId, { includePending = false } = {}) => {
   const statuses = includePending ? ['active', 'pending'] : ['active'];
 
@@ -135,10 +114,6 @@ export const listMembers = async (projectId, { includePending = false } = {}) =>
     .sort({ createdAt: 1 });
 };
 
-/**
- * Invites an email address. If that address already belongs to a user the
- * invitation is bound immediately; otherwise it waits for them to sign in.
- */
 export const invite = async (projectId, email, invitedById) => {
   const normalised = normaliseEmail(email);
 
@@ -200,11 +175,7 @@ export const respondToInvitation = async (projectId, userId, accept) => {
   return await invitation.save();
 };
 
-/**
- * Withdraws an invitation that has not been answered. Addressed by the
- * membership row rather than by user, because an invitation to someone with no
- * account yet has no user to address.
- */
+// By membership id, because an unbound invitation has no user to look up.
 export const revokeInvitation = async (projectId, memberId) => {
   return await ProjectMember.findOneAndDelete({
     _id: memberId,
@@ -226,11 +197,6 @@ export const removeMember = async (projectId, userId) => {
   });
 };
 
-/**
- * A collaborator removing themselves. The owner cannot leave: a project with
- * no owner could never be managed or deleted again, so ownership has to be
- * handed over first (ADR 0001).
- */
 export const leaveProject = async (projectId, userId) => {
   const project = await Project.findById(projectId);
 
@@ -247,11 +213,6 @@ export const leaveProject = async (projectId, userId) => {
   });
 };
 
-/**
- * Hands the project to an existing active collaborator. The previous owner
- * stays on as a collaborator, which is what makes it safe for them to leave
- * afterwards (ADR 0001).
- */
 export const transferOwnership = async (projectId, newOwnerId) => {
   const project = await Project.findById(projectId);
 
@@ -285,12 +246,8 @@ export const transferOwnership = async (projectId, newOwnerId) => {
   return await project.save();
 };
 
-/**
- * Attaches invitations addressed to this user's email once they sign in.
- *
- * Only called with an email Auth0 has marked verified -- an unverified address
- * would otherwise be a way into somebody else's project (ADR 0001).
- */
+// Only call this with an email Auth0 has verified: an unverified address would
+// let anyone claim invitations sent to it.
 export const bindPendingInvitations = async (userId, verifiedEmail) => {
   const normalised = normaliseEmail(verifiedEmail);
 

@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 
 const schema = new mongoose.Schema({
-  // Tenant key. Every query in services/ filters on this (ADR 0001).
   project: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Project',

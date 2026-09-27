@@ -1,14 +1,5 @@
-/**
- * Asks Auth0 who the bearer of this access token is.
- *
- * The access token carries `sub` but not necessarily an email, and the email a
- * client sends us is just a hint. Project invitations are bound by email, so
- * that binding needs an address Auth0 itself vouches for.
- *
- * Returns null when the token cannot be exchanged (for example when the client
- * did not request the `email` scope) -- callers must treat that as "no verified
- * email" rather than falling back to the client's value.
- */
+// Asks Auth0 for the token holder's profile, to get an email Auth0 has
+// verified. Returns null on failure; treat the email as unverified then.
 export const fetchUserInfo = async (rawToken) => {
   try {
     const response = await fetch(`${process.env.ISSUER_BASE_URL}userinfo`, {
@@ -27,7 +18,6 @@ export const fetchUserInfo = async (rawToken) => {
   }
 };
 
-/** The email address, only if Auth0 reports it as verified. */
 export const getVerifiedEmail = (userInfo) => {
   if (!userInfo?.email || userInfo.email_verified !== true) return null;
 

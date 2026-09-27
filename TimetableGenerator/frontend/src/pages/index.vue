@@ -171,12 +171,10 @@ onMounted(async () => {
   await load()
 });
 
-// Accepting an invitation (here or from the bell), being removed from a
-// project, or a project being deleted all change this list.
 watch(() => invitationStore.projectsVersion, () => load())
 
 const openProject = (project: ProjectData) => {
-  // The route guard joins the socket room and sets the scope from the URL.
+  // The route guard joins the project from the URL.
   router.push(`/p/${project._id}/Generate`)
 }
 

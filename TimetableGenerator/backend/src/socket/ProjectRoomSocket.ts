@@ -1,16 +1,7 @@
 import * as projectService from '../services/ProjectService.js'
 
-/**
- * Binds a connection to one project.
- *
- * The client announces which project it is looking at; membership is verified
- * against the identity established during the handshake, never against
- * anything the client claims about itself. The resulting project id is the
- * only one the entity handlers will act on.
- *
- * The room join is what step 4 uses to stop broadcasting every mutation to
- * every connected client.
- */
+// Binds a connection to one project, after checking membership against the
+// handshake identity rather than anything the client sends.
 const handleEvents = (socket, io) => {
   socket.on('joinProject', async (obj, ack) => {
     try {
@@ -51,18 +42,10 @@ const handleEvents = (socket, io) => {
 
 export const roomOf = (projectId) => `project:${projectId}`;
 
-/**
- * Every connection joins its own user's room at connect time. It is how an
- * invitation reaches someone who is not a member yet, and so is in no project
- * room at all.
- */
+// Joined on connect, so invitations reach users who aren't in any project yet.
 export const userRoomOf = (userId) => `user:${String(userId)}`;
 
-/**
- * The project this connection is working in, or null when it has not joined
- * one. Entity handlers must refuse to act when this is null rather than
- * falling back to any kind of global scope.
- */
+// Handlers must do nothing when this returns null.
 export const projectOf = (socket) => socket.data.projectId ?? null;
 
 export default handleEvents

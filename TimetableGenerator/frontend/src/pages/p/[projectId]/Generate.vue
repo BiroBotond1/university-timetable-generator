@@ -39,12 +39,8 @@ const appStore = useAppStore();
 const route = useRoute();
 const generating = computed(() => appStore.generating);
 
-/**
- * A run started by somebody else, or before this page was opened, is not
- * something the socket can tell us about after the fact -- the broadcast only
- * reaches clients that were connected at the time. Read the persisted state
- * instead so the button is right on arrival and after a reload.
- */
+// The socket only reports runs that start while this tab is connected, so read
+// the persisted status on load.
 const syncGenerationState = async () => {
   try {
     const projectId = (route.params as { projectId?: string }).projectId

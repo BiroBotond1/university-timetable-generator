@@ -8,14 +8,8 @@ const EMPTY_RESULT = JSON.stringify({
   active: true,
 })
 
-/**
- * A stand-in for the C++ engine, on the fixed port GenerationService dials.
- *
- * Calls do not complete on their own: each one parks until the test releases
- * it. That makes "A is running while B waits" an exact observation rather than
- * a race against a sleep, which is what made the first version of these tests
- * flaky.
- */
+// Stands in for the C++ engine on :50051. Calls park until the test releases
+// them, so ordering can be asserted without sleeps.
 export const startStubEngine = async (port = 50051) => {
   const definition = protoLoader.loadSync('./../../generator.proto', {
     keepCase: true, longs: String, enums: String, defaults: true, oneofs: true,
@@ -26,7 +20,6 @@ export const startStubEngine = async (port = 50051) => {
   let concurrent = 0
   let maxConcurrent = 0
   let parked: Array<() => void> = []
-  // Identifies whose payload arrived, so queue order can be asserted exactly.
   let callOrder: string[] = []
   let waiters: Array<{ count: number, resolve: () => void }> = []
 
@@ -69,20 +62,15 @@ export const startStubEngine = async (port = 50051) => {
   })
 
   return {
-    /** Total calls that have reached the engine since the last reset. */
     get served() { return served },
-    /** The highest number of calls the engine ever had open at once. */
     get maxConcurrent() { return maxConcurrent },
-    /** The first teacher name in each payload, in arrival order. */
     get callOrder() { return [...callOrder] },
 
-    /** Resolves once `count` calls have arrived. */
     waitForCalls: (count: number) => new Promise<void>((resolve) => {
       if (served >= count) return resolve()
       waiters.push({ count, resolve })
     }),
 
-    /** Lets every parked call finish. */
     releaseAll: () => {
       const toRelease = parked
       parked = []

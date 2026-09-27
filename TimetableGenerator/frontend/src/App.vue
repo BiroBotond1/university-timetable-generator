@@ -44,9 +44,7 @@ onUnmounted(() => {
   disconnectSocket()
 })
 
-// immediate, because on a reload Auth0 may already have rehydrated before the
-// watcher is installed, in which case a lazy watcher would never fire and the
-// socket would never connect.
+// immediate: on a reload Auth0 can be authenticated before this watcher exists.
 watch(isAuthenticated, async (value) => {
   if (!value) {
     appStore.currentUser = null
@@ -56,7 +54,6 @@ watch(isAuthenticated, async (value) => {
 
   await getAccessTokenSilently()  // forces hydration
 
-  // The server rejects unauthenticated handshakes, so connect before emitting.
   connectSocket(() => getAccessTokenSilently())
 
   emitSyncUser({

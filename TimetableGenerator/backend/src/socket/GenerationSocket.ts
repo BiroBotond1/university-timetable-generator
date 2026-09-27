@@ -7,8 +7,7 @@ const handleEvents = (socket, io) => {
     if (!projectId) return;
 
     try {
-      // Enforced here, not only by disabling the button: the button is only
-      // correct for clients that were watching when the run started.
+      // The client disables the button, but its state can be stale.
       if (service.isGenerating(projectId)) {
         return socket.emit('GenerationRefused', {
           message: 'A generation is already running for this project'

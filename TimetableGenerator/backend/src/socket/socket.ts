@@ -22,7 +22,6 @@ const initializeSocket = (server) => {
 
   console.log('initialize socket')
 
-  // Every connection must present a valid Auth0 token before any handler runs.
   io.use(socketAuth);
 
   setIo(io);

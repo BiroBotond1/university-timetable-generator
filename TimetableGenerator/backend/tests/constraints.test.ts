@@ -11,12 +11,7 @@ before(() => connectTestDb('constraints'))
 beforeEach(() => resetTestDb())
 after(() => disconnectTestDb())
 
-/**
- * These names are the JSON keys the C++ engine reads out of the payload
- * (TimetableConfig.cpp). If this list and the engine ever disagree, generation
- * fails at runtime with no compile-time warning -- which is the whole reason
- * this assertion exists.
- */
+// The JSON keys the C++ engine reads (TimetableConfig.cpp).
 const ENGINE_WIRE_KEYS = [
   'OneTypeOfCourseOnADayClass',
   'ClassCoursesStartsAtEight',

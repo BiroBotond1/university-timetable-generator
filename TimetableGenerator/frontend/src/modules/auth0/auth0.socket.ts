@@ -5,10 +5,6 @@ export const emitSyncUser = (userData: Partial<UserData>) => {
   socket.emit('sendSyncUser', { user: userData });
 };
 
-/**
- * The server replies with the Mongo user document, which carries the `_id` the
- * client needs in order to own or join projects. Returns a teardown function.
- */
 export const setupUserSocketListeners = (
   onSynced: (user: SyncedUser) => void
 ) => {

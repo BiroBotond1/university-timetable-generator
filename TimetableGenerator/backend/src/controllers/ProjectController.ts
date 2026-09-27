@@ -1,8 +1,7 @@
 import * as service from '../services/ProjectService.js'
 import { evictFromProject, toProject, toUser } from '../socket/notify.js'
 
-// Membership changes arrive over REST, but the people they affect are on
-// sockets. Each handler below tells them after a successful change:
+// After each change the affected clients are told over the socket:
 //   invitationsChanged -> the invitee's badge
 //   membersChanged     -> the Members page of everyone in the project
 //   projectsChanged    -> a user's project list
@@ -77,8 +76,6 @@ export const deleteById = async (req, res) => {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // Anyone still inside would otherwise go on writing into a project that
-    // no longer exists.
     evictFromProject(projectId, null, 'deleted');
     members.forEach((member) => toUser(member.user?._id, 'projectsChanged'));
 
@@ -107,8 +104,7 @@ export const invite = async (req, res) => {
       req.context.user._id
     );
 
-    // An invitation to someone with no account yet has no user to notify; it
-    // appears for them when they first sign in.
+    // No-op when the address has no account yet.
     toUser(invitation.user, 'invitationsChanged', { reason: 'received' });
     toProject(req.context.projectId, 'membersChanged');
 
@@ -132,7 +128,6 @@ export const respondToInvitation = async (req, res) => {
       return res.status(404).json({ error: 'Invitation not found' });
     }
 
-    // The same user may have the badge open in another tab.
     toUser(userId, 'invitationsChanged', { reason: accept ? 'accepted' : 'declined' });
     if (accept) toUser(userId, 'projectsChanged');
     toProject(req.params.projectId, 'membersChanged');
@@ -174,7 +169,6 @@ export const removeMember = async (req, res) => {
       return res.status(404).json({ error: 'Member not found' });
     }
 
-    // Revokes access on tabs the removed member already has open.
     evictFromProject(projectId, userId, 'removed');
     toUser(userId, 'projectsChanged');
     toProject(projectId, 'membersChanged');
@@ -196,8 +190,6 @@ export const leaveProject = async (req, res) => {
       return res.status(404).json({ error: 'Membership not found' });
     }
 
-    // Every tab the leaver has open in this project, not only the one that
-    // asked -- the others would otherwise keep write access.
     evictFromProject(projectId, userId, 'left');
     toUser(userId, 'projectsChanged');
     toProject(projectId, 'membersChanged');
@@ -223,7 +215,6 @@ export const transferOwnership = async (req, res) => {
     }
 
     toProject(req.context.projectId, 'membersChanged');
-    // Both people's project lists show a different role now.
     toUser(previousOwnerId, 'projectsChanged');
     toUser(newOwnerId, 'projectsChanged');
 

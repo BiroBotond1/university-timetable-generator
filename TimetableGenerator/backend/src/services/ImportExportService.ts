@@ -5,7 +5,7 @@ import * as subjectService from './SubjectService.js'
 import * as teacherService from './TeacherService.js'
 import * as classHourService from './ClassHourService.js'
 
-/** Fields that belong to one database row, not to the school being described. */
+// Drops _id, __v and project so the row can be re-created in another project.
 const strip = (doc) => {
   const plain = typeof doc?.toObject === 'function' ? doc.toObject() : { ...doc };
 
@@ -16,11 +16,8 @@ const strip = (doc) => {
   return plain;
 }
 
-/**
- * Removes database bookkeeping at any depth, including from documents that
- * were populated into the export. `_id` stays: within a file it is how
- * references are expressed, and import rewrites it on the way back in.
- */
+// Removes __v and project at every depth. _id is kept: references inside the
+// file use it, and import rewrites it.
 const forExport = (value) => {
   if (Array.isArray(value)) return value.map(forExport);
 
@@ -40,7 +37,6 @@ const forExport = (value) => {
   return value;
 }
 
-/** Accepts either a populated document or a bare id. */
 const idOf = (ref) => String(ref?._id ?? ref ?? '');
 
 export async function getTimetableData(projectId)
@@ -63,23 +59,14 @@ export async function getTimetableData(projectId)
   return JSON.stringify(object);
 }
 
-/**
- * Loads a school into a project, replacing whatever is there.
- *
- * Ids in the file are treated as names local to that file, not as database
- * keys: every entity is created afresh and references are rewritten through an
- * old-id to new-id map. Previously the documents were re-inserted with their
- * original _id values, so the same file could not be loaded into two projects
- * without colliding, and a file could not be shared between installations.
- *
- * Order matters -- locations, teachers and classes have no outgoing
- * references, subjects point at locations, and class hours point at the rest.
- */
+// Creates every entity afresh and rewrites references through old-id -> new-id
+// maps, so the same file can be loaded into any project. Order matters: subjects
+// reference locations, class hours reference everything else.
 export async function doImport(projectId, data)
 {
   const dataObj = JSON.parse(data)
 
-  // Dependents first, so nothing dangles part-way through.
+  // Dependents first, so nothing points at a deleted row.
   await classHourService.removeAll(projectId)
   await subjectService.removeAll(projectId)
   await classService.removeAll(projectId)

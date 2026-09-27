@@ -1,11 +1,5 @@
 import * as projectService from '../services/ProjectService.js'
 
-/**
- * Resolves `:projectId` and verifies the caller is an active member.
- *
- * Runs once per request so controllers and services below never re-derive the
- * project; they read `req.context.projectId` (ADR 0001).
- */
 export const requireProjectAccess = async (req, res, next) => {
   const projectId = req.params.projectId;
   const user = req.context?.user;
@@ -18,8 +12,7 @@ export const requireProjectAccess = async (req, res, next) => {
     const membership = await projectService.getMembership(projectId, user._id);
 
     if (!membership) {
-      // Deliberately 404 and not 403: whether a project exists is itself
-      // information a non-member should not get.
+      // 404 rather than 403, so a non-member can't tell whether the project exists.
       return res.status(404).json({ error: 'Project not found' });
     }
 
@@ -35,7 +28,6 @@ export const requireProjectAccess = async (req, res, next) => {
   }
 };
 
-/** Inviting, transferring ownership and deleting are owner-only. */
 export const requireProjectOwner = (req, res, next) => {
   if (req.context?.role !== 'owner') {
     return res.status(403).json({ error: 'Only the project owner can do this' });

@@ -91,7 +91,6 @@ describe('invitations', () => {
 
     await projectService.invite(project._id, 'carol@school.hu', alice._id)
 
-    // unbound until that address exists
     assert.equal(
       await ProjectMember.countDocuments({ email: 'carol@school.hu', user: null }),
       1

@@ -35,8 +35,7 @@ router.beforeEach(async (to, from, next) => {
     return next('/Login')
   }
 
-  // Project scope is carried by the URL, so it survives a reload and a pasted
-  // link. Entering a project route joins its socket room; leaving drops it.
+  // Entering a project route joins its socket room; leaving one drops it.
   const appStore = useAppStore()
   const projectId = 'projectId' in to.params
     ? (to.params.projectId as string)
@@ -54,7 +53,6 @@ router.beforeEach(async (to, from, next) => {
     const joined = await joinProject(projectId)
 
     if (!joined.ok) {
-      // Not a member, or the project is gone. Back to the project list.
       appStore.projectId = null
       return next('/')
     }

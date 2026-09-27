@@ -14,7 +14,6 @@ before(() => connectTestDb('scoping'))
 beforeEach(() => resetTestDb())
 after(() => disconnectTestDb())
 
-/** Two projects owned by the same user, each with its own school. */
 const twoSchools = async () => {
   const owner = await makeUser()
   const a = await makeProject(owner, 'School A')

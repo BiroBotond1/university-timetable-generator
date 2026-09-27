@@ -20,14 +20,8 @@ import { model } from '../models/User.js'
 //   return await model.findByIdAndRemove(id);
 // };
 
-/**
- * Upserts the Mongo user for an authenticated Auth0 identity.
- *
- * `auth0Id` is taken from the verified handshake token by the caller. The
- * username and email are client-supplied profile hints and are NOT verified --
- * do not bind project invitations to this email without checking Auth0's
- * `email_verified` claim first (ADR 0001).
- */
+// username and email come from the client and are not verified, so don't bind
+// invitations to this email.
 export const syncUser = async (auth0User) => {
 
   // Find existing
@@ -52,11 +46,6 @@ export const getByAuth0Id = async (auth0Id) => {
   return await model.findOne({ auth0Id });
 };
 
-/**
- * Used by the REST context middleware. The socket sync normally creates this
- * row at login, but a REST call can arrive first, so fall back to a minimal
- * record rather than rejecting an otherwise valid request.
- */
 export const getOrCreateByAuth0Id = async (auth0Id) => {
   const existing = await model.findOne({ auth0Id });
 

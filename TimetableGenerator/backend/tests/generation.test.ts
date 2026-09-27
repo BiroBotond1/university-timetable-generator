@@ -11,8 +11,7 @@ import { model as Project } from '../src/models/Project.js'
 
 let engine: Awaited<ReturnType<typeof startStubEngine>>
 
-// Started once for the file: rebinding the port between tests raced with the
-// previous server's shutdown.
+// Started once: rebinding the port per test raced with the previous shutdown.
 before(async () => {
   await connectTestDb('generation')
   engine = await startStubEngine()
@@ -23,8 +22,8 @@ beforeEach(async () => {
   engine.reset()
 })
 
-// Nothing may stay parked, or the next test inherits an open call that holds
-// the global queue. Drained over a few ticks to catch late arrivals.
+// Release anything still parked, or it holds the global queue and hangs the
+// next test.
 afterEach(async () => {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     engine.releaseAll()
@@ -59,8 +58,7 @@ describe('one generation per project', () => {
       /already running/
     )
 
-    // Wait for the call to actually reach the engine: releasing before it
-    // arrives releases nothing, and it would then park forever.
+    // Releasing before the call arrives would release nothing.
     await engine.waitForCalls(1)
     engine.releaseAll()
     await run
@@ -88,7 +86,7 @@ describe('runs from different projects queue', () => {
     const runA = generationService.generate(a._id)
     const runB = generationService.generate(b._id)
 
-    // Exactly one call has reached the engine: B is still behind A.
+    // B is still queued behind A.
     await engine.waitForCalls(1)
     assert.equal(engine.served, 1)
     assert.equal(await statusOf(a), 'running')
@@ -109,9 +107,6 @@ describe('runs from different projects queue', () => {
     await teacherService.create(a._id, { name: 'from-A' })
     await teacherService.create(b._id, { name: 'from-B' })
 
-    // Regression guard: the queue slot used to be taken after an await, so
-    // whichever project's status write finished first went first -- meaning B
-    // could overtake A under load.
     const runA = generationService.generate(a._id)
     const runB = generationService.generate(b._id)
 
@@ -154,7 +149,6 @@ describe('cancellation', () => {
     const runA = generationService.generate(a._id)
     const runB = generationService.generate(b._id)
 
-    // A is at the engine, B is queued behind it.
     await engine.waitForCalls(1)
     generationService.cancel(b._id)
 
@@ -176,7 +170,7 @@ describe('restart recovery', () => {
   test('status left behind by a restart is cleared at boot', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
-    // what a crash mid-run would leave in the database
+    // What a crash mid-run leaves behind.
     await Project.findByIdAndUpdate(project._id, { generationStatus: 'running' })
 
     assert.equal(await projectService.clearStaleGenerationStatus(), 1)

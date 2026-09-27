@@ -37,7 +37,6 @@ mongoose
   })
   .then(() => {
     console.log('MongoDB database Connected...')
-    // In-flight generations do not survive a restart; clear what they left.
     projectService.clearStaleGenerationStatus()
   })
   .catch((err) => console.log(err));
@@ -52,15 +51,11 @@ app.use(auth({
 
 app.use(mongoMiddleware);
 
-// Bridges the validated JWT to the data layer; everything below reads
-// req.context.user rather than touching req.auth.
 app.use(userContext);
 
 // api
 app.use('/api/projects', projectApi);
 
-// Project-scoped entities. requireProjectAccess resolves :projectId and
-// verifies membership once, before any controller runs.
 const scoped = '/api/projects/:projectId';
 app.use(`${scoped}/constraints`, requireProjectAccess, constraintApi);
 app.use(`${scoped}/subjects`, requireProjectAccess, subjectApi);

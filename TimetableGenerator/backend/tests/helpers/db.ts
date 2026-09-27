@@ -12,29 +12,21 @@ import ClassHour from '../../src/models/ClassHour.js'
 
 const models = [User, Project, ProjectMember, Teacher, Location, Subject, Class, Constraint, ClassHour]
 
-/**
- * Indexes are not created by dropDatabase, and some behaviour under test
- * depends on them -- the unique {project, name} on Constraint in particular.
- */
+// dropDatabase drops indexes too, and some tests rely on them.
 const syncIndexes = async () => {
   for (const model of models) {
     await model.syncIndexes()
   }
 }
 
-/**
- * Each test file gets its own database, because the node test runner runs
- * files in parallel and they would otherwise drop each other's data.
- *
- * Requires MongoDB to be running: `yarn deps:up` from TimetableGenerator/.
- */
+// One database per file, because files run in parallel.
+// Needs MongoDB: `yarn deps:up` from TimetableGenerator/.
 export const connectTestDb = async (name: string) => {
   await mongoose.connect(`mongodb://localhost/timetabledb_test_${name}`)
   await mongoose.connection.dropDatabase()
   await syncIndexes()
 }
 
-/** Call between tests so each one starts from an empty database. */
 export const resetTestDb = async () => {
   await mongoose.connection.dropDatabase()
   await syncIndexes()

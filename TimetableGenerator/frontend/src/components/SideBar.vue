@@ -112,8 +112,7 @@ let teardownMembership: (() => void) | null = null
 onMounted(() => {
   teardownImportExport = setupImportExportSocketListeners();
 
-  // The sidebar is mounted for the whole signed-in session, which makes it the
-  // place for events about the user's own memberships.
+  // Mounted for the whole session, so it hosts the membership listeners.
   teardownMembership = setupMembershipSocketListeners({
     onInvitationsChanged: ({ reason }) => {
       invitationStore.load()
@@ -127,7 +126,6 @@ onMounted(() => {
     onProjectClosed: ({ projectId: closedId, reason }) => {
       invitationStore.projectsChanged()
 
-      // The server has already taken this tab out of the project; follow it.
       if (appStore.projectId === closedId) {
         appStore.flash = {
           deleted: 'This project was deleted by its owner.',
@@ -142,8 +140,8 @@ onMounted(() => {
   invitationStore.load()
 });
 
-// Invitations sent before this user had an account are attached during the
-// sync, so load again once it has finished.
+// Load again after the sync: it can attach invitations sent before this user
+// had an account.
 watch(() => appStore.currentUser?._id, (id) => {
   if (id) invitationStore.load()
 })
@@ -153,8 +151,6 @@ onUnmounted(() => {
   teardownMembership?.()
 });
 
-// Nav targets are relative to the project in the URL, so a link is only ever
-// valid for the project the user is actually looking at.
 const base = computed(() => `/p/${projectId.value}`)
 
 const items = computed(() => [
@@ -184,7 +180,6 @@ const catalogItems = computed(() => [
   }
 ]);
 
-// Its own section: it is about who is on the project, not about the school.
 const memberItems = computed(() => [
   { title: "Members", icon: "mdi-account-multiple", route: `${base.value}/Members` },
 ]);

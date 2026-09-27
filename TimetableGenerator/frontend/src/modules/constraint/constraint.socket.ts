@@ -7,8 +7,7 @@ export const setupConstraintSocketListeners = (
   hardConstraints: Ref<ConstraintData[]>,
   softConstraints: Ref<ConstraintData[]>
 ) => {
-  // Resolved here rather than at module scope: at import time Pinia may not be
-  // installed yet.
+  // Not at module scope: Pinia may not be installed at import time.
   const appStore = useAppStore()
 
   return listen({
@@ -20,8 +19,7 @@ export const setupConstraintSocketListeners = (
       appStore.generating = false
     },
 
-    // The server refused because a run is already going -- the button was
-    // showing stale state, so correct it.
+    // A run is already going; the button was showing stale state.
     GenerationRefused: (payload) => {
       appStore.generating = true
       console.warn(payload?.message)

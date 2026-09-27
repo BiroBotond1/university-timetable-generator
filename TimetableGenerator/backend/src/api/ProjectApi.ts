@@ -26,7 +26,7 @@ router.route('/').get(getAll).post(create);
 // Must be declared before '/:projectId' or it is swallowed by it.
 router.route('/invitations').get(getInvitations);
 
-// Answering an invitation is the one project route a non-member may call.
+// No requireProjectAccess: the invitee isn't a member yet.
 router.route('/:projectId/invitation').post(respondToInvitation);
 
 router.route('/:projectId')
@@ -44,7 +44,6 @@ router.route('/:projectId/members/:userId')
 router.route('/:projectId/invitations/:memberId')
   .delete(requireProjectAccess, requireProjectOwner, revokeInvitation);
 
-// Any member may leave; the service refuses the owner.
 router.route('/:projectId/leave')
   .post(requireProjectAccess, leaveProject);
 

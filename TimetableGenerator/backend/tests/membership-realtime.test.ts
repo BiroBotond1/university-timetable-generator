@@ -12,15 +12,8 @@ import { setIo } from '../src/socket/notify.js'
 import * as controller from '../src/controllers/ProjectController.js'
 import * as projectService from '../src/services/ProjectService.js'
 
-/**
- * Membership changes arrive over REST but have to show up live on other
- * people's screens. These tests call the real REST controllers and then look
- * at what each connected tab actually received, so "the owner's list updates
- * when someone accepts" is observed rather than assumed.
- *
- * Only the Auth0 handshake is stubbed; rooms, notifier and handlers are the
- * production code.
- */
+// Calls the real REST controllers and checks what each connected tab received.
+// Only the Auth0 handshake is stubbed.
 
 const PORT = 4601
 
@@ -59,7 +52,6 @@ interface Tab {
 
 const openSockets: Socket[] = []
 
-/** A browser tab: a connection that records everything it is sent. */
 const openTab = (user) => new Promise<Tab>((resolve) => {
   const socket = createClient(`http://localhost:${PORT}`, {
     auth: { userId: String(user._id) },
@@ -84,7 +76,6 @@ const enterProject = (tab: Tab, project) =>
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 250))
 
-/** Invokes a controller the way Express would, and captures the response. */
 const call = async (handler, req) => {
   let statusCode = 200
   let body = null
@@ -236,7 +227,6 @@ describe('leaving', () => {
     assert.deepEqual(bobSecondTab.got('projectClosed'), [closed])
     assert.ok(bobTab.got('projectsChanged').length >= 1)
 
-    // and neither tab can write any more
     bobSecondTab.socket.emit('sendCreateTeacher', { teacher: { name: 'AfterLeaving' } })
     await settle()
     assert.equal(aliceTab.got('createTeacher').length, 0)

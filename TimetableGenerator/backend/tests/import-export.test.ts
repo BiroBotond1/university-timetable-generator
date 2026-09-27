@@ -13,7 +13,7 @@ before(() => connectTestDb('importexport'))
 beforeEach(() => resetTestDb())
 after(() => disconnectTestDb())
 
-/** A populated project A, an empty project B, and A exported to a file. */
+// Project A with a school, an empty project B, and A exported to a file.
 const exported = async () => {
   const owner = await makeUser()
   const a = await makeProject(owner, 'A')
@@ -92,7 +92,7 @@ describe('import into a different project', () => {
     assert.equal(classHour.number, 3)
     assert.equal(classHour.weight, 5)
     assert.deepEqual(teacher.inappropriateDates, [[0, 0]])
-    // catalogs hold entity names, not ids, so they need no remapping
+    // Catalogs hold entity names, not ids, so they need no remapping.
     assert.equal(teacher.catalog[0][0].subject, 'Fizika')
   })
 
@@ -129,8 +129,6 @@ describe('repeated and round-trip imports', () => {
 
     await impexp.doImport(b._id, file)
 
-    // Regression guard: imp() used forEach(async ...), which does not await,
-    // so this read used to race the inserts.
     assert.equal((await classHourService.getAll(b._id)).length, 1)
   })
 
@@ -150,7 +148,6 @@ describe('repeated and round-trip imports', () => {
     const { a, b, file } = await exported()
 
     await impexp.doImport(b._id, file)
-    // b now has data; import a's *empty* sibling shape over it
     await impexp.doImport(b._id, JSON.stringify({ classes: [], classHours: [], locations: [], subjects: [], teachers: [] }))
 
     assert.equal((await teacherService.getAll(b._id)).length, 0)
