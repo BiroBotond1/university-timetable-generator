@@ -73,6 +73,10 @@ executes files in parallel and they would otherwise drop each other's data.
   engine on `:50051` whose calls park until the test releases them
 - `socket-rooms.test.ts` — real handlers on a real socket server, with only the
   Auth0 handshake stubbed
+- `membership-realtime.test.ts` — calls the REST project controllers and checks
+  which connected tabs received which event, so "the owner's list updates when
+  someone accepts or leaves" is observed rather than assumed. Add a case here
+  when adding a membership operation
 
 **There is no frontend or C++ test target.** The only other automated gate is a
 cppcheck GitHub Action, and that workflow is misconfigured (it fails on any
