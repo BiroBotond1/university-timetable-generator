@@ -106,6 +106,28 @@ describe('bulk removal is scoped', () => {
   })
 })
 
+describe('generation runs are listed per project', () => {
+  test('newest first, at most 20, only this project, and without the raw error', async () => {
+    const { a, b } = await twoSchools()
+
+    for (let minute = 0; minute < 22; minute += 1) {
+      const run = await generationRunService.create(a._id)
+      await GenerationRun.findByIdAndUpdate(run._id, {
+        queuedAt: new Date(2026, 0, 1, 12, minute),
+        details: 'Error: 13 INTERNAL: stack trace',
+      })
+    }
+    await generationRunService.create(b._id)
+
+    const runs = await generationRunService.getRecent(a._id)
+
+    assert.equal(runs.length, 20)
+    assert.deepEqual(runs.map(run => run.queuedAt.getMinutes()), [...Array(20)].map((_, i) => 21 - i))
+    assert.ok(runs.every(run => String(run.project) === String(a._id)))
+    assert.ok(runs.every(run => run.details === undefined))
+  })
+})
+
 describe('deleting a project cascades', () => {
   test('everything in the project goes, and only that project', async () => {
     const { a, b } = await twoSchools()

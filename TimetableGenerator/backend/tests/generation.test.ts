@@ -11,6 +11,11 @@ import { model as Project } from '../src/models/Project.js'
 import { model as GenerationRun } from '../src/models/GenerationRun.js'
 import * as runService from '../src/services/GenerationRunService.js'
 import grpc from '@grpc/grpc-js'
+import http from 'http'
+import { Server } from 'socket.io'
+import { io as createClient, type Socket } from 'socket.io-client'
+import handleProjectRoomEvents from '../src/socket/ProjectRoomSocket.js'
+import handleGenerationEvents from '../src/socket/GenerationSocket.js'
 
 let engine: Awaited<ReturnType<typeof startStubEngine>>
 
@@ -346,5 +351,113 @@ describe('what a run tells the user', () => {
       { ...record.result.toObject() },
       { active: false, fitnessClass: 1500, fitnessTeacher: -40, fitnessLocation: 2000, elapsedTime: 12.5 }
     )
+  })
+})
+
+// Real ProjectRoom and Generation handlers on a real socket server, here rather
+// than beside the other socket tests because this file owns the stub engine's
+// port. Only the Auth0 handshake is stubbed.
+describe('the whole project sees each run', () => {
+  const PORT = 4603
+  let httpServer: http.Server
+  let io: Server
+  const sockets: Socket[] = []
+
+  before(async () => {
+    httpServer = http.createServer()
+    io = new Server(httpServer)
+    io.use((socket, next) => {
+      socket.data.userId = socket.handshake.auth.userId
+      next()
+    })
+    io.on('connection', (socket) => {
+      handleProjectRoomEvents(socket, io)
+      handleGenerationEvents(socket, io)
+    })
+    await new Promise<void>(resolve => httpServer.listen(PORT, resolve))
+  })
+
+  afterEach(() => {
+    sockets.splice(0).forEach(socket => socket.disconnect())
+  })
+
+  after(() => new Promise<void>(resolve => {
+    io.close()
+    httpServer.close(() => resolve())
+  }))
+
+  /** A browser tab with the project open, recording every event it receives. */
+  const openTab = (user, project) => new Promise<{ socket: Socket, events: Array<{ event: string, payload: any }> }>((resolve) => {
+    const socket = createClient(`http://localhost:${PORT}`, {
+      auth: { userId: String(user._id) },
+      reconnection: false,
+    })
+    sockets.push(socket)
+
+    const events: Array<{ event: string, payload: any }> = []
+    socket.onAny((event, payload) => events.push({ event, payload }))
+    socket.on('connect', () =>
+      socket.emit('joinProject', { projectId: String(project._id) }, () => resolve({ socket, events })))
+  })
+
+  const waitFor = (tab, event: string) => new Promise<any>((resolve) => {
+    const seen = tab.events.find(e => e.event === event)
+    if (seen) return resolve(seen.payload)
+    tab.socket.once(event, resolve)
+  })
+
+  const settle = () => new Promise(resolve => setTimeout(resolve, 250))
+
+  /** Alice owns the school, Bob collaborates on it; Carol owns another. */
+  const twoMembersAndAStranger = async () => {
+    const alice = await makeUser()
+    const bob = await makeUser('bob@school.hu')
+    const carol = await makeUser()
+    const project = await makeProject(alice)
+    const other = await makeProject(carol, 'Other School')
+
+    await projectService.invite(project._id, 'bob@school.hu', alice._id)
+    await projectService.respondToInvitation(project._id, bob._id, true)
+
+    return {
+      alice, bob, carol, project,
+      aliceTab: await openTab(alice, project),
+      bobTab: await openTab(bob, project),
+      carolTab: await openTab(carol, other),
+    }
+  }
+
+  test('every member\'s tab follows the run to its failure, and no one else\'s', { timeout: 20000 }, async () => {
+    const { alice, aliceTab, bobTab, carolTab } = await twoMembersAndAStranger()
+
+    aliceTab.socket.emit('sendGenerationStarted')
+    await engine.waitForCalls(1)
+    engine.failAll(grpc.status.FAILED_PRECONDITION, 'Class 9A needs 41 hours, the week has 40.')
+
+    const finished = await waitFor(bobTab, 'GenerationFinished')
+    await waitFor(aliceTab, 'GenerationFinished')
+
+    for (const tab of [aliceTab, bobTab]) {
+      assert.deepEqual(tab.events.map(e => e.event), ['GenerationQueued', 'GenerationStarted', 'GenerationFinished'])
+    }
+    assert.equal(finished.status, 'failed')
+    assert.equal(finished.message, 'Class 9A needs 41 hours, the week has 40.')
+    assert.equal(finished.startedBy.username, alice.username)
+    assert.equal(finished.details, undefined)
+
+    await settle()
+    assert.deepEqual(carolTab.events, [])
+  })
+
+  test('a member can cancel another member\'s run, and everyone sees who did', { timeout: 20000 }, async () => {
+    const { bob, aliceTab, bobTab } = await twoMembersAndAStranger()
+
+    aliceTab.socket.emit('sendGenerationStarted')
+    await engine.waitForCalls(1)
+    bobTab.socket.emit('sendGenerationCancelled')
+
+    const cancelled = await waitFor(aliceTab, 'GenerationCancelled')
+    assert.equal(cancelled.status, 'cancelled')
+    assert.equal(cancelled.cancelledBy.username, bob.username)
   })
 })
