@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "TimetableGenerator.h"
 #include "GenerationError.h"
+#include "GenerationCancelled.h"
 #include "School.h"
 #include <functional>
+#include <future>
 #include <map>
+#include <thread>
 
 //The random generator cannot be seeded, so every case checks something that holds for any random
 //run: an input that no order can place, or one that every order the engine tries can.
@@ -50,6 +53,19 @@ namespace
 			if (nPlaced != nExpected)
 				throw TestFailure(className + ": expected " + std::to_string(nExpected) + " hours, found " + std::to_string(nPlaced));
 		}
+	}
+
+	void ExpectCancelled(std::future<std::string>& p_run)
+	{
+		try
+		{
+			p_run.get();
+		}
+		catch (const GenerationCancelled&)
+		{
+			return;
+		}
+		throw TestFailure("expected GenerationCancelled, but generation finished");
 	}
 
 	School ValidSchool()
@@ -101,6 +117,27 @@ namespace
 			ExpectScheduled(School().AddHours("A", "U", "Math", 20).AddHours("B", "V", "Math", 20)
 				.AddHours("A", "T", "Math", 20).AddHours("B", "T", "Math", 20),
 				{ { "A", 40 }, { "B", 40 } });
+		} },
+
+		{ "cancelled_before_start", [] {
+			const std::atomic<bool> cancelled{ true };
+			auto run = std::async(std::launch::deferred, [&] { return TimetableGenerator().Run(ValidSchool().ToJson(), cancelled); });
+			ExpectCancelled(run);
+		} },
+
+		//valid_school anneals for about 30 s; the cancel lands well into that, and wherever it
+		//lands the run must stop within one iteration, so 5 s is room for a slow machine and
+		//nowhere near enough for a run that ignores the flag
+		{ "cancelled_while_annealing", [] {
+			std::atomic<bool> cancelled{ false };
+			auto run = std::async(std::launch::async, [&] { return TimetableGenerator().Run(ValidSchool().ToJson(), cancelled); });
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			cancelled = true;
+
+			if (run.wait_for(std::chrono::seconds(5)) != std::future_status::ready)
+				throw TestFailure("the run was still going 5 s after it was cancelled");
+			ExpectCancelled(run);
 		} },
 	};
 }

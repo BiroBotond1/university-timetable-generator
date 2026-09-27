@@ -1,5 +1,6 @@
 #pragma once
 #include "Database.h"
+#include <atomic>
 
 class Entity;
 
@@ -7,12 +8,15 @@ class TimetableGenerator
 {
 public:
 	std::string Run(const std::string& input);
+	//throws GenerationCancelled once p_cancelled is set; it is checked before every placement
+	//attempt and every annealing iteration, so a run stops within one iteration
+	std::string Run(const std::string& input, const std::atomic<bool>& p_cancelled);
 
 private:
 	void CheckWeeklyHours();
-	void InitCatalogs(const std::string& p_input);
+	void InitCatalogs(const std::string& p_input, const std::atomic<bool>& p_cancelled);
 	std::shared_ptr<ClassHour> PlaceClassHours();
-	void SimulatedAnnealing();
+	void SimulatedAnnealing(const std::atomic<bool>& p_cancelled);
 	std::string WriteCatalog();
 
 	bool Changes(Database& p_db);

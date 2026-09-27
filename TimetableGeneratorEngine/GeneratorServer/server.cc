@@ -46,6 +46,7 @@
 #include <chrono>
 #include <thread>
 #include <future>
+#include <atomic>
 #include "MyTime.h"
 #include "TimetableGenerator.h"
 #include "GenerationError.h"
@@ -67,9 +68,10 @@
 
      TimetableGenerator generator;
      std::string input = request->input();
+     std::atomic<bool> cancelled{ false };
 
-     auto future = std::async(std::launch::async, [&generator, input]() {
-         return generator.Run(input);
+     auto future = std::async(std::launch::async, [&generator, &cancelled, input]() {
+         return generator.Run(input, cancelled);
      });
 
      while (true) {
@@ -94,7 +96,12 @@
          }
 
          if (context->IsCancelled()) {
-             // Client cancelled the request
+             // Client cancelled the request. A future from std::async waits for its task when
+             // destroyed, so returning alone would leave this thread blocked, and a core busy,
+             // until the annealing ended; the flag makes Run stop within one iteration instead.
+             // Its GenerationCancelled stays in the future, which is never read.
+             cancelled = true;
+             future.wait();
              std::cout << "Client cancelled request" << std::endl;
              return Status(grpc::StatusCode::CANCELLED, "Request cancelled");
          }
