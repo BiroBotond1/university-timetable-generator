@@ -7,10 +7,28 @@
 #include "ClassHour.h"
 #include "Random.h"
 #include "GenerationError.h"
+#include <limits>
 
 namespace
 {
-    std::string CouldNotPlace(const ClassHour& p_classHour)
+    struct WeeklyHours
+    {
+        std::unordered_map<std::string, int> mByTeacher;
+        std::unordered_map<std::string, int> mByClass;
+    };
+
+    WeeklyHours CountWeeklyHours(Database& p_db)
+    {
+        WeeklyHours weeklyHours;
+        for (const auto& [id, classHour] : p_db.GetClassHours())
+        {
+            weeklyHours.mByTeacher[classHour->GetTeacher()->GetId()] += classHour->GetNumber();
+            weeklyHours.mByClass[classHour->GetClass()->GetId()] += classHour->GetNumber();
+        }
+        return weeklyHours;
+    }
+
+    std::string CouldNotPlace(const ClassHour& p_classHour, int p_nAttempts)
     {
         auto subject = p_classHour.GetSubject();
         std::string freeTogether = subject->HasLocations()
@@ -18,15 +36,16 @@ namespace
             : "the class and the teacher are both free";
 
         return "Could not place " + subject->GetName() + " for " + p_classHour.GetClass()->GetName()
-            + " with " + p_classHour.GetTeacher()->GetName() + ": no slot where " + freeTogether + ".";
+            + " with " + p_classHour.GetTeacher()->GetName() + " after " + std::to_string(p_nAttempts)
+            + " attempts: no slot where " + freeTogether + ".";
     }
 }
 
 std::string TimetableGenerator::Run(const std::string& input)
-{    
+{
     m_DB.Fill(input);
     InitLinearAnnealingParameter();
-    InitCatalogs();
+    InitCatalogs(input);
     SimulatedAnnealing();
     return WriteCatalog();
 }
@@ -36,14 +55,51 @@ void TimetableGenerator::InitLinearAnnealingParameter()
     m_linearAnnealing = m_DB.GetClasses().size() <= 14 ? 0.1 : 0.01; //set the linear anneling parameter smaller for bigger schools to be able to get a correct solution
 }
 
-void TimetableGenerator::InitCatalogs() 
+//hours are placed one at a time without backtracking, so even a schedulable school can run into
+//a dead end; a fresh database and a different order usually get past it
+void TimetableGenerator::InitCatalogs(const std::string& p_input)
 {
     m_bActive = false;
-    for (auto& classHour : m_DB.GetClassHours())
+    for (int nAttempt = 1; ; nAttempt++)
     {
-        if (!classHour.second->AddClassHoursToCatalog())
-            throw GenerationError(CouldNotPlace(*classHour.second));
+        auto unplaced = PlaceClassHours();
+        if (!unplaced)
+            return;
+
+        if (nAttempt == INIT_ATTEMPTS)
+            throw GenerationError(CouldNotPlace(*unplaced, INIT_ATTEMPTS));
+
+        m_DB = Database();
+        m_DB.Fill(p_input);
     }
+}
+
+//most constrained first: hours that need a room, then the busiest teachers and classes, then the
+//longest entries; the random last key gives every attempt a different order among equals
+std::shared_ptr<ClassHour> TimetableGenerator::PlaceClassHours()
+{
+    auto weeklyHours = CountWeeklyHours(m_DB);
+
+    using PlacementKey = std::tuple<bool, int, int, int, int>;
+    std::vector<std::pair<PlacementKey, std::shared_ptr<ClassHour>>> vOrder;
+    for (const auto& [id, classHour] : m_DB.GetClassHours())
+    {
+        PlacementKey key{ classHour->HasLocation(),
+            weeklyHours.mByTeacher[classHour->GetTeacher()->GetId()],
+            weeklyHours.mByClass[classHour->GetClass()->GetId()],
+            classHour->GetNumber(),
+            Random::GetInt(0, std::numeric_limits<int>::max()) };
+        vOrder.emplace_back(key, classHour);
+    }
+
+    std::sort(vOrder.begin(), vOrder.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    for (const auto& [key, classHour] : vOrder)
+    {
+        if (!classHour->AddClassHoursToCatalog())
+            return classHour;
+    }
+    return nullptr;
 }
 
 void TimetableGenerator::SimulatedAnnealing() 

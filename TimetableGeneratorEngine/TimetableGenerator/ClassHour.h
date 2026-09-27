@@ -25,6 +25,7 @@ public:
 	std::shared_ptr<Subject>	GetSubject() const	{ return m_subject.lock(); }
 
 	double		GetWeight() const { return m_dWeight; }
+	int			GetNumber() const { return m_nNumber; }
 	
 	bool		AddClassHoursToCatalog();
 	bool		HasLocation() const;

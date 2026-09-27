@@ -9,7 +9,8 @@ public:
 	std::string Run(const std::string& input);
 
 private:
-	void InitCatalogs();
+	void InitCatalogs(const std::string& p_input);
+	std::shared_ptr<ClassHour> PlaceClassHours();
 	void SimulatedAnnealing();
 	std::string WriteCatalog();
 
@@ -41,4 +42,5 @@ private:
 
 	const double MAX_TEMP = 100000.0;
 	const double MIN_TEMP = 2.0;
+	const int INIT_ATTEMPTS = 20;
 };
