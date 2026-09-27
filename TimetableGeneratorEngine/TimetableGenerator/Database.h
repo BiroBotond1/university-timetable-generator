@@ -29,7 +29,7 @@ public:
 	SubjectMap&		GetSubjects()	{ return m_subjects; }
 	ClassHourMap&	GetClassHours() { return m_classHours; }
 
-	std::shared_ptr<Class> GetRandomClass();
+	std::shared_ptr<Class> GetRandomClass();	//nullptr when no class has any hours
 
 private:
 	template <typename T>
@@ -46,6 +46,6 @@ private:
 	ClassMap					m_classes;
 	SubjectMap					m_subjects;
 	ClassHourMap				m_classHours;
-	std::vector<std::string>	m_classIDs;
+	std::vector<std::string>	m_classIDsWithHours;
 };
 

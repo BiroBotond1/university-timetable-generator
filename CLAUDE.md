@@ -17,9 +17,10 @@ university-timetable-generator/
 │   ├── frontend/                # Vue 3 + Vite + Vuetify + Tailwind
 │   ├── backend/                 # Express + Socket.IO + Mongoose
 │   └── docker-compose-deps.yml  # MongoDB only
-└── TimetableGeneratorEngine/    # C++ / CMake, 4 subprojects
+└── TimetableGeneratorEngine/    # C++ / CMake, 5 subprojects
     ├── TimetableGenerator/      # the solver library
     ├── GeneratorServer/         # gRPC server, :50051
+    ├── TimetableGeneratorTests/ # CTest cases for the solver
     ├── TimetableGeneratorExe/   # CLI stub (the actual call is commented out)
     └── InputDataGenerator/      # synthetic school generator for testing
 ```
@@ -78,7 +79,25 @@ executes files in parallel and they would otherwise drop each other's data.
   someone accepts or leaves" is observed rather than assumed. Add a case here
   when adding a membership operation
 
-**There is no frontend or C++ test target.** The only other automated gate is a
+Engine tests in `TimetableGeneratorEngine/TimetableGeneratorTests/`, no
+framework, one CTest entry per case. From `TimetableGeneratorEngine/`:
+
+```bash
+cmake -S . -B build -DTIMETABLE_BUILD_SERVER=OFF   # OFF: no gRPC needed
+cmake --build build --config Release
+ctest --test-dir build -C Release -j 7
+```
+
+Each case runs `TimetableGenerator::Run` on a school built in code by the
+`School` helper, which writes the same document the backend sends. The random
+generator cannot be seeded, so a case may only check what holds for every random
+run — an input no order can place, or one every order the engine tries can. The
+two cases that anneal take about 30 s, since the cooling schedule is a fixed
+~500k iterations. Every case has a 120 s CTest timeout so that an unbounded loop
+fails instead of hanging. Keep the build directory path short: MSBuild fails
+past 260 characters, and a build under `%TEMP%` gets there.
+
+**There is no frontend test target.** The only other automated gate is a
 cppcheck GitHub Action, and that workflow is misconfigured (it fails on any
 stderr output, and cppcheck writes progress to stderr), so it is permanently red.
 Don't read CI status as signal.
@@ -120,8 +139,11 @@ only. When you add a mutation, the socket handler is the real path; the REST
 
 **Backend → engine, gRPC.** `Generate(GenerateRequest{string input})` returns
 `GenerateReply{string output}` — a whole JSON document in, a whole JSON document
-out. Cancellation is real: the backend calls `call.cancel()` and the C++ server
-polls `context->IsCancelled()` every 100 ms.
+out. An input the engine cannot schedule comes back as `FAILED_PRECONDITION`
+with a message naming the class, teacher or subject; malformed input or an
+engine bug as `INTERNAL`. Cancellation is only half real: the backend calls
+`call.cancel()`, and the C++ handler notices within 100 ms and returns
+`CANCELLED`, but the run itself keeps going (see Known gaps).
 
 **Backend layering.** `api/` (routers) → `controllers/` → `services/` →
 `models/`. The `socket/` handlers call the *same* services, so business logic
@@ -181,6 +203,14 @@ Don't treat any of this as intentional design.
   This was an experiment, not live work.
 - Root `README.md` is stale — it describes invoking `timetable_generator.exe`
   directly and predates gRPC and Auth0.
+- Cancelling a generation does not stop the engine. `server.cc` runs
+  `TimetableGenerator::Run` through `std::async`, and that future's destructor
+  waits for the task, so after returning `CANCELLED` the handler thread and one
+  CPU core stay busy until the annealing finishes. The fix is a stop flag passed
+  into `Run` and checked in its loops.
+- Engine failure messages never reach the user. `GenerationService.execute`
+  logs the gRPC error with `console.error` and resets the status to idle, so the
+  UI only sees generation stop.
 
 ## Roadmap
 
@@ -191,19 +221,22 @@ Implemented in eight commits on `project-based-schools`; the decisions, the
 rejected alternatives and the step order are in
 [ADR 0001](docs/adr/0001-project-scoped-multi-tenancy.md).
 
+**Done — the engine no longer hangs on inputs it cannot place.** Placement
+lists the free slots instead of drawing random ones until one fits, places the
+most constrained hours first and retries dead ends up to 20 times, and a count
+check names an over-subscribed class or teacher. The same unbounded-loop shape
+in the annealing's swap selection, hit by any class without hours, is gone too.
+Seven commits on `fix-init-infinite-loop`.
+
 Next, in order:
 
-1. **Fix the initialization infinite loop.** When the input is over-subscribed
-   and no free slot exists, `ClassHour::GetFreeTime` and
-   `GetFreeTimeWithLocation` (`TimetableGeneratorEngine/TimetableGenerator/ClassHour.cpp:58`
-   and `:70`) retry a random `Time` forever with no iteration cap and no failure
-   path. This hangs before annealing even starts.
-2. Dockerize.
-3. Deploy.
+1. Dockerize.
+2. Deploy.
 
 Longer-term ideas from the thesis, not scheduled: parallel annealing runs,
-feedback naming the conflict source when generation fails, manual editing of a
-generated timetable, automatic fitness-parameter tuning.
+showing the engine's failure message in the UI (the engine names the conflict
+source now; the backend drops it), manual editing of a generated timetable,
+automatic fitness-parameter tuning.
 
 ## Conventions
 

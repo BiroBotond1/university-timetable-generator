@@ -34,49 +34,64 @@ bool ClassHour::HasLocation() const
 	return m_subject.lock()->HasLocations();
 }
 
-void ClassHour::AddClassHoursToCatalog() 
+//false when an hour found no free slot; the hours placed before it stay in the catalogs
+bool ClassHour::AddClassHoursToCatalog()
 {
 	for (int i = 0; i < m_nNumber; i++)
 	{
-		if (HasLocation()) 
+		auto freeSlot = GetRandomFreeSlot();
+		if (!freeSlot)
+			return false;
+
+		auto [time, location] = *freeSlot;
+		if (location)
 		{
-			auto [time, location] = GetFreeTimeWithLocation();
-			
 			location->Add(time, shared_from_this());
 			m_class.lock()->SetClassHour(shared_from_this(), location, time);
 			m_teacher.lock()->SetClassHour(shared_from_this(), location, time);
 		}
 		else {
-			Time freeTime = GetFreeTime();
-
-			m_class.lock()->Add(freeTime, shared_from_this());
-			m_teacher.lock()->Add(freeTime, shared_from_this());
+			m_class.lock()->Add(time, shared_from_this());
+			m_teacher.lock()->Add(time, shared_from_this());
 		}
 	}
+	return true;
 }
 
-Time ClassHour::GetFreeTime()
+//lists every free (time, location) pair instead of drawing random ones until one fits, so an
+//empty list proves there is no slot; picking from the list is as uniform as the random draws were
+std::optional<std::pair<Time, std::shared_ptr<Location>>> ClassHour::GetRandomFreeSlot() const
 {
-	Time time = Random::GetTime();
+	auto clas = m_class.lock();
+	auto teacher = m_teacher.lock();
+	auto subject = m_subject.lock();
 
-	while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time))
+	std::vector<std::pair<Time, std::shared_ptr<Location>>> vFreeSlots;
+	for (int nDay = 0; nDay < DAY_COUNT; nDay++)
 	{
-		time = Random::GetTime();
+		for (int nHour = 0; nHour < HOUR_COUNT; nHour++)
+		{
+			Time time{ nDay, nHour };
+			if (!clas->IsFreeDay(time) || !teacher->IsFreeDay(time))
+				continue;
+
+			if (!subject->HasLocations())
+			{
+				vFreeSlots.emplace_back(time, nullptr);
+				continue;
+			}
+
+			for (const auto& location : subject->GetLocations())
+			{
+				auto sharedLocation = location.lock();
+				if (sharedLocation->IsFreeDay(time))
+					vFreeSlots.emplace_back(time, sharedLocation);
+			}
+		}
 	}
 
-	return time;
-}
+	if (vFreeSlots.empty())
+		return std::nullopt;
 
-std::pair<Time, std::shared_ptr<Location>> ClassHour::GetFreeTimeWithLocation()
-{
-	Time time = Random::GetTime();
-	std::shared_ptr<Location> location = m_subject.lock()->GetRandomLocation();
-
-	while (!m_class.lock()->IsFreeDay(time) || !m_teacher.lock()->IsFreeDay(time) || !location->IsFreeDay(time))
-	{
-		time = Random::GetTime();
-		location = m_subject.lock()->GetRandomLocation();
-	}
-
-	return std::make_pair(time, location);
+	return vFreeSlots[Random::GetInt(0, int(vFreeSlots.size() - 1))];
 }

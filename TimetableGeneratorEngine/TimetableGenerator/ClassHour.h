@@ -25,13 +25,13 @@ public:
 	std::shared_ptr<Subject>	GetSubject() const	{ return m_subject.lock(); }
 
 	double		GetWeight() const { return m_dWeight; }
+	int			GetNumber() const { return m_nNumber; }
 	
-	void		AddClassHoursToCatalog();
+	bool		AddClassHoursToCatalog();
 	bool		HasLocation() const;
 
 private:
-	Time GetFreeTime();
-	std::pair<Time, std::shared_ptr<Location>> GetFreeTimeWithLocation();
+	std::optional<std::pair<Time, std::shared_ptr<Location>>> GetRandomFreeSlot() const;
 
 private:
 	std::weak_ptr<Teacher>		m_teacher;

@@ -6,12 +6,47 @@
 #include "Subject.h"
 #include "ClassHour.h"
 #include "Random.h"
+#include "GenerationError.h"
+#include <limits>
+
+namespace
+{
+    struct WeeklyHours
+    {
+        std::unordered_map<std::string, int> mByTeacher;
+        std::unordered_map<std::string, int> mByClass;
+    };
+
+    WeeklyHours CountWeeklyHours(Database& p_db)
+    {
+        WeeklyHours weeklyHours;
+        for (const auto& [id, classHour] : p_db.GetClassHours())
+        {
+            weeklyHours.mByTeacher[classHour->GetTeacher()->GetId()] += classHour->GetNumber();
+            weeklyHours.mByClass[classHour->GetClass()->GetId()] += classHour->GetNumber();
+        }
+        return weeklyHours;
+    }
+
+    std::string CouldNotPlace(const ClassHour& p_classHour, int p_nAttempts)
+    {
+        auto subject = p_classHour.GetSubject();
+        std::string freeTogether = subject->HasLocations()
+            ? "the class, the teacher and one of the subject's rooms are all free"
+            : "the class and the teacher are both free";
+
+        return "Could not place " + subject->GetName() + " for " + p_classHour.GetClass()->GetName()
+            + " with " + p_classHour.GetTeacher()->GetName() + " after " + std::to_string(p_nAttempts)
+            + " attempts: no slot where " + freeTogether + ".";
+    }
+}
 
 std::string TimetableGenerator::Run(const std::string& input)
-{    
+{
     m_DB.Fill(input);
+    CheckWeeklyHours();
     InitLinearAnnealingParameter();
-    InitCatalogs();
+    InitCatalogs(input);
     SimulatedAnnealing();
     return WriteCatalog();
 }
@@ -21,13 +56,80 @@ void TimetableGenerator::InitLinearAnnealingParameter()
     m_linearAnnealing = m_DB.GetClasses().size() <= 14 ? 0.1 : 0.01; //set the linear anneling parameter smaller for bigger schools to be able to get a correct solution
 }
 
-void TimetableGenerator::InitCatalogs() 
+//these inputs fail on every placement attempt whatever the order, and here the message can name
+//the exact excess instead of whichever hour happened to be left over
+void TimetableGenerator::CheckWeeklyHours()
+{
+    const int nWeekSlots = DAY_COUNT * HOUR_COUNT;
+    auto weeklyHours = CountWeeklyHours(m_DB);
+
+    int nTotalHours = 0;
+    for (const auto& [classId, nHours] : weeklyHours.mByClass)
+        nTotalHours += nHours;
+
+    if (nTotalHours == 0)
+        throw GenerationError("There are no class hours to schedule.");
+
+    for (const auto& [classId, nHours] : weeklyHours.mByClass)
+    {
+        if (nHours > nWeekSlots)
+            throw GenerationError("Class " + m_DB.GetClasses().at(classId)->GetName() + " needs "
+                + std::to_string(nHours) + " hours, the week has " + std::to_string(nWeekSlots) + ".");
+    }
+
+    for (const auto& [teacherId, nHours] : weeklyHours.mByTeacher)
+    {
+        if (nHours > nWeekSlots)
+            throw GenerationError("Teacher " + m_DB.GetTeachers().at(teacherId)->GetName() + " needs "
+                + std::to_string(nHours) + " hours, the week has " + std::to_string(nWeekSlots) + ".");
+    }
+}
+
+//hours are placed one at a time without backtracking, so even a schedulable school can run into
+//a dead end; a fresh database and a different order usually get past it
+void TimetableGenerator::InitCatalogs(const std::string& p_input)
 {
     m_bActive = false;
-    for (auto& classHour : m_DB.GetClassHours())
+    for (int nAttempt = 1; ; nAttempt++)
     {
-        classHour.second->AddClassHoursToCatalog();
+        auto unplaced = PlaceClassHours();
+        if (!unplaced)
+            return;
+
+        if (nAttempt == INIT_ATTEMPTS)
+            throw GenerationError(CouldNotPlace(*unplaced, INIT_ATTEMPTS));
+
+        m_DB = Database();
+        m_DB.Fill(p_input);
     }
+}
+
+//most constrained first: hours that need a room, then the busiest teachers and classes, then the
+//longest entries; the random last key gives every attempt a different order among equals
+std::shared_ptr<ClassHour> TimetableGenerator::PlaceClassHours()
+{
+    auto weeklyHours = CountWeeklyHours(m_DB);
+
+    using PlacementKey = std::tuple<bool, int, int, int, int>;
+    std::vector<std::pair<PlacementKey, std::shared_ptr<ClassHour>>> vOrder;
+    for (const auto& [id, classHour] : m_DB.GetClassHours())
+    {
+        PlacementKey key{ classHour->HasLocation(),
+            weeklyHours.mByTeacher[classHour->GetTeacher()->GetId()],
+            weeklyHours.mByClass[classHour->GetClass()->GetId()],
+            classHour->GetNumber(),
+            Random::GetInt(0, std::numeric_limits<int>::max()) };
+        vOrder.emplace_back(key, classHour);
+    }
+
+    std::sort(vOrder.begin(), vOrder.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    for (const auto& [key, classHour] : vOrder)
+    {
+        if (!classHour->AddClassHoursToCatalog())
+            return classHour;
+    }
+    return nullptr;
 }
 
 void TimetableGenerator::SimulatedAnnealing() 
@@ -41,13 +143,15 @@ void TimetableGenerator::SimulatedAnnealing()
     int i = 0, nStepsWithNoBetterSolution = 0; 
     while (t > MIN_TEMP)
     {
+        double fitnessC = Fitness();
+
         Database localDB;
         m_DB.DeepCopy(localDB);
 
-        Changes(localDB);
+        if (!Changes(localDB))
+            break;      //no class has a valid swap, so no move can change the timetable any more
 
         double fitnessW = Fitness(localDB);
-        double fitnessC = Fitness();
 
         if (fitnessW > fitnessC || Random::Get() < exp((fitnessW - fitnessC) / t))
         {
@@ -76,19 +180,41 @@ void TimetableGenerator::SimulatedAnnealing()
     m_DB.DeepCopy(bestDB);
 }
 
-void TimetableGenerator::Changes(Database& p_db)
+bool TimetableGenerator::Changes(Database& p_db)
 {
     for (int i = 0; i < 1; i++)
     {
-        Change(p_db);
+        if (!Change(p_db))
+            return false;
     }
+    return true;
 }
 
-void TimetableGenerator::Change(Database& p_db)
+bool TimetableGenerator::Change(Database& p_db)
 {
     auto clas = p_db.GetRandomClass();
+    std::optional<std::tuple<Time, Time>> freeHourTimes;
+    if (clas)
+        freeHourTimes = GetRandomFreeHourTime(clas);
 
-    auto [time1, time2] = GetRandomFreeHourTime(clas);
+    //the drawn class has no valid swap, which is rare; any class that still has one will do
+    if (!freeHourTimes)
+    {
+        for (auto& [id, otherClass] : p_db.GetClasses())
+        {
+            freeHourTimes = GetRandomFreeHourTime(otherClass);
+            if (freeHourTimes)
+            {
+                clas = otherClass;
+                break;
+            }
+        }
+    }
+
+    if (!freeHourTimes)
+        return false;
+
+    auto [time1, time2] = *freeHourTimes;
 
     auto classHour1 = clas->GetCatalog().GetClassHour(time1);
     auto classHour2 = clas->GetCatalog().GetClassHour(time2);
@@ -102,7 +228,7 @@ void TimetableGenerator::Change(Database& p_db)
         {
             auto location = subject1->GetRandomLocation();
             if (ChangeLocations(classHour1, location, time1))
-                return;
+                return true;
         }
     }
 
@@ -112,7 +238,7 @@ void TimetableGenerator::Change(Database& p_db)
         {
             auto location = subject2->GetRandomLocation();
             if (ChangeLocations(classHour2, location, time2))
-                return;
+                return true;
         }
     }
 
@@ -121,6 +247,7 @@ void TimetableGenerator::Change(Database& p_db)
     SwapTeachers(clas, time1, time2);
 
     clas->Change(time1, time2);
+    return true;
 }
 
 double TimetableGenerator::LinearAnnealing(double t, int i)
@@ -208,27 +335,44 @@ std::tuple<double, double, double, bool> TimetableGenerator::Evaluate(Database& 
     return std::make_tuple(dFitnessValueClass, dFitnessValueTeacher, dFitnessValueLocation, bActive);
 }
 
-std::tuple<Time, Time> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr<Class> p_class)
+//lists every valid swap instead of drawing random pairs until one is valid, so a class with no
+//valid swap (no hours, or every teacher busy wherever it could move) no longer loops forever
+std::optional<std::tuple<Time, Time>> TimetableGenerator::GetRandomFreeHourTime(std::shared_ptr<Class> p_class)
 {
-    Time time1, time2;
-    std::shared_ptr<Teacher> teacher1;
-    std::shared_ptr<Teacher> teacher2;
-    std::shared_ptr<Location> location1;
-    std::shared_ptr<Location> location2;
-    do {
-        time1 = Random::GetTime();
-        time2 = Random::GetTime();
-        teacher1 = p_class->GetTeacher(time1);
-        teacher2 = p_class->GetTeacher(time2);
-        location1 = p_class->GetCatalog().GetLocation(time1);
-        location2 = p_class->GetCatalog().GetLocation(time2);
-    } while ((teacher1 && !teacher1->GetCatalog().IsFreeDay(time2))
-        || (teacher2 && !teacher2->GetCatalog().IsFreeDay(time1))
-        || (location1 && !location1->GetCatalog().IsFreeDay(time2))
-        || (location2 && !location2->GetCatalog().IsFreeDay(time1))
-        || (!teacher1 && !teacher2));
+    std::vector<Time> vTimes;
+    std::vector<std::shared_ptr<Teacher>> vTeachers;
+    std::vector<std::shared_ptr<Location>> vLocations;
+    for (int nDay = 0; nDay < DAY_COUNT; nDay++)
+    {
+        for (int nHour = 0; nHour < HOUR_COUNT; nHour++)
+        {
+            Time time{ nDay, nHour };
+            vTimes.push_back(time);
+            vTeachers.push_back(p_class->GetTeacher(time));
+            vLocations.push_back(p_class->GetCatalog().GetLocation(time));
+        }
+    }
 
-    return std::make_tuple(time1, time2);
+    std::vector<std::tuple<Time, Time>> vSwaps;
+    for (size_t i = 0; i < vTimes.size(); i++)
+    {
+        for (size_t j = 0; j < vTimes.size(); j++)
+        {
+            if ((!vTeachers[i] && !vTeachers[j])
+                || (vTeachers[i] && !vTeachers[i]->GetCatalog().IsFreeDay(vTimes[j]))
+                || (vTeachers[j] && !vTeachers[j]->GetCatalog().IsFreeDay(vTimes[i]))
+                || (vLocations[i] && !vLocations[i]->GetCatalog().IsFreeDay(vTimes[j]))
+                || (vLocations[j] && !vLocations[j]->GetCatalog().IsFreeDay(vTimes[i])))
+                continue;
+
+            vSwaps.emplace_back(vTimes[i], vTimes[j]);
+        }
+    }
+
+    if (vSwaps.empty())
+        return std::nullopt;
+
+    return vSwaps[Random::GetInt(0, int(vSwaps.size() - 1))];
 }
 
 std::string TimetableGenerator::WriteCatalog()

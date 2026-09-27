@@ -8,6 +8,7 @@
 #include "ClassHour.h"
 #include "Random.h"
 #include "Catalog.h"
+#include <unordered_set>
 
 void Database::Fill(const std::string& input)
 {
@@ -29,7 +30,6 @@ void Database::Fill(const std::string& input)
     for (auto& jsonClass : data["classes"])
     {
         m_classes.emplace(jsonClass["_id"], std::make_shared<Class>(jsonClass, config));
-        m_classIDs.push_back(jsonClass["_id"]);
     }
 
     for (auto& jsonSubject : data["subjects"])
@@ -37,18 +37,33 @@ void Database::Fill(const std::string& input)
         m_subjects.emplace(jsonSubject["_id"], std::make_shared<Subject>(jsonSubject, m_locations));
     }
 
+    std::unordered_set<std::string> classIDsWithHours;
     for (auto& jsonClassHour : data["classHours"])
     {
         auto teacherId = jsonClassHour["teacher"]["_id"].get<std::string>();
         auto classId = jsonClassHour["class"]["_id"].get<std::string>();
         auto subjectId = jsonClassHour["subject"]["_id"].get<std::string>();
-        m_classHours.emplace(jsonClassHour["_id"], std::make_shared<ClassHour>(jsonClassHour, m_teachers[teacherId], m_classes[classId], m_subjects[subjectId]));
+        auto classHour = std::make_shared<ClassHour>(jsonClassHour, m_teachers[teacherId], m_classes[classId], m_subjects[subjectId]);
+        if (classHour->GetNumber() > 0)
+            classIDsWithHours.insert(classId);
+        m_classHours.emplace(jsonClassHour["_id"], classHour);
+    }
+
+    //the annealing moves hours within one class, so a class without hours has nothing to move
+    for (auto& jsonClass : data["classes"])
+    {
+        auto classId = jsonClass["_id"].get<std::string>();
+        if (classIDsWithHours.count(classId))
+            m_classIDsWithHours.push_back(classId);
     }
 }
 
 std::shared_ptr<Class> Database::GetRandomClass()
 {
-    std::string classId = m_classIDs[Random::GetInt(0, int(m_classIDs.size() - 1))];
+    if (m_classIDsWithHours.empty())
+        return nullptr;
+
+    std::string classId = m_classIDsWithHours[Random::GetInt(0, int(m_classIDsWithHours.size() - 1))];
     return m_classes[classId];
 }
 
@@ -79,7 +94,7 @@ json Database::WriteCatalog()
 
 void Database::DeepCopy(Database& p_copyDB)
 {
-    p_copyDB.m_classIDs = m_classIDs;
+    p_copyDB.m_classIDsWithHours = m_classIDsWithHours;
     p_copyDB.m_teachers = DeepCopyMap<Teacher>(m_teachers);
     p_copyDB.m_locations = DeepCopyMap<Location>(m_locations);
     p_copyDB.m_classes = DeepCopyMap<Class>(m_classes);
