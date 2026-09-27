@@ -54,9 +54,17 @@ export const generate = async (projectId) => {
   const entry = { call: null, cancelled: false };
   inFlight.set(key, entry);
 
-  await projectService.setGenerationStatus(projectId, 'queued');
+  // Started now but deliberately not awaited here: taking the queue slot must
+  // happen synchronously, in request order. Awaiting first would let two
+  // requests swap places depending on which database write finished first.
+  const queuedWrite = projectService.setGenerationStatus(projectId, 'queued');
 
-  const run = queue.then(() => execute(projectId, key, entry));
+  const run = queue.then(async () => {
+    // ...but it must land before execute() writes 'running', or the status
+    // would end up stuck at 'queued' for a run that is already going.
+    await queuedWrite;
+    return execute(projectId, key, entry);
+  });
 
   // Keep the chain alive even if this run throws, or every later generation
   // would inherit the rejection.

@@ -26,6 +26,8 @@ export const startStubEngine = async (port = 50051) => {
   let concurrent = 0
   let maxConcurrent = 0
   let parked: Array<() => void> = []
+  // Identifies whose payload arrived, so queue order can be asserted exactly.
+  let callOrder: string[] = []
   let waiters: Array<{ count: number, resolve: () => void }> = []
 
   const notifyWaiters = () => {
@@ -41,7 +43,13 @@ export const startStubEngine = async (port = 50051) => {
   const server = new grpc.Server()
 
   server.addService(proto.Generator.service, {
-    Generate: (_call, callback) => {
+    Generate: (call, callback) => {
+      try {
+        callOrder.push(JSON.parse(call.request.input).teachers?.[0]?.name ?? '')
+      } catch {
+        callOrder.push('')
+      }
+
       served += 1
       concurrent += 1
       maxConcurrent = Math.max(maxConcurrent, concurrent)
@@ -65,6 +73,8 @@ export const startStubEngine = async (port = 50051) => {
     get served() { return served },
     /** The highest number of calls the engine ever had open at once. */
     get maxConcurrent() { return maxConcurrent },
+    /** The first teacher name in each payload, in arrival order. */
+    get callOrder() { return [...callOrder] },
 
     /** Resolves once `count` calls have arrived. */
     waitForCalls: (count: number) => new Promise<void>((resolve) => {
@@ -85,6 +95,7 @@ export const startStubEngine = async (port = 50051) => {
       maxConcurrent = 0
       parked = []
       waiters = []
+      callOrder = []
     },
 
     stop: () => server.forceShutdown(),

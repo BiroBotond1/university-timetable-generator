@@ -6,6 +6,7 @@ import { startStubEngine } from './helpers/stubEngine.js'
 import { makeProject, makeUser } from './helpers/fixtures.js'
 import * as projectService from '../src/services/ProjectService.js'
 import * as generationService from '../src/services/GenerationService.js'
+import * as teacherService from '../src/services/TeacherService.js'
 import { model as Project } from '../src/models/Project.js'
 
 let engine: Awaited<ReturnType<typeof startStubEngine>>
@@ -22,8 +23,14 @@ beforeEach(async () => {
   engine.reset()
 })
 
-// Nothing may stay parked, or the next test inherits an open call.
-afterEach(() => engine.releaseAll())
+// Nothing may stay parked, or the next test inherits an open call that holds
+// the global queue. Drained over a few ticks to catch late arrivals.
+afterEach(async () => {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    engine.releaseAll()
+    await new Promise(resolve => setTimeout(resolve, 20))
+  }
+})
 
 after(async () => {
   engine.stop()
@@ -34,14 +41,14 @@ const statusOf = async (project) =>
   (await Project.findById(project._id)).generationStatus
 
 describe('one generation per project', () => {
-  test('a fresh project is idle', async () => {
+  test('a fresh project is idle', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
     assert.equal(await statusOf(project), 'idle')
     assert.equal(generationService.isGenerating(project._id), false)
   })
 
-  test('a second run on the same project is refused', async () => {
+  test('a second run on the same project is refused', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
     const run = generationService.generate(project._id)
@@ -52,11 +59,14 @@ describe('one generation per project', () => {
       /already running/
     )
 
+    // Wait for the call to actually reach the engine: releasing before it
+    // arrives releases nothing, and it would then park forever.
+    await engine.waitForCalls(1)
     engine.releaseAll()
     await run
   })
 
-  test('the status returns to idle when the run finishes', async () => {
+  test('the status returns to idle when the run finishes', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
     const run = generationService.generate(project._id)
@@ -70,7 +80,7 @@ describe('one generation per project', () => {
 })
 
 describe('runs from different projects queue', () => {
-  test('the second project waits rather than running alongside', async () => {
+  test('the second project waits rather than running alongside', { timeout: 20000 }, async () => {
     const owner = await makeUser()
     const a = await makeProject(owner, 'A')
     const b = await makeProject(owner, 'B')
@@ -90,7 +100,33 @@ describe('runs from different projects queue', () => {
     await Promise.all([runA, runB])
   })
 
-  test('the engine never handles two at once, but both are served', async () => {
+  test('the queue is served in request order', { timeout: 20000 }, async () => {
+    const owner = await makeUser()
+    const a = await makeProject(owner, 'A')
+    const b = await makeProject(owner, 'B')
+
+    // The stub identifies a payload by its first teacher.
+    await teacherService.create(a._id, { name: 'from-A' })
+    await teacherService.create(b._id, { name: 'from-B' })
+
+    // Regression guard: the queue slot used to be taken after an await, so
+    // whichever project's status write finished first went first -- meaning B
+    // could overtake A under load.
+    const runA = generationService.generate(a._id)
+    const runB = generationService.generate(b._id)
+
+    await engine.waitForCalls(1)
+    assert.deepEqual(engine.callOrder, ['from-A'])
+
+    engine.releaseAll()
+    await engine.waitForCalls(2)
+    assert.deepEqual(engine.callOrder, ['from-A', 'from-B'])
+
+    engine.releaseAll()
+    await Promise.all([runA, runB])
+  })
+
+  test('the engine never handles two at once, but both are served', { timeout: 20000 }, async () => {
     const owner = await makeUser()
     const a = await makeProject(owner, 'A')
     const b = await makeProject(owner, 'B')
@@ -110,7 +146,7 @@ describe('runs from different projects queue', () => {
 })
 
 describe('cancellation', () => {
-  test('cancelling a queued run stops it ever reaching the engine', async () => {
+  test('cancelling a queued run stops it ever reaching the engine', { timeout: 20000 }, async () => {
     const owner = await makeUser()
     const a = await makeProject(owner, 'A')
     const b = await makeProject(owner, 'B')
@@ -129,7 +165,7 @@ describe('cancellation', () => {
     assert.equal(await statusOf(b), 'idle')
   })
 
-  test('cancelling an idle project reports that there was nothing to cancel', async () => {
+  test('cancelling an idle project reports that there was nothing to cancel', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
     assert.equal(generationService.cancel(project._id), false)
@@ -137,7 +173,7 @@ describe('cancellation', () => {
 })
 
 describe('restart recovery', () => {
-  test('status left behind by a restart is cleared at boot', async () => {
+  test('status left behind by a restart is cleared at boot', { timeout: 20000 }, async () => {
     const project = await makeProject(await makeUser())
 
     // what a crash mid-run would leave in the database
@@ -147,7 +183,7 @@ describe('restart recovery', () => {
     assert.equal(await statusOf(project), 'idle')
   })
 
-  test('idle projects are left alone by the boot sweep', async () => {
+  test('idle projects are left alone by the boot sweep', { timeout: 20000 }, async () => {
     await makeProject(await makeUser())
 
     assert.equal(await projectService.clearStaleGenerationStatus(), 0)
